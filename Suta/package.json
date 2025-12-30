@@ -15,6 +15,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "@gaspl/search-client": "^1.0.1",
     "vue": "^3.5.26"
   },
   "devDependencies": {
