@@ -1,15 +1,19 @@
 <script  lang="ts">
-
+  import card from './components/card.vue';
+  import { defineComponent } from 'vue';
+  export default defineComponent({
+    components:{
+      card
+    }
+  })
 </script>
 
 <template>
-  <header>
-
-    <div>
-      <h1 class="st-bg-blue-400" >You did it!</h1>
-    </div>
-  </header>
-
+       <card/>
+       <card/>
+       <card/>
+       <card/>
+       <card/>       
 </template>
 
 <style scoped>
