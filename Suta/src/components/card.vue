@@ -3,7 +3,7 @@
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 st-leading-[23.1px]">
-        <span v-if="userData.created_at > '1764527400', userData.discount == 0"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">
+        <span v-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">
           NEW
         </span>
         <span v-if="userData.discount > 0"  class="st-bg-[#c43838] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">

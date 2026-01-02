@@ -11,6 +11,8 @@
         data: {} as object,
         result:{} as object,
         sortBy:"" as String,
+        sortList:["Price: Low to High","Price: High to Low","Discount: High to Low","Date: Old to New","Date: New to Old"] as Array,
+        rawData:{} as object,
       };
     },
     methods:{
@@ -18,32 +20,27 @@
         var searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
         searchClient.fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at").count(32).filter("(discount>0 OR discount=0) AND isActive=1 AND price>0").sort(`${this.sortBy}`);
         this.data=await searchClient.search("saree","KSNQ58MRXELY5JCX767TDSA1");
-        console.log(this.data.results);
+        console.log(this.data.totalHits);
         this.result=this.data.results;
         for (const element of this.result) {
           console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive);
         }
       },
-      sortByWho(){
-      const list=document.getElementById('sortList');
-      let val;
-      list?.addEventListener('click',(e)=>{
-        val=e.target?.id;
-        console.log(val);
-        switch (val) {
-            case "priceLtoH":
+      sortByWho(element){
+        switch (element) {
+            case "Price: Low to High":
               this.sortBy='discounted_price';
               break;
-            case "priceHtoL":
+            case "Price: High to Low":
               this.sortBy='-discounted_price';
               break;
-            case "discountHtoL":
+            case "Discount: High to Low":
               this.sortBy='-discount';
               break;
-            case "dateOtoN":
+            case "Date: Old to New":
               this.sortBy="created_at";
               break;
-            case "dateNtoO":
+            case "Date: New to Old":
               this.sortBy="-created_at";
               break;
             default:
@@ -51,13 +48,10 @@
           }
           console.log(this.sortBy);
           this.fetchData();
-      })
-
-    }
+      }
     },
     mounted(){
       this.fetchData();
-      this.sortByWho();
     }
   })
 </script>
@@ -200,7 +194,7 @@
                 </svg>
               </span>
             </div>
-            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>32</span><span>products</span></span>
+            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ this.data.totalHits }}</span><span>products</span></span>
             </div>
 
             <div class="sortby st-hidden lg:st-block st-py-[13px] st-border-l st-border-[#e8e8e1] st-group st-relative st-text-[11px] st-flex st-items-center st-gap-[0px] st-align-middle st-justify-center st-text-[#5c5c5c] st-cursor-pointer">
@@ -214,11 +208,7 @@
     
     <ul id="sortList" data-v-92e5ae27="" class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
       <li class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
-      <li id="priceLtoH" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Price: Low To High</li>
-      <li id="priceHtoL" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Price: High To Low</li>
-      <li id="discountHtoL" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Discount: High To Low</li> 
-      <li id="dateOtoN" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Date: Old To New</li>
-      <li id="dateNtoO" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Date: New To Old</li>
+      <li v-for="(item,index) in sortList" :key="index" @click="sortByWho(item)" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item }}</li>
     </ul>
   </span>
             </div>
@@ -495,59 +485,11 @@
         </button>
       </div>
     </li>
-    <li >
+    <li v-for="(item,index) in sortList" :key="index" >
       <div  class="ripple-container">
-        <button  class="active-sort st-font-medium" value="Price: Low to High">
-          <span  class="sortByValues">Price: Low to High</span>
+        <button  class="active-sort st-font-medium" :value="item">
+          <span  class="sortByValues">{{ item }}</span>
           <span  class="st-active-sort">
-            <svg data-v-07dd1f14="" xmlns="http://www.w3.org/2000/svg" width="18.281" height="18.281" viewBox="0 0 18.281 18.281">
-              <path data-v-07dd1f14="" id="Path_2397" data-name="Path 2397" d="M0,14H5.852V0" transform="translate(12.021 2.121) rotate(45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </li>
-    <li >
-      <div  class="ripple-container">
-        <button  class="" value="Price: High to Low">
-          <span  class="sortByValues">Price: High to Low</span>
-          <span class="st-active-sort">
-            <svg data-v-07dd1f14="" xmlns="http://www.w3.org/2000/svg" width="18.281" height="18.281" viewBox="0 0 18.281 18.281">
-              <path data-v-07dd1f14="" id="Path_2397" data-name="Path 2397" d="M0,14H5.852V0" transform="translate(12.021 2.121) rotate(45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </li>
-    <li d>
-      <div d class="ripple-container">
-        <button class="" value="Discount: High to Low">
-          <span d class="sortByValues">Discount: High to Low</span>
-          <span  class="st-active-sort">
-            <svg data-v-07dd1f14="" xmlns="http://www.w3.org/2000/svg" width="18.281" height="18.281" viewBox="0 0 18.281 18.281">
-              <path data-v-07dd1f14="" id="Path_2397" data-name="Path 2397" d="M0,14H5.852V0" transform="translate(12.021 2.121) rotate(45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </li>
-    <li >
-      <div class="ripple-container">
-        <button  class="" value="Date, old to new">
-          <span data-v-07dd1f14="" class="sortByValues">Date, old to new</span>
-          <span data-v-07dd1f14="" class="st-active-sort">
-            <svg data-v-07dd1f14="" xmlns="http://www.w3.org/2000/svg" width="18.281" height="18.281" viewBox="0 0 18.281 18.281">
-              <path data-v-07dd1f14="" id="Path_2397" data-name="Path 2397" d="M0,14H5.852V0" transform="translate(12.021 2.121) rotate(45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
-            </svg>
-          </span>
-        </button>
-      </div>
-    </li>
-    <li data-v-07dd1f14="">
-      <div data-v-07dd1f14="" class="ripple-container">
-        <button data-v-07dd1f14="" class="" value="Date, new to old">
-          <span data-v-07dd1f14="" class="sortByValues">Date, new to old</span>
-          <span data-v-07dd1f14="" class="st-active-sort">
             <svg data-v-07dd1f14="" xmlns="http://www.w3.org/2000/svg" width="18.281" height="18.281" viewBox="0 0 18.281 18.281">
               <path data-v-07dd1f14="" id="Path_2397" data-name="Path 2397" d="M0,14H5.852V0" transform="translate(12.021 2.121) rotate(45)" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
             </svg>
