@@ -3,7 +3,7 @@
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 st-leading-[23.1px]">
-        <span v-if="userData.created_at > '1577817000', userData.discount == 0"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">
+        <span v-if="userData.created_at > '1764527400', userData.discount == 0"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">
           NEW
         </span>
         <span v-if="userData.discount > 0"  class="st-bg-[#c43838] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">
@@ -17,18 +17,21 @@
         </svg>
       </div>
       <a href="/products/jungle-rani" class="product-card__media st-relative st-block">
-        <img class="st-cursor-pointer st-block st-w-full" :src="userData.images[0].src" alt="Jungle Rani">
-        
+        <img v-if="userData.images[0]" class="st-cursor-pointer st-block st-w-full" :src="userData.images[0].src" alt="Jungle Rani">
+        <img v-else class="st-cursor-pointer st-block st-w-full st-h-full" src="https://media.istockphoto.com/id/1500807425/vector/image-not-found-icon-vector-design.jpg?s=612x612&w=0&k=20&c=SF3EoL0zSi3XUwFzduMo3xdJFEk8V5IUsGqRocgPEtU=" alt="">
         <img v-if="userData.images[1]" class="st-absolute st-inset-0 st-opacity-0 group-hover:st-opacity-100 st-transition-opacity st-duration-300 st-w-full" :src="userData.images[1].src" alt="2nd image">
       </a>
+      <div v-if="userData.reviews_count" class=" st-flex st-absolute st-bottom-[3px] st-bg-[#fff] st-left-[3px] st-rounded-[7px] st-py-[1px] st-px-[4px] st-text-[12px]"><p>{{ userData.reviews_average }}</p>
+        <svg aria-hidden="true" focusable="false" width="13" class="icon icon-star-rating" viewBox="0 0 12 11"><path d="M6 0v8.635L2.292 11 3.48 6.87 0 4.202l4.443-.187L6 0Zm0 0v8.635L9.708 11 8.52 6.87 12 4.202l-4.443-.187L6 0Z" fill="#ffb400"></path></svg>
+        <div>({{ userData.reviews_count }})</div></div>
     </div>
 
     <div class="productcardInfo st-py-[4px] st-px-[6px] st-border-[1px] st-border-black/13 st-rounded-bl-[5px] st-rounded-br-[5px] st-border-t-0 st-shadow-[1px_1px_3px_#00000021]">
       <div class="stackcontent st-grid st-grid-rows-3 st-gap-y-[5px]">
         
-        <a href="" class="st-text-[14px] ">{{ userData.title.split("(")[0].trim()}}</a>
+        <a href="" class="st-text-[14px] st-truncate st-block">{{ userData.title.split("(")[0].trim()}}</a>
         
-        <div class="product-type st-flex st-gap-[5px] st-flex-wrap ">
+        <div class="st-w-fit st-h-fit">
           <div class="typecard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
             {{ userData.product_type }}
           </div>
@@ -43,12 +46,12 @@
           </div> -->
         </div>
 
-        <div class="prices st-flex st-gap-[15px] ">
-          <div v-if="userData.discount>0" class="pricetag st-text-[12px] st-line-through st-text-red-600">
-            ₹ {{ userData.price }}.00
-          </div>
-          <div class="pricetag st-text-[12px]">
-            ₹ {{ userData.discounted_price }}.00
+        <div class="prices st-flex st-gap-[15px] st-w-fit st-h-fit">
+            <div class="pricetag st-text-[12px] st-w-fit st-h-fit">
+              ₹{{ userData.discounted_price }}.00
+            </div>
+          <div v-if="userData.discount>0" class="st-w-fit st-h-fit pricetag st-text-[12px] st-line-through st-text-red-600">
+            ₹{{ userData.price }}.00
           </div>
         </div>
       </div>
