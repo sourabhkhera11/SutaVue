@@ -14,13 +14,13 @@
     },
     methods:{
       async fetchData(){
-        var searchClient = new SearchClient("i23b7q1j4icuv9wzze35u44s", "JFH1L4JRGKLVFTQY4FQPXIFV");
-        searchClient.fields("discounted_price","fit","gender","image","isActive","isBestSeller","isSearchable","price","title","vendor","product_type","size","color","style").count(32);
-        this.data=await searchClient.search("shirt","QPI32C64SIDELBV7BSK5H5LD");
+        var searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
+        searchClient.fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at").count(32).filter("discount>0");
+        this.data=await searchClient.search("saree","KSNQ58MRXELY5JCX767TDSA1");
         console.log(this.data.results);
         this.result=this.data.results;
         for (const element of this.result) {
-          console.log(element.title+" "+element.product_type+" "+element.price+" "+element.image.scr+" "+element.gender+" "+element.fit+" "+element.discounted_price+" "+element.style+" "+element.vendor);
+          console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at);
         }
       }
     },
