@@ -16,12 +16,14 @@
         textFilterFields:{} as Record<string,any>,
         numericFilterFields:{} as Record<string,any>,
         visibleStates:{} as Record<string,boolean>,
+        productType:[] as string[],
       };
     },
     methods:{
       async fetchData():Promise<void>{
         var searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
-        searchClient.fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at").count(32).filter("(discount>0 OR discount=0) AND isActive=1 AND price>0").sort(`${this.sortBy}`).textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern").numericFacets("discounted_price",[
+        searchClient.fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at").count(32).filter("(discount>0 OR discount=0) AND isActive=1 AND price>0").sort(`${this.sortBy}`).textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
+        .numericFacets("discounted_price",[
           {
           min:1000,
           max:1999,
@@ -70,8 +72,9 @@
           min:50,
           max:60,
         }
-        ]);
-        this.data=await searchClient.search("saree","KSNQ58MRXELY5JCX767TDSA1");
+        ])
+        .textFacetFilters('product_type',this.productType);
+        this.data = await searchClient.search("saree","KSNQ58MRXELY5JCX767TDSA1");
         this.result=this.data.results;
         this.textFilterFields=this.data.textFacets;
         console.log(this.textFilterFields);
@@ -134,6 +137,9 @@
             return label.charAt(0)?.toUpperCase()+label.slice(1);
             break;
         }
+      },
+      display():void{
+        console.log(this.productType);
       }
     },
     mounted(){
@@ -561,7 +567,7 @@
   <ul  class="list st-m-0 st-list-none">
     <li >
       <div  class="ripple-container">
-        <button class="" value="Featured">
+        <button class="" value="Featured">productType
           <span  class="sortByValues">Featured</span>
           <span class="st-active-sort">
             <svg data-v-07dd1f14="" xmlns="http://www.w3.org/2000/svg" width="18.281" height="18.281" viewBox="0 0 18.281 18.281">
@@ -623,86 +629,90 @@
     </ul>
   </div>
 </div>
+<div class="numericFields">
+  <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
+    <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
+    @click="toggle('price')">
+      <h3 class="st-text-[15px]">Price</h3>
+      <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
+      </svg></span>
+    </div>
+    <div v-if="visibleStates['price']" class=" st-transition-all st-duration-300 st-ease-in-out">
+      <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+        <li v-for="(price,index) in this.numericFilterFields.discounted_price" :key="index" >
+          <div class="outer-checkbox">
+            <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+              <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
+              <span class="st-hidden  st-checkbox st-border st-border-solid st-border-[#5c5c5c] st-block st-relative st-h-[14px] st-w-[14px] st-rounded-[2px] st-mr-[12px] st-mt-[2px] st-shrink-0"></span>
+              <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+                <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                  <span class="money">₹{{ price.min }}.00</span>
+                  <span> - </span>
+                  <span class="money">₹{{ price.max }}.00</span> ({{ price.count }}) 
+                </div>
+              </div>
+            </label>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
+    <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
+    @click="toggle('discount')">
+      <h3 class="st-text-[15px]">Discount</h3>
+      <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
+      </svg></span>
+    </div>
+    <div v-if="visibleStates['discount']" class=" st-transition-all st-duration-300 st-ease-in-out">
+      <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+        <li v-for="(price,index) in this.numericFilterFields.discount" :key="index" >
+          <div class="outer-checkbox">
+            <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+              <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
+              <div class="st-filter-label-container st-flex-col st-flex st-items-center st-justify-between st-w-full">
+                <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                  <span class="money">{{ price.min }}</span>%
+                  <span class="money">And Above</span> ({{ price.count }}) 
+                </div>
+              </div>
+            </label>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('price')">
-                    <h3 class="st-text-[15px]">Price</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['price']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li v-for="(price,index) in this.numericFilterFields.discounted_price" :key="index" >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <span class="st-hidden  st-checkbox st-border st-border-solid st-border-[#5c5c5c] st-block st-relative st-h-[14px] st-w-[14px] st-rounded-[2px] st-mr-[12px] st-mt-[2px] st-shrink-0"></span>
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">₹{{ price.min }}.00</span>
-                                <span> - </span>
-                                <span class="money">₹{{ price.max }}.00</span> ({{ price.count }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
+<div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
+                <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
+                @click="toggle('category')">
+                  <h3 class="st-text-[15px]">Category</h3>
+                  
+                  <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
+                  </svg></span>
                 </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('discount')">
-                    <h3 class="st-text-[15px]">Discount</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['discount']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li v-for="(price,index) in this.numericFilterFields.discount" :key="index" >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex-col st-flex st-items-center st-justify-between st-w-full">
-                              <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.min }}</span>%
-                                <span class="money">And Above</span> ({{ price.count }}) 
-                              </div>
+                <div v-if="visibleStates['category']" class=" st-transition-all st-duration-300 st-ease-in-out">
+                  <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+                    <li  v-for="(price,index) in this.textFilterFields.product_type" :key="index"  >
+                      <div class="outer-checkbox" :key="index">
+                        <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70" >
+                          <input class="st-mr-[12px]" type="checkbox" :value=price.label v-model="productType" @change="this.fetchData()" >
+                          <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full" >
+                            <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize" >
+                              <span class="money" >{{ price.label }}</span>({{ price.value }}) 
                             </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
+                          </div>
+                        </label>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('category')">
-                    <h3 class="st-text-[15px]">Category</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['category']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.product_type" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+              </div>
                 <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
                   <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
                   @click="toggle('blousepiece')">
@@ -811,7 +821,7 @@
                       <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
                     </svg></span>
                   </div>
-                  <div v-if="visibleStates['fabric']" class=" st-transition-all st-duration-300 st-ease-in-out">
+                  <div v-if="visibleStates['occasion']" class=" st-transition-all st-duration-300 st-ease-in-out">
                     <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
                       <li  v-for="(price,index) in this.textFilterFields.st_occasion" :key="index"  >
                         <div class="outer-checkbox">
