@@ -13,15 +13,81 @@
         sortBy:"" as String,
         sortList:["Price: Low to High","Price: High to Low","Discount: High to Low","Date: Old to New","Date: New to Old"] as Array,
         rawData:{} as object,
+        textFilterFields:{} as object,
+        numericFilterFields:{} as object,
       };
     },
     methods:{
       async fetchData(){
         var searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
-        searchClient.fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at").count(32).filter("(discount>0 OR discount=0) AND isActive=1 AND price>0").sort(`${this.sortBy}`);
+        searchClient.fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at").count(32).filter("(discount>0 OR discount=0) AND isActive=1 AND price>0").sort(`${this.sortBy}`).textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern").numericFacets("discounted_price",[
+          {
+          min:1000,
+          max:1999,
+        },
+      {
+          min:2000,
+          max:2999,
+        },
+      {
+          min:3000,
+          max:4999,
+        },
+      {
+          min:5000,
+          max:6999,
+        },
+      {
+          min:7000,
+          max:9999,
+        },
+      {
+          min:10000,
+          max:19999,
+        },
+      {
+          min:20000,
+          max:49999,
+        }]).numericFacets("discount",[
+          {
+          min:10,
+          max:20,
+        },
+        {
+          min:20,
+          max:30,
+        },
+        {
+          min:30,
+          max:40,
+        },
+        {
+          min:40,
+          max:50,
+        },
+        {
+          min:50,
+          max:60,
+        },
+        {
+          min:60,
+          max:70,
+        },
+        {
+          min:70,
+          max:80,
+        },
+        {
+          min:80,
+          max:100,
+        },
+        ]);
         this.data=await searchClient.search("saree","KSNQ58MRXELY5JCX767TDSA1");
-        console.log(this.data.totalHits);
         this.result=this.data.results;
+        this.textFilterFields=this.data.textFacets;
+        console.log(this.textFilterFields);
+        this.numericFilterFields=this.data.numericFacets;
+        console.log(this.numericFilterFields);
         for (const element of this.result) {
           console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive);
         }
@@ -234,7 +300,7 @@
               <span class="filter-clear st-text-[12px] st-text-[#5c5c5c]" style="display: none;">Clear</span>
             </span>
           </h3>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24" fill="none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000">
           </path>
         </svg>
@@ -505,13 +571,12 @@
         <div class="collection container md:st-grid lg:st-grid-cols-[25%_1fr] md:st-gap-[30px]">
             <div class="sidebar st-hidden lg:st-block st-sticky st-overflow-y-auto st-top-[200px] st-max-h-[402px] ">  
 <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-  <!-- Outer div (always visible) -->
   <div
     class="st-flex st-text-[#5c5c5c] st-text-[12px] st-justify-between st-py-[20px] st-cursor-pointer"
     onclick="this.nextElementSibling.classList.toggle('st-hidden')">
     <h3 class="st-text-[15px]">Availability</h3>
     <span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24" fill="none">
+      <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd"
           d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
           fill="#000000">
@@ -519,8 +584,6 @@
       </svg>
     </span>
   </div>
-
-  <!-- Inner div (hidden initially) -->
   <div class="st-hidden st-transition-all st-duration-300 st-ease-in-out">
     <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
       <li>
