@@ -15,8 +15,11 @@
         rawData:{} as Record<string,any>,
         textFilterFields:{} as Record<string,any>,
         numericFilterFields:{} as Record<string,any>,
-        visibleStates:{} as Record<string,boolean>,
+        visibleStates:{
+          "available":true,
+        } as Record<string,boolean>,
         productType:[] as string[],
+        activeBit:true as boolean,
         filters:[
           {
           "name":"Price",
@@ -83,8 +86,13 @@
     },
     methods:{
       async fetchData():Promise<void>{
-        var searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
-        searchClient.fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at").count(32).filter("(discount>0 OR discount=0) AND isActive=1 AND price>0").sort(`${this.sortBy}`).textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
+        const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
+        let query=searchClient
+        .fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at")
+        .count(32)
+        .filter(`(discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
+        .sort(`${this.sortBy}`)
+        .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
         .numericFacets("discounted_price",[
           {
           min:1000,
@@ -113,7 +121,8 @@
       {
           min:20000,
           max:49999,
-        }]).numericFacets("discount",[
+        }])
+        .numericFacets("discount",[
           {
           min:10,
           max:20,
@@ -134,8 +143,18 @@
           min:50,
           max:60,
         }
-        ]).numericFacetFilters('discounted_price',20000,49999);
-        this.data = await searchClient.search("saree","KSNQ58MRXELY5JCX767TDSA1");
+        ]);
+        this.selectedFilters.forEach((ele:any)=>{
+          if(ele.type==="text" && ele.selected?.length >0){
+            query=query.textFacetFilters(ele.field,ele.selected);
+          }
+          else if(ele.type==="numeric" && ele.selected?.length>0){
+            ele.selected.forEach((range:any)=>{
+              query=query.numericFacetFilters(ele.field,range[0],range[1]);
+            })
+          }
+        })
+        this.data = await query.search("*","KSNQ58MRXELY5JCX767TDSA1");
         this.result=this.data.results;
         this.textFilterFields=this.data.textFacets;
         console.log(this.textFilterFields);
@@ -212,6 +231,21 @@
     } else {
       selectedArray.splice(index, 1);
     }
+    },
+    clearFilter(selectedArray:any[]){
+      selectedArray.length=0;
+    },
+    clearAllFiler(){
+      this.activeBit=false;
+      this.filters.forEach((ele)=>{
+        ele.selected.length=0;
+      })
+    },
+    isActive():string{
+      if(this.activeBit){
+        return "AND isActive=1";
+      }
+      return "";
     }
   
     },
@@ -224,9 +258,15 @@
           this.selectedFilters=this.filters.filter((ele)=>{
             return ele.selected.length>0;
           });
-          this.display()
+          this.display();
+          this.fetchData();
         },
         deep:true
+      },
+      activeBit:{
+        handler(){
+          this.fetchData();
+        }
       }
     }
   })
@@ -682,13 +722,13 @@
       <section class="maincontainer lg:st-my-[50px] md:st-my-[0px]  st-my-[0px]">
         <div class="collection container md:st-grid lg:st-grid-cols-[25%_1fr] md:st-gap-[30px]">
             <div class="sidebar st-hidden lg:st-block st-sticky st-overflow-y-auto st-top-[200px] st-max-h-[402px] ">  
-<div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
+<div class="st-border-b st-border-solid st-border-[rgb(229,231,235)] st-tracking-[1px]">
   <div
-    class="st-flex st-text-[#5c5c5c] st-text-[12px] st-justify-between st-py-[20px] st-cursor-pointer"
-    @click="toggle('available')">
-    <h3 class="st-text-[15px]">Availability</h3>
-    <span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+    class="st-flex st-text-[#5c5c5c] st-text-[12px] st-justify-between st-py-[20px] st-cursor-pointer" @click="toggle('available')">
+    <h3 class="st-text-[15px]" >Availability</h3>
+    <span class="st-flex">
+      <p v-if="activeBit" @click.stop="activeBit=false">Clear</p>
+      <svg @click="toggle('available')" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd"
           d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
           fill="#000000">
@@ -701,7 +741,7 @@
       <li>
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px]" type="checkbox" value="In Stock Only" />
+            <input class=" st-mr-[12px]" type="checkbox" value="true" v-model="activeBit" />
             <div
               class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div
@@ -717,10 +757,11 @@
 </div>
     <div class="Fields">
   <div v-for="item in filters" class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-  @click="toggle(item.name)">
-    <h3 class="st-text-[15px]">{{item.name}}</h3>
-    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+  <div @click="toggle(item.name)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
+    <h3 class="st-text-[15px] " >{{item.name}}</h3>
+    <span class="st-flex st-align-top">
+      <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
+      <svg @click="toggle(item.name)" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
       <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
     </svg></span>
   </div>
@@ -776,6 +817,39 @@
               </div>            
               <div class="contentarea">
                 <div class="productlist st-flex st-flex-wrap" >
+                  <div data-v-da40671c="" class="st-selected-filters st-hidden-sm st-flex st-w-full st-px-[10px] lg:st-px-[0] lg:st-pr-[0px] st-mb-[20px] lg:st-mb-[10px] lg:st-mt-[25px]">
+                    <div data-v-da40671c="" class="filter-tag-column st-width st-w-full">
+                      <div data-v-da40671c="" class="st-filter-tags">
+                        <div data-v-da40671c="" class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
+                          <div v-if="activeBit" data-v-da40671c="" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
+                            <div data-v-da40671c="" class="tag-content">In Stock Only</div>
+                            <div data-v-da40671c="" class="tag-close st-text-[#ff0000]">✕</div>
+                          </div>
+                          <div v-for="(fields,index) in selectedFilters" class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]" :key="index">
+                            <div v-for="items in fields.selected" :key="index">
+                              <div class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
+                                <div v-if="fields.type==='numeric' && fields.name==='Price'" class="tag-content">
+                                  <span data-v-da40671c="">₹{{ items[0] }}.00</span>
+                                  <span data-v-da40671c=""> - <span data-v-da40671c="">₹{{ items[1] }}.00</span></span>
+                                </div>
+                                <div v-else-if="fields.type==='numeric' && fields.name==='Discount'" class="tag-content">
+                                  <span data-v-da40671c="">{{ items[0] }}%</span>
+                                  <span data-v-da40671c=""> And <span data-v-da40671c="">Above</span></span>
+                                </div>
+                                <div v-else-if="fields.type==='text'" class="tag-content">
+                                  <span data-v-da40671c="">{{ items }}</span>
+                                </div>
+                                <div data-v-da40671c="" class="tag-close st-text-[#ff0000]">✕</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="selectedFilters.length>0 || activeBit" data-v-da40671c="" class="tag-item st-last-clear-tag st-shrink-0">
+                      <div @click="clearAllFiler()"  class="tag-content st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer"> Reset All</div>
+                    </div>
+                  </div>
                   <card v-for="(value,index) in result" :key="index" :user-data="value"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
