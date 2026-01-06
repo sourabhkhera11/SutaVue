@@ -17,6 +17,68 @@
         numericFilterFields:{} as Record<string,any>,
         visibleStates:{} as Record<string,boolean>,
         productType:[] as string[],
+        filters:[
+          {
+          "name":"Price",
+          "field":"discounted_price",
+          "selected":[],
+          "type":"numeric"
+        },
+        {
+          "name":"Discount",
+          "field":"discount",
+          "selected":[],
+          "type":"numeric"
+        },
+        {
+          "name":"Category",
+          "field":"product_type",
+          "selected":[],
+          "type":"text"
+        },
+        {
+          "name":"Blouse Piece",
+          "field":"st_blousetype",
+          "selected":[],
+          "type":"text"
+        },
+      {
+          "name":"Size",
+          "field":"size",
+          "selected":[],
+          "type":"text"
+        },
+      {
+          "name":"Colour",
+          "field":"colour",
+          "selected":[],
+          "type":"text"
+        },
+      {
+          "name":"Fabric",
+          "field":"fabric",
+          "selected":[],
+          "type":"text"
+        },
+      {
+          "name":"Occasion",
+          "field":"st_occasion",
+          "selected":[],
+          "type":"text"
+        },
+      {
+          "name":"Technique",
+          "field":"st_technique",
+          "selected":[],
+          "type":"text"
+        },
+      {
+          "name":"Pattern",
+          "field":"st_pattern",
+          "selected":[],
+          "type":"text"
+        },] as Record<string,any>[],
+        selectedFilters:[] as Record<string,any>[],
       };
     },
     methods:{
@@ -72,8 +134,7 @@
           min:50,
           max:60,
         }
-        ])
-        .textFacetFilters('product_type',this.productType);
+        ]).numericFacetFilters('discounted_price',20000,49999);
         this.data = await searchClient.search("saree","KSNQ58MRXELY5JCX767TDSA1");
         this.result=this.data.results;
         this.textFilterFields=this.data.textFacets;
@@ -139,11 +200,34 @@
         }
       },
       display():void{
-        console.log(this.productType);
-      }
+        console.log(this.selectedFilters);
+      },
+      isRangeSelected(selectedArray:any[], min:number, max:number) {
+    return selectedArray.some(range => range[0] === min && range[1] === max);
+    },  
+    toggleRange(selectedArray:any[],min:number,max:number){
+      const index = selectedArray.findIndex(range => range[0] === min && range[1] === max);
+      if (index === -1) {
+      selectedArray.push([min, max]);
+    } else {
+      selectedArray.splice(index, 1);
+    }
+    }
+  
     },
     mounted(){
       this.fetchData();
+    },
+    watch:{
+      filters:{
+        handler(){
+          this.selectedFilters=this.filters.filter((ele)=>{
+            return ele.selected.length>0;
+          });
+          this.display()
+        },
+        deep:true
+      }
     }
   })
 </script>
@@ -316,6 +400,8 @@
       <svg data-v-da40671c="" data-v-0cd7b26b="" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="st-cross-btn st-w-[20px] st-fill-[#000000]">
         <path data-v-da40671c="" data-v-0cd7b26b="" d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"></path>
       </svg>
+
+
       
     </div>
     <div class="st-sidebar-content st-relative st-top-[55px] st-px-[15px] lg:st-px-[0] st-pb-[100px] lg:st-pb-[0] lg:st-top-[-20px] st-right-0 st-left-0 st-bottom-0">
@@ -629,265 +715,64 @@
     </ul>
   </div>
 </div>
-<div class="numericFields">
-  <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-    <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-    @click="toggle('price')">
-      <h3 class="st-text-[15px]">Price</h3>
-      <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-      </svg></span>
-    </div>
-    <div v-if="visibleStates['price']" class=" st-transition-all st-duration-300 st-ease-in-out">
-      <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-        <li v-for="(price,index) in this.numericFilterFields.discounted_price" :key="index" >
-          <div class="outer-checkbox">
-            <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-              <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-              <span class="st-hidden  st-checkbox st-border st-border-solid st-border-[#5c5c5c] st-block st-relative st-h-[14px] st-w-[14px] st-rounded-[2px] st-mr-[12px] st-mt-[2px] st-shrink-0"></span>
-              <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                  <span class="money">₹{{ price.min }}.00</span>
-                  <span> - </span>
-                  <span class="money">₹{{ price.max }}.00</span> ({{ price.count }}) 
-                </div>
-              </div>
-            </label>
-          </div>
-        </li>
-      </ul>
-    </div>
+    <div class="Fields">
+  <div v-for="item in filters" class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
+  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
+  @click="toggle(item.name)">
+    <h3 class="st-text-[15px]">{{item.name}}</h3>
+    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
+    </svg></span>
   </div>
-  <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-    <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-    @click="toggle('discount')">
-      <h3 class="st-text-[15px]">Discount</h3>
-      <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-      </svg></span>
-    </div>
-    <div v-if="visibleStates['discount']" class=" st-transition-all st-duration-300 st-ease-in-out">
-      <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-        <li v-for="(price,index) in this.numericFilterFields.discount" :key="index" >
-          <div class="outer-checkbox">
-            <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-              <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-              <div class="st-filter-label-container st-flex-col st-flex st-items-center st-justify-between st-w-full">
-                <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                  <span class="money">{{ price.min }}</span>%
-                  <span class="money">And Above</span> ({{ price.count }}) 
-                </div>
+  <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
+    <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+      <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
+        <div class="outer-checkbox">
+          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max)">
+            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+              <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                <span class="money">₹{{ subItem.min }}.00</span>
+                <span> - </span>
+                <span class="money">₹{{ subItem.max }}.00</span> ({{ subItem.count }}) 
               </div>
-            </label>
-          </div>
-        </li>
-      </ul>
-    </div>
+            </div>
+          </label>
+        </div>
+      </li>
+    </ul>
+    <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body st-flex-col st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+      <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
+        <div class="outer-checkbox">
+          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max)">
+            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+              <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                <span class="money">{{ subItem.min }}%</span>
+                <span class="money">And Above</span> ({{ subItem.count }}) 
+              </div>
+            </div>
+          </label>
+        </div>
+      </li>
+    </ul>
+    <ul v-else class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+                      <li  v-for="(subItem,index) in textFilterFields[item.field]" :key="index"  >
+                        <div class="outer-checkbox">
+                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+                            <input class="st-mr-[12px]" type="checkbox" :value="subItem.label" v-model="item.selected">
+                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                                <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                      </li>
+                    </ul>
   </div>
 </div>
-
-<div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                @click="toggle('category')">
-                  <h3 class="st-text-[15px]">Category</h3>
-                  
-                  <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                  </svg></span>
-                </div>
-                <div v-if="visibleStates['category']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                  <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                    <li  v-for="(price,index) in this.textFilterFields.product_type" :key="index"  >
-                      <div class="outer-checkbox" :key="index">
-                        <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70" >
-                          <input class="st-mr-[12px]" type="checkbox" :value=price.label v-model="productType" @change="this.fetchData()" >
-                          <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full" >
-                            <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize" >
-                              <span class="money" >{{ price.label }}</span>({{ price.value }}) 
-                            </div>
-                          </div>
-                        </label>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('blousepiece')">
-                    <h3 class="st-text-[15px]">Blouse Piece</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['blousepiece']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.st_blousetype" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('size')">
-                    <h3 class="st-text-[15px]">Size</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['size']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.size" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('colour')">
-                    <h3 class="st-text-[15px]">Colour</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['colour']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.colour" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('fabric')">
-                    <h3 class="st-text-[15px]">Fabric</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['fabric']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.fabric" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('occasion')">
-                    <h3 class="st-text-[15px]">Occasion</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['occasion']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.st_occasion" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('technique')">
-                    <h3 class="st-text-[15px]">Technique</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['technique']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.st_technique" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-                  <div class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer"
-                  @click="toggle('pattern')">
-                    <h3 class="st-text-[15px]">Pattern</h3>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-                      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-                    </svg></span>
-                  </div>
-                  <div v-if="visibleStates['pattern']" class=" st-transition-all st-duration-300 st-ease-in-out">
-                    <ul class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(price,index) in this.textFilterFields.st_technique" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" value="[object Object]">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ price.label }}</span>({{ price.value }}) 
-                              </div>
-                            </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
+    </div> 
               </div>            
               <div class="contentarea">
                 <div class="productlist st-flex st-flex-wrap" >
