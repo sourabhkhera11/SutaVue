@@ -82,80 +82,97 @@
           "type":"text"
         },] as Record<string,any>[],
         selectedFilters:[] as Record<string,any>[],
+        skipCount:0 as number,
+        isLoading:false as boolean,
       };
     },
     methods:{
-      async fetchData():Promise<void>{
-        const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
-        let query=searchClient
-        .fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at")
-        .count(32)
-        .filter(`(discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
-        .sort(`${this.sortBy}`)
-        .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
-        .numericFacets("discounted_price",[
+      async fetchData(isLoadMore:boolean=false):Promise<void>{
+        this.isLoading=true;
+        try{
+          const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
+          let query=searchClient
+          .fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at")
+          .count(32)
+          .skip(this.skipCount*32)
+          .filter(`(discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
+          .sort(`${this.sortBy}`)
+          .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
+          .numericFacets("discounted_price",[
+            {
+            min:1000,
+            max:1999,
+          },
+        {
+            min:2000,
+            max:2999,
+          },
+        {
+            min:3000,
+            max:4999,
+          },
+        {
+            min:5000,
+            max:6999,
+          },
+        {
+            min:7000,
+            max:9999,
+          },
+        {
+            min:10000,
+            max:19999,
+          },
+        {
+            min:20000,
+            max:49999,
+          }])
+          .numericFacets("discount",[
+            {
+            min:10,
+            max:20,
+          },
           {
-          min:1000,
-          max:1999,
-        },
-      {
-          min:2000,
-          max:2999,
-        },
-      {
-          min:3000,
-          max:4999,
-        },
-      {
-          min:5000,
-          max:6999,
-        },
-      {
-          min:7000,
-          max:9999,
-        },
-      {
-          min:10000,
-          max:19999,
-        },
-      {
-          min:20000,
-          max:49999,
-        }])
-        .numericFacets("discount",[
+            min:20,
+            max:30,
+          },
           {
-          min:10,
-          max:20,
-        },
-        {
-          min:20,
-          max:30,
-        },
-        {
-          min:30,
-          max:40,
-        },
-        {
-          min:40,
-          max:50,
-        },
-        {
-          min:50,
-          max:60,
+            min:30,
+            max:40,
+          },
+          {
+            min:40,
+            max:50,
+          },
+          {
+            min:50,
+            max:60,
+          }
+          ]);
+          this.selectedFilters.forEach((ele:any)=>{
+            if(ele.type==="text" && ele.selected?.length >0){
+              query=query.textFacetFilters(ele.field,ele.selected);
+            }
+            else if(ele.type==="numeric" && ele.selected?.length>0){
+              ele.selected.forEach((range:any)=>{
+                query=query.numericFacetFilters(ele.field,range[0],range[1]);
+              })
+            }
+          })
+          this.data = await query.search("*","KSNQ58MRXELY5JCX767TDSA1");
         }
-        ]);
-        this.selectedFilters.forEach((ele:any)=>{
-          if(ele.type==="text" && ele.selected?.length >0){
-            query=query.textFacetFilters(ele.field,ele.selected);
-          }
-          else if(ele.type==="numeric" && ele.selected?.length>0){
-            ele.selected.forEach((range:any)=>{
-              query=query.numericFacetFilters(ele.field,range[0],range[1]);
-            })
-          }
-        })
-        this.data = await query.search("*","KSNQ58MRXELY5JCX767TDSA1");
-        this.result=this.data.results;
+        catch(er){
+          console.log(er);
+        }
+        finally{
+          this.isLoading=false;
+        }
+        if(isLoadMore){
+          this.result=[...this.result,...this.data.results];
+        }
+        else{
+          this.result=this.data.results;
+        }
         this.textFilterFields=this.data.textFacets;
         console.log(this.textFilterFields);
         this.numericFilterFields=this.data.numericFacets;
@@ -185,7 +202,7 @@
               break;
           }
           console.log(this.sortBy);
-          this.fetchData();
+          this.fetchData(false);
       },
       toggle(id:string):void{
         this.visibleStates[id]=!this.visibleStates[id];
@@ -251,10 +268,16 @@
   removeFilter(selectedArray:any[],item:any){
     const index=selectedArray.indexOf(item);
     selectedArray.splice(index,1);
-  }
+  },
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+  skipCountFunction(){
+    this.skipCount++;
+  },
     },
     mounted(){
-      this.fetchData();
+      this.fetchData(false);
     },
     watch:{
       filters:{
@@ -263,16 +286,27 @@
             return ele.selected.length>0;
           });
           this.display();
-          this.fetchData();
+          this.fetchData(false);
         },
         deep:true
       },
       activeBit:{
         handler(){
-          this.fetchData();
+          this.fetchData(false);
+        }
+      },
+      skipCount:{
+        handler(){
+          this.fetchData(true);
         }
       }
-    }
+    },
+    computed: {
+    productRemaining() {
+      if (!this.data) return false;
+      return (this.data.totalHits - 32 - (this.skipCount * 32)) < 32;
+  }
+},
   })
 </script>
 
@@ -745,7 +779,7 @@
       <li>
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px]" type="checkbox" value="true" v-model="activeBit" />
+            <input class=" st-mr-[12px]" type="checkbox" value="true" v-model="activeBit" @change="scrollToTop()" />
             <div
               class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div
@@ -774,7 +808,7 @@
       <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max)">
+            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
             <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                 <span class="money">₹{{ subItem.min }}.00</span>
@@ -790,11 +824,11 @@
       <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max)">
+            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
             <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                 <span class="money">{{ subItem.min }}%</span>
-                <span class="money">And Above</span> ({{ subItem.count }}) 
+                <span class="money"> And Above</span> ({{ subItem.count }}) 
               </div>
             </div>
           </label>
@@ -805,7 +839,7 @@
                       <li  v-for="(subItem,index) in textFilterFields[item.field]" :key="index"  >
                         <div class="outer-checkbox">
                           <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" :value="subItem.label" v-model="item.selected">
+                            <input class="st-mr-[12px]" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
                             <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                               <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                                 <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
@@ -857,10 +891,16 @@
                   <card v-for="(value,index) in result" :key="index" :user-data="value"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
-  <div class="button st-border st-border-black st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
+  <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
     <a class="">
-      <div class="st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
+      <div v-if="!isLoading && !productRemaining" @click="skipCountFunction()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
         LOAD MORE 
+      </div>
+      <div v-if="!isLoading && productRemaining"  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
+        RESULTS END HERE 
+      </div>
+      <div v-if="isLoading"  class="st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-border st-border-black st-text-[13px] st-text-black st-font-[700]">
+        LOADING... 
       </div>
     </a>
   </div>
