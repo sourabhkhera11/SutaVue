@@ -247,7 +247,11 @@
       }
       return "";
     }
-  
+  ,
+  removeFilter(selectedArray:any[],item:any){
+    const index=selectedArray.indexOf(item);
+    selectedArray.splice(index,1);
+  }
     },
     mounted(){
       this.fetchData();
@@ -823,7 +827,7 @@
                         <div data-v-da40671c="" class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
                           <div v-if="activeBit" data-v-da40671c="" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
                             <div data-v-da40671c="" class="tag-content">In Stock Only</div>
-                            <div data-v-da40671c="" class="tag-close st-text-[#ff0000]">✕</div>
+                            <div @click="activeBit=false" class="tag-close st-text-[#ff0000]">✕</div>
                           </div>
                           <div v-for="(fields,index) in selectedFilters" class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]" :key="index">
                             <div v-for="items in fields.selected" :key="index">
@@ -839,7 +843,7 @@
                                 <div v-else-if="fields.type==='text'" class="tag-content">
                                   <span data-v-da40671c="">{{ items }}</span>
                                 </div>
-                                <div data-v-da40671c="" class="tag-close st-text-[#ff0000]">✕</div>
+                                <div @click="removeFilter(fields.selected,items)" class="tag-close st-text-[#ff0000]">✕</div>
                               </div>
                             </div>
                           </div>
