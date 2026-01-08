@@ -86,6 +86,7 @@
         isLoading:false as boolean,
         showUp:false as boolean,
         showDown:true as boolean,
+        layoutRatio:"33.33%" as string,
       };
     },
     methods:{
@@ -288,7 +289,24 @@
       top:direction=='up'?-amount:amount,
       behavior:'smooth'
     });
+  },
+feedRatio(grid:string):void{
+  switch (grid) {
+    case "3by3":
+      this.layoutRatio= "33.33%";
+      break;
+    case "4by4":
+      this.layoutRatio= "25%";
+      break;
+    case "6by6":
+      this.layoutRatio= "16.66%";
+      break;
+    default:
+      this.layoutRatio= "33.33%";
+      break;
   }
+  console.log(this.layoutRatio);
+},
     },
     mounted(){
       this.fetchData(false);
@@ -318,7 +336,7 @@
         handler(){
           this.fetchData(true);
         }
-      }
+      },
     },
     computed: {
     productRemaining() {
@@ -448,23 +466,16 @@
                   <path fill="#000000" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path>
                 </svg>
               </span>
-              <span class="st-hidden lg:st-block">
-                <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
-                  <path fill="#e8e8e1" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path>
-                </svg>
+              <span class="st-hidden lg:st-block" @click="feedRatio('3by3')" :class="layoutRatio==='33.33%'?'st-opacity-100': 'st-opacity-30'">
+                <svg data-v-da40671c="" role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path></svg>
               </span>
-              <span class="md:st-hidden">
-
-              </span>
-              <span class=" st-hidden lg:st-block">
+              <span class=" st-hidden lg:st-block " @click="feedRatio('4by4')" :class="layoutRatio==='25%'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="currentColor"d="M0 0h4v4H0zM0 7h4v4H0zM0 14h4v4H0zM7 0h4v4H7zM7 7h4v4H7zM7 14h4v4H7zM14 0h4v4h-4zM14 7h4v4h-4zM14 14h4v4h-4z"></path>
                 </svg>
                 </span>
-                <span class=" st-hidden lg:st-block">
-                  <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
-                  <path fill="#e8e8e1" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path>
-                </svg>
+                <span class=" st-hidden lg:st-block " @click="feedRatio('6by6')" :class="layoutRatio==='16.66%'?'st-opacity-100': 'st-opacity-30'">
+                  <svg data-v-da40671c="" role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
               </span>
             </div>
             <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ this.data.totalHits }}</span><span>products</span></span>
@@ -913,7 +924,7 @@
 </div>
 </div>
                 <div class="productlist st-flex st-flex-wrap st-mx-[-15px]" >
-                  <card v-for="(value,index) in result" :key="index" class="  lg:st-basis-[33.33%] st-basis-[50%] st-px-[15px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]" :user-data="value"/>
+                  <card v-for="(value,index) in result" :key="index" :style="{flexBasis: layoutRatio}" class="   st-basis-[50%] st-px-[15px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]" :user-data="value"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
