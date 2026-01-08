@@ -95,11 +95,11 @@
         try{
           const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
           let query=searchClient
-          .fields("id","product_type" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at")
+          .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at")
           .count(32)
           .skip(this.skipCount*32)
           .filter(`(discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
-          .sort(`${this.sortBy}`)
+          .sort("-isActive","saree_position",`${this.sortBy}`)
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
             {
@@ -202,6 +202,7 @@
               this.sortBy="-created_at";
               break;
             default:
+              this.sortBy="";
               break;
           }
           console.log(this.sortBy);
@@ -519,7 +520,7 @@ checkSelected(item:any, subItem:any) {
                 </div>
     
     <ul id="sortList" data-v-92e5ae27="" class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
-      <li class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <li @click="sortByWho('default')" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
       <li v-for="(item,index) in sortList" :key="index" @click="sortByWho(item)" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item }}</li>
     </ul>
   </span>

@@ -3,12 +3,19 @@
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 ">
-        <span v-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
+        <span v-if="userData.collections.label==='bestseller sarees' || userData.collections.label==='most loved sarees'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
+          {{userData.collections.label.split("sarees")[0]}}
+        </span>
+        <span v-else-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           NEW
+        </span>
+        <span v-else-if="userData.product_type==='combo of 5' || userData.product_type==='combo of 10' || userData.product_type==='combo of 3' "  class="st-bg-[#f5913c] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
+          {{ userData.product_type.toUpperCase()}}
         </span>
         <span v-else-if="userData.discount > 0"  class="st-bg-[#d70302cc] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           {{ userData.discount }}% OFF
         </span>
+        
       </div>
 
       <div class="heartButton st-absolute st-right-0 st-z-[2] st-flex st-bg-[#cdc4c4] st-border-[1px] st-border-white st-rounded-[15px] st-items-center st-justify-center st-pt-[6px] st-pr-[5px] st-pl-[4px] st-pb-[4px]">
@@ -21,7 +28,7 @@
         <img v-else class="st-cursor-pointer st-block st-w-full st-h-full" src="https://media.istockphoto.com/id/1500807425/vector/image-not-found-icon-vector-design.jpg?s=612x612&w=0&k=20&c=SF3EoL0zSi3XUwFzduMo3xdJFEk8V5IUsGqRocgPEtU=" alt="">
         <img v-if="userData.images[1]" class="st-absolute st-inset-0 st-opacity-0 group-hover:st-opacity-100 st-transition-opacity st-duration-300 st-w-full" :src="userData.images[1].src" alt="2nd image">
       </a>
-      <div v-if="userData.reviews_count" class=" st-flex st-absolute st-bottom-[3px] st-bg-[#fff] st-left-[3px] st-rounded-[7px] st-py-[1px] st-px-[4px] st-text-[12px]"><p>{{ userData.reviews_average }}</p>
+      <div v-if="userData.reviews_count" class=" st-flex st-absolute st-bottom-[3px] st-bg-[#fff] st-left-[3px]  st-py-[1px] st-px-[4px] st-text-[12px]"><p>{{ userData.reviews_average }}</p>
         <svg aria-hidden="true" focusable="false" width="13" class="icon icon-star-rating" viewBox="0 0 12 11"><path d="M6 0v8.635L2.292 11 3.48 6.87 0 4.202l4.443-.187L6 0Zm0 0v8.635L9.708 11 8.52 6.87 12 4.202l-4.443-.187L6 0Z" fill="#ffb400"></path></svg>
         <div>({{ userData.reviews_count }})</div></div>
     </div>
