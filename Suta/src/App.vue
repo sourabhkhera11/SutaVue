@@ -864,7 +864,7 @@ checkSelected(item:any, subItem:any) {
       </div>
       <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
         <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-          <li v-for="(subItem,index) in getSortedSubItems(item)" :key="index" >
+          <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                 <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
@@ -880,7 +880,7 @@ checkSelected(item:any, subItem:any) {
           </li>
         </ul>
         <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body st-flex-col  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-          <li v-for="(subItem,index) in getSortedSubItems(item)" :key="index" >
+          <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                 <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
@@ -895,7 +895,7 @@ checkSelected(item:any, subItem:any) {
           </li>
         </ul>
         <ul v-else class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                          <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="index"  >
+                          <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.label"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
                               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                                 <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
@@ -952,7 +952,7 @@ checkSelected(item:any, subItem:any) {
 </div>
 </div>
                 <div class="productlist st-flex st-flex-wrap st-mx-[-15px]" >
-                  <card v-for="(value,index) in result" :key="index" :style="{flexBasis: layoutRatio}" class="   st-basis-[50%] st-px-[15px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]" :user-data="value"/>
+                  <card v-for="(value,index) in result" :key="index" :style="{flexBasis: layoutRatio}" class="st-basis-[50%] st-px-[15px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutRatio"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">

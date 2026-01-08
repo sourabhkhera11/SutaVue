@@ -1,5 +1,5 @@
 <template>
-  <div class="product  ">
+  <div class="product  md:st-mb-[32px]">
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 ">
@@ -26,7 +26,7 @@
         <div>({{ userData.reviews_count }})</div></div>
     </div>
 
-    <div class="productcardInfo st-py-[4px] st-px-[6px] md:st-mb-[32px] ">
+    <div v-if="ratio!='16.66%'" class="productcardInfo st-py-[4px] st-px-[6px]  ">
       <div class="stackcontent st-grid st-grid-rows-3 st-gap-y-[5px]">
         
         <a href="" class="st-text-[12px] st-text-[#1c1c1c] st-tracking-[2.16px] st-truncate st-block">{{ userData.title.split("(")[0].trim()}}</a>
@@ -66,7 +66,8 @@ export default defineComponent({
     userData: {
       type: Object,
       required: true
-    }
+    },
+    ratio: String,
   }
 })
 </script>
