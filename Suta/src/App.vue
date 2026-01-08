@@ -835,10 +835,10 @@ feedRatio(grid:string):void{
         </svg></span>
       </div>
       <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
-        <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+        <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
           <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
             <div v-if="subItem.count>0" class="outer-checkbox">
-              <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+              <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                 <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
@@ -851,7 +851,7 @@ feedRatio(grid:string):void{
             </div>
           </li>
         </ul>
-        <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+        <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body st-flex-col  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
           <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
@@ -888,7 +888,7 @@ feedRatio(grid:string):void{
               <div class="contentarea st-overflow-hidden st-w-full">
                 <div class="st-hidden-sm st-flex st-w-full st-px-[10px] lg:st-px-[0] lg:st-pr-[0px] st-mb-[20px] lg:st-mb-[10px] lg:st-mt-[25px]">
 <div class="filter-tag-column st-width st-w-full">
-  <div class="st-filter-tags st-flex st-relative">
+  <div class="st-filter-tags st-flex  st-gap-[20px] st-w-full st-justify-between">
     
     <div class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
         <div v-if="activeBit" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
@@ -915,7 +915,7 @@ feedRatio(grid:string):void{
         </div>
       </template>
     </div>
-    <div v-if="selectedFilters.length > 0 || activeBit" class="tag-item st-shrink-0  st-absolute st-right-[0px]">
+    <div v-if="selectedFilters.length > 0 || activeBit" class="tag-item st-shrink-0 ">
       <div @click="clearAllFiler()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
         Reset All
       </div>

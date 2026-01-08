@@ -6,7 +6,7 @@
         <span v-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           NEW
         </span>
-        <span v-if="userData.discount > 0"  class="st-bg-[#d70302cc] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
+        <span v-else-if="userData.discount > 0"  class="st-bg-[#d70302cc] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           {{ userData.discount }}% OFF
         </span>
       </div>
