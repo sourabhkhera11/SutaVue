@@ -2,11 +2,11 @@
   <div class="product st-relative lg:st-p-[10px] st-mt-0 st-px-[2px] st-mb-[8px] lg:st-px-[2.5px] lg:st-mb-[17.5px] md:st-mb-[32px] lg:st-basis-[25%] st-basis-[50%]">
     <div class="productcard-img st-relative st-group">
       
-      <div class="badge st-z-[1] st-absolute st-top-0 st-leading-[23.1px]">
-        <span v-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">
+      <div class="badge st-z-[1] st-absolute st-top-0 ">
+        <span v-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           NEW
         </span>
-        <span v-if="userData.discount > 0"  class="st-bg-[#c43838] st-text-[#fff] st-text-[11px] st-pt-[1.6px] st-pb-[1.6px] st-pl-[8px] st-pr-[8px] st-tracking-[1.98px] st-flex">
+        <span v-if="userData.discount > 0"  class="st-bg-[#d70302cc] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           {{ userData.discount }}% OFF
         </span>
       </div>
@@ -47,10 +47,10 @@
         </div>
 
         <div class="prices st-flex st-gap-[15px] st-w-fit st-h-fit">
-            <div class="pricetag st-text-[12px] st-w-fit st-h-fit">
+            <div class="pricetag st-text-[13px] st-w-fit st-h-fit">
               ₹{{ userData.discounted_price }}.00
             </div>
-          <div v-if="userData.discount>0" class="st-w-fit st-h-fit pricetag st-text-[12px] st-line-through st-text-red-600">
+          <div v-if="userData.discount>0" class="st-w-fit st-h-fit pricetag st-text-[11.2px] st-line-through st-text-red-600">
             ₹{{ userData.price }}.00
           </div>
         </div>

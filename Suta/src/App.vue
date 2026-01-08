@@ -427,7 +427,7 @@
             </div>
           </div>
       </section>
-      <section class="searchbar content st-absolute st-sticky st-top-[53px] st-z-[10]">
+      <section class=" container  searchbar content st-absolute st-sticky st-top-[53px] st-z-[10]">
         <div class=" ">
           <div class="filterbar st-flex st-align-middle st-flex-wrap md:st-gap-[50px] lg:st-justify-between st-mt-[0px] lg:st-mt-[50px] st-shadow-[0_1px_rgb(221,221,221),_0_-1px_rgb(221,221,221)] md:st-m-[0px] md:lg:st-[-64px] st-bg-[#fff]">
             <div class="filtersort  lg:st-hidden st-flex st-tracking-[1.98px] st-grow  st-text-[11px] st-justify-center st-align-middle ">
@@ -813,76 +813,80 @@
   </div>
 </div>
     <div class="Fields">
-  <div v-for="item in filters" class="st-border-b st-border-solid st-border-[rgb(229,231,235)]">
-  <div @click="toggle(item.name)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
-    <h3 class="st-text-[15px] " >{{item.name}}</h3>
-    <span class="st-flex st-align-top">
-      <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
-      <svg @click="toggle(item.name)" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-    </svg></span>
-  </div>
-  <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
-    <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-      <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
-        <div class="outer-checkbox">
-          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-            <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
-            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-              <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                <span class="money">₹{{ subItem.min }}.00</span>
-                <span> - </span>
-                <span class="money">₹{{ subItem.max }}.00</span> ({{ subItem.count }}) 
-              </div>
+  <div v-for="item in filters" >
+    <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+      <div   @click="toggle(item.name)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
+        <h3 class="st-text-[15px] " >{{item.name}}</h3>
+        <span class="st-flex st-align-top">
+          <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
+          <svg @click="toggle(item.name)" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
+        </svg></span>
+      </div>
+      <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
+        <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+          <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
+            <div v-if="subItem.count>0" class="outer-checkbox">
+              <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
+                <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+                  <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                    <span class="money">₹{{ subItem.min }}.00</span>
+                    <span> - </span>
+                    <span class="money">₹{{ subItem.max }}.00</span> ({{ subItem.count }}) 
+                  </div>
+                </div>
+              </label>
             </div>
-          </label>
-        </div>
-      </li>
-    </ul>
-    <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body st-flex-col st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-      <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
-        <div class="outer-checkbox">
-          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-            <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
-            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-              <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                <span class="money">{{ subItem.min }}%</span>
-                <span class="money"> And Above</span> ({{ subItem.count }}) 
-              </div>
+          </li>
+        </ul>
+        <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+          <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
+            <div v-if="subItem.count>0" class="outer-checkbox">
+              <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+                <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
+                <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+                  <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                    <span class="money">{{ subItem.min }}%</span>
+                    <span class="money"> And Above</span> ({{ subItem.count }}) 
+                  </div>
+                </div>
+              </label>
             </div>
-          </label>
-        </div>
-      </li>
-    </ul>
-    <ul v-else class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                      <li  v-for="(subItem,index) in textFilterFields[item.field]" :key="index"  >
-                        <div class="outer-checkbox">
-                          <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
-                            <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                              <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                                <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
-                              </div>
+          </li>
+        </ul>
+        <ul v-else class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+                          <li  v-for="(subItem,index) in textFilterFields[item.field]" :key="index"  >
+                            <div v-if="subItem.value>0" class="outer-checkbox">
+                              <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+                                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
+                                <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+                                  <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                                    <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
+                                  </div>
+                                </div>
+                              </label>
                             </div>
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
-  </div>
+                          </li>
+                        </ul>
+      </div>
+    </div>
 </div>
-    </div> 
+</div> 
               </div>            
               <div class="contentarea">
                 <div class="productlist st-flex st-flex-wrap" >
                   <div class="st-hidden-sm st-flex st-w-full st-px-[10px] lg:st-px-[0] lg:st-pr-[0px] st-mb-[20px] lg:st-mb-[10px] lg:st-mt-[25px]">
-                    <div class="filter-tag-column st-width st-w-full">
-                      <div class="st-filter-tags">
-                        <div class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
-                          <div v-if="activeBit" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
+  <div class="filter-tag-column st-width st-w-full">
+    <div class="st-filter-tags st-flex st-relative">
+      
+      <div class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
+          <div v-if="activeBit" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
           <div class="tag-content">In Stock Only</div>
           <div @click="activeBit=false" class="tag-close st-text-[#ff0000]">✕</div>
-                          </div>
-                          <template v-for="(fields, index) in selectedFilters">
+        </div>
+
+        <template v-for="(fields, index) in selectedFilters">
           <div v-for="(items, subIndex) in fields.selected" :key="fields.name + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
             
             <div v-if="fields.type==='numeric' && fields.name==='Price'" class="tag-content">
@@ -899,16 +903,16 @@
             
             <div @click="removeFilter(fields, items)" class="tag-close st-text-[#ff0000]">✕</div>
           </div>
-                          </template>
-                          <div v-if="selectedFilters.length > 0 || activeBit" class="tag-item st-shrink-0">
-                            <div @click="clearAllFiler()" class="tag-content st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
-                              Reset All
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+        </template>
+      </div>
+      <div v-if="selectedFilters.length > 0 || activeBit" class="tag-item st-shrink-0  st-absolute st-right-[0px]">
+        <div @click="clearAllFiler()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
+          Reset All
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
                   <card v-for="(value,index) in result" :key="index" :user-data="value"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
@@ -946,4 +950,5 @@
 </template>
 
 <style scoped>
+  @import "./assets/main.css";
 </style>
