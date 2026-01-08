@@ -911,7 +911,7 @@ feedRatio(grid:string):void{
             <span>{{ items }}</span>
           </div>
           
-          <div @click="removeFilter(fields, items)" class="tag-close st-text-[#ff0000]">✕</div>
+          <div @click="removeFilter(fields.selected, items)" class="tag-close st-text-[#ff0000]">✕</div>
         </div>
       </template>
     </div>
