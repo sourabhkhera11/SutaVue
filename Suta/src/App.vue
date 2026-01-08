@@ -84,6 +84,8 @@
         selectedFilters:[] as Record<string,any>[],
         skipCount:0 as number,
         isLoading:false as boolean,
+        showUp:false as boolean,
+        showDown:true as boolean,
       };
     },
     methods:{
@@ -275,9 +277,26 @@
   skipCountFunction(){
     this.skipCount++;
   },
+  handleScroll(){
+    this.showUp=window.scrollY>50;
+    const bottomOfWindow=window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50;
+    this.showDown=!bottomOfWindow;
+  },
+  move(direction:string){
+    const amount=500;
+    window.scrollBy({
+      top:direction=='up'?-amount:amount,
+      behavior:'smooth'
+    });
+  }
     },
     mounted(){
       this.fetchData(false);
+      window.addEventListener("scroll",this.handleScroll);
+      this.handleScroll();
+    },
+    beforeDestroy(){
+      window.removeEventListener("scroll",this.handleScroll);
     },
     watch:{
       filters:{
@@ -906,6 +925,20 @@
   </div>
 </div>
               </div>
+        </div>
+        <div class="" >
+          <div class="st-fixed st-bottom-[20px] st-right-[20px] st-z-50 st-flex st-gap-[5px]" >
+    <div class="Up Button" v-show="showUp" @click="move('up')">
+      <svg class="st-cursor-pointer" width="38" viewBox="-2.4 -2.4 28.80 28.80" fill="#000000ab" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
+      <g id="SVGRepo_bgCarrier" stroke-width="0"><rect x="-2.4" y="-2.4" width="28.80" height="28.80" rx="14.4" fill="#000000ab" strokewidth="0"></rect></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 20L12 4M12 4L18 10M12 4L6 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g>
+    </svg>
+    </div>
+    <div class="Down Button " v-show="showDown" @click="move('down')">
+      <svg class="st-rotate-180 st-cursor-pointer" width="38" viewBox="-2.4 -2.4 28.80 28.80" fill="#000000ab" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
+      <g id="SVGRepo_bgCarrier" stroke-width="0"><rect x="-2.4" y="-2.4" width="28.80" height="28.80" rx="14.4" fill="#000000ab" strokewidth="0"></rect></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 20L12 4M12 4L18 10M12 4L6 10" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path> </g>
+    </svg>
+    </div>
+  </div>
         </div>
       </section>
 </template>
