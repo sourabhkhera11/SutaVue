@@ -779,7 +779,7 @@
       <li>
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px]" type="checkbox" value="true" v-model="activeBit" @change="scrollToTop()" />
+            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="true" v-model="activeBit" @change="scrollToTop()" />
             <div
               class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div
@@ -808,7 +808,7 @@
       <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
+            <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
             <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                 <span class="money">₹{{ subItem.min }}.00</span>
@@ -824,7 +824,7 @@
       <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-            <input class="st-mr-[12px]" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
+            <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
             <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                 <span class="money">{{ subItem.min }}%</span>
@@ -839,7 +839,7 @@
                       <li  v-for="(subItem,index) in textFilterFields[item.field]" :key="index"  >
                         <div class="outer-checkbox">
                           <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                            <input class="st-mr-[12px]" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
+                            <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
                             <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                               <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                                 <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
