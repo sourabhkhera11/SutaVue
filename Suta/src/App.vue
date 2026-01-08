@@ -307,6 +307,34 @@ feedRatio(grid:string):void{
   }
   console.log(this.layoutRatio);
 },
+getSortedSubItems(item:any) {
+    let sourceList = [];
+    if (item.type === 'numeric') {
+      sourceList = this.numericFilterFields[item.field] || [];
+    } else {
+      sourceList = this.textFilterFields[item.field] || [];
+    }
+    return [...sourceList]
+    .filter(subItem => {
+         const count = (item.type === 'numeric') ? subItem.count : subItem.value; 
+         return count > 0;
+      })
+    .sort((a, b) => {
+      const isASelected = this.checkSelected(item, a);
+      const isBSelected = this.checkSelected(item, b);
+      if (isASelected && !isBSelected) return -1;
+      if (!isASelected && isBSelected) return 1;
+      return 0; 
+    });
+  },
+checkSelected(item:any, subItem:any) {
+    if (item.type === 'numeric') {
+      return this.isRangeSelected(item.selected, subItem.min, subItem.max);
+    } else {
+      return item.selected.includes(subItem.label); 
+    }
+  },
+
     },
     mounted(){
       this.fetchData(false);
@@ -836,7 +864,7 @@ feedRatio(grid:string):void{
       </div>
       <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
         <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-          <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
+          <li v-for="(subItem,index) in getSortedSubItems(item)" :key="index" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                 <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
@@ -852,7 +880,7 @@ feedRatio(grid:string):void{
           </li>
         </ul>
         <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body st-flex-col  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-          <li v-for="(subItem,index) in numericFilterFields[item.field]" :key="index" >
+          <li v-for="(subItem,index) in getSortedSubItems(item)" :key="index" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                 <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
@@ -867,7 +895,7 @@ feedRatio(grid:string):void{
           </li>
         </ul>
         <ul v-else class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-                          <li  v-for="(subItem,index) in textFilterFields[item.field]" :key="index"  >
+                          <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="index"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
                               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                                 <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
