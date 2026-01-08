@@ -1,5 +1,5 @@
 <template>
-  <div class="product st-relative lg:st-p-[10px] st-mt-0 st-px-[2px] st-mb-[8px] lg:st-px-[2.5px] lg:st-mb-[17.5px] md:st-mb-[32px] lg:st-basis-[25%] st-basis-[50%]">
+  <div class="product  ">
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 ">
@@ -26,13 +26,13 @@
         <div>({{ userData.reviews_count }})</div></div>
     </div>
 
-    <div class="productcardInfo st-py-[4px] st-px-[6px] st-border-[1px] st-border-black/13 st-rounded-bl-[5px] st-rounded-br-[5px] st-border-t-0 st-shadow-[1px_1px_3px_#00000021]">
+    <div class="productcardInfo st-py-[4px] st-px-[6px] md:st-mb-[32px] ">
       <div class="stackcontent st-grid st-grid-rows-3 st-gap-y-[5px]">
         
-        <a href="" class="st-text-[14px] st-truncate st-block">{{ userData.title.split("(")[0].trim()}}</a>
+        <a href="" class="st-text-[12px] st-text-[#1c1c1c] st-tracking-[2.16px] st-truncate st-block">{{ userData.title.split("(")[0].trim()}}</a>
         
         <div class="st-w-fit st-h-fit">
-          <div class="typecard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
+          <div class="typecard st-text-[12px] st-text-[#1c1c1c] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
             {{ userData.product_type }}
           </div>
           <!-- <div class="fabriccard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
@@ -46,8 +46,8 @@
           </div> -->
         </div>
 
-        <div class="prices st-flex st-gap-[15px] st-w-fit st-h-fit">
-            <div class="pricetag st-text-[13px] st-w-fit st-h-fit">
+        <div class="prices st-flex st-gap-[8px] st-w-fit st-h-fit">
+            <div class="pricetag st-text-[13px] st-text-[#1c1c1c] st-w-fit st-h-fit">
               ₹{{ userData.discounted_price }}.00
             </div>
           <div v-if="userData.discount>0" class="st-w-fit st-h-fit pricetag st-text-[11.2px] st-line-through st-text-red-600">
