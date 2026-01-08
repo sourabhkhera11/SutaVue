@@ -874,37 +874,39 @@
               </div>            
               <div class="contentarea">
                 <div class="productlist st-flex st-flex-wrap" >
-                  <div data-v-da40671c="" class="st-selected-filters st-hidden-sm st-flex st-w-full st-px-[10px] lg:st-px-[0] lg:st-pr-[0px] st-mb-[20px] lg:st-mb-[10px] lg:st-mt-[25px]">
-                    <div data-v-da40671c="" class="filter-tag-column st-width st-w-full">
-                      <div data-v-da40671c="" class="st-filter-tags">
-                        <div data-v-da40671c="" class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
-                          <div v-if="activeBit" data-v-da40671c="" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
-                            <div data-v-da40671c="" class="tag-content">In Stock Only</div>
-                            <div @click="activeBit=false" class="tag-close st-text-[#ff0000]">✕</div>
+                  <div class="st-hidden-sm st-flex st-w-full st-px-[10px] lg:st-px-[0] lg:st-pr-[0px] st-mb-[20px] lg:st-mb-[10px] lg:st-mt-[25px]">
+                    <div class="filter-tag-column st-width st-w-full">
+                      <div class="st-filter-tags">
+                        <div class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
+                          <div v-if="activeBit" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
+          <div class="tag-content">In Stock Only</div>
+          <div @click="activeBit=false" class="tag-close st-text-[#ff0000]">✕</div>
                           </div>
-                          <div v-for="(fields,index) in selectedFilters" class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]" :key="index">
-                            <div v-for="items in fields.selected" :key="index">
-                              <div class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
-                                <div v-if="fields.type==='numeric' && fields.name==='Price'" class="tag-content">
-                                  <span data-v-da40671c="">₹{{ items[0] }}.00</span>
-                                  <span data-v-da40671c=""> - <span data-v-da40671c="">₹{{ items[1] }}.00</span></span>
-                                </div>
-                                <div v-else-if="fields.type==='numeric' && fields.name==='Discount'" class="tag-content">
-                                  <span data-v-da40671c="">{{ items[0] }}%</span>
-                                  <span data-v-da40671c=""> And <span data-v-da40671c="">Above</span></span>
-                                </div>
-                                <div v-else-if="fields.type==='text'" class="tag-content">
-                                  <span data-v-da40671c="">{{ items }}</span>
-                                </div>
-                                <div @click="removeFilter(fields.selected,items)" class="tag-close st-text-[#ff0000]">✕</div>
-                              </div>
+                          <template v-for="(fields, index) in selectedFilters">
+          <div v-for="(items, subIndex) in fields.selected" :key="fields.name + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
+            
+            <div v-if="fields.type==='numeric' && fields.name==='Price'" class="tag-content">
+              <span>₹{{ items[0] }}.00</span> - <span>₹{{ items[1] }}.00</span>
+            </div>
+            
+            <div v-else-if="fields.type==='numeric' && fields.name==='Discount'" class="tag-content">
+              <span>{{ items[0] }}%</span> And <span>Above</span>
+            </div>
+            
+            <div v-else class="tag-content">
+              <span>{{ items }}</span>
+            </div>
+            
+            <div @click="removeFilter(fields, items)" class="tag-close st-text-[#ff0000]">✕</div>
+          </div>
+                          </template>
+                          <div v-if="selectedFilters.length > 0 || activeBit" class="tag-item st-shrink-0">
+                            <div @click="clearAllFiler()" class="tag-content st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
+                              Reset All
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div v-if="selectedFilters.length>0 || activeBit" data-v-da40671c="" class="tag-item st-last-clear-tag st-shrink-0">
-                      <div @click="clearAllFiler()"  class="tag-content st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer"> Reset All</div>
                     </div>
                   </div>
                   <card v-for="(value,index) in result" :key="index" :user-data="value"/>
