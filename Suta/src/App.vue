@@ -4,9 +4,9 @@
   import SearchClient from "@gaspl/search-client";
   function getInitialRatio(){
       if (typeof window !== 'undefined') {
-        return window.innerWidth >= 1024 ? '33.33%' : '48.5%';
+        return window.innerWidth >= 1024 ? '33.33%' : '50%';
       }
-      return '48.5%%'; 
+      return '50%%'; 
   };
   export default defineComponent({
     components:{
@@ -305,7 +305,7 @@ feedRatio(grid:string):void{
       this.layoutRatio="100%";
       break;
     case "2by2":
-      this.layoutRatio="48.5%";
+      this.layoutRatio="50%";
       break;
     case "3by3":
       this.layoutRatio= "33.33%";
@@ -482,8 +482,8 @@ handleResize() {
       </section>
       <section class="mobile">
         <div class="lg:st-hidden">
-          <div  class=" st-w-full st-text-[14px]  ">
-            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal st-flex st-gap-[5px] st-text-capitalize"><span >{{ this.data.totalHits }}</span><span class=""> Products</span><span class=""></span>
+          <div  class=" st-w-full st-text-[14px]  md:st-border-t md:st-border-[#e8e8e1]">
+            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ this.data.totalHits }}</span><span class=""> Products</span><span class=""></span>
             </span>
             </div>
           </div>
@@ -503,7 +503,7 @@ handleResize() {
               <span class=" lg:st-hidden st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('1by1')" :class="layoutRatio==='100%'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M0 0h18v18H0z"></path></svg>
               </span>
-              <span class="lg:st-hidden st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('2by2')" :class="layoutRatio==='48.5%'?'st-opacity-100': 'st-opacity-30'">
+              <span class="lg:st-hidden st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('2by2')" :class="layoutRatio==='50%'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="#000000" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path>
                 </svg>
@@ -542,8 +542,8 @@ handleResize() {
         </div>
       </div>
       </section>
-      <section v-if="mobileFilterToggle" class=" lg:st-hidden filterby-sidebar ">
-        <div class=" st-bg-[#00000080] st-fixed st-top-0  st-left-0 st-right-0 st-bottom-0 st-z-[2000]  ">
+      <section v-if="mobileFilterToggle"  class=" lg:st-hidden filterby-sidebar  st-bg-[#00000080] st-inset-0 st-fixed st-z-[2000]">
+        <div @click.self="mobileFilterToggle=false" class="st-top-0 st-w-full st-absolute st-left-0 st-right-0 st-bottom-0   ">
   <div class="mobilesearch hidden-desktop st-z-[500] st-inline-block lg:st-hidden st-fixed st-top-[0] st-w-[75%] st-left-[unset] st-right-[-100%] st-h-full st-bg-white st-opacity-0 st-z-[6] open st-opacity-100 st-right-[0] st-overflow-auto">
     <div class="filterHeader st-w-[inherit] st-bg-white st-flex st-justify-between st-items-center st-p-[16px] st-leading-[20px] st-text-[14px] st-text-[#333333] st-font-semibold st-fixed st-z-[1] st-border st-border-solid st-border-[#e8e9eb] st-uppercase" id="mobileHeader">
       <div class="mobile-filter-title"> Filter by</div>
@@ -654,7 +654,7 @@ handleResize() {
 </div>
 </div>
       </section>
-      <section v-if="mobileSortToggle" class="sortby-sidebar lg:st-hidden  st-bg-[#00000080] st-fixed st-inset-0 st-z-[1999]">
+      <section v-if="mobileSortToggle" @click.self="mobileSortToggle=false" class="sortby-sidebar lg:st-hidden  st-bg-[#00000080] st-fixed st-inset-0 st-z-[1999]">
         <div class=" st-w-full st-absolute  st-left-0 st-right-0 st-bottom-0  " >
           <div  class=" st-bg-white st-overflow-y-auto st-overflow-x-hidden st-p-[20px]   st-text-center ">
   <span @click="mobileSortToggle=false" class="closeFilter st-block st-text-[30px] st-top-[5px] st-text-black st-absolute st-z-[9] st-right-[15px]">×</span>
@@ -802,8 +802,8 @@ handleResize() {
   </div>
 </div>
 </div>
-                <div class="productlist st-flex st-flex-wrap st-mx-0 lg:st-mx-[-15px]  " >
-                  <card v-for="(value,index) in result" :key="index" :style="{flexBasis: layoutRatio}" class=" md:st-px-[15px] lg:st-mx-[0px] st-mx-[2.5px] st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutRatio"/>
+                <div class="productlist st-flex st-flex-wrap md:st-mx-[-15px] st-mx-[2.5px] " >
+                  <card v-for="(value,index) in result" :key="index" :style="{flexBasis: layoutRatio}" class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutRatio"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">

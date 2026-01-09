@@ -1,10 +1,10 @@
 <template>
-  <div class="product  md:st-mb-[32px]">
+  <div class="product  md:st-mb-[30px] st-px-[2.5px] md:st-px-[0px]">
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 ">
         <span v-if="userData.collections.label==='bestseller sarees' || userData.collections.label==='most loved sarees'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
-          {{userData.collections.label.split("sarees")[0]}}
+          {{userData.collections.label.split("sarees")[0].toUpperCase()}}
         </span>
         <span v-else-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           NEW
@@ -36,11 +36,11 @@
     <div v-if="ratio!='16.66%'" class="productcardInfo st-py-[4px] st-px-[6px]  ">
       <div class="stackcontent st-grid st-grid-rows-3 st-gap-y-[5px]">
         
-        <a href="" class="st-text-[12px] st-text-[#1c1c1c] st-tracking-[2.16px] st-truncate st-block">{{ userData.title.split("(")[0].trim()}}</a>
+        <a href="" class="st-text-[12px] st-text-[#1c1c1c] st-tracking-[2.16px] st-truncate st-block">{{ userData.title.split("(")[0].trim().toUpperCase()}}</a>
         
         <div class="st-w-fit st-h-fit">
           <div class="typecard st-text-[12px] st-text-[#1c1c1c] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
-            {{ userData.product_type }}
+            {{ userData.product_type[0].toUpperCase()+userData.product_type.slice(1) }}
           </div>
           <!-- <div class="fabriccard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
             {{ userData.fit }}
