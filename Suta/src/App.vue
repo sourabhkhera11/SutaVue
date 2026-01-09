@@ -96,6 +96,9 @@
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
+        topResult: {} as Record<string,any>,
+        searchQuery:"" as string,
+        searchFieldToggle:false as boolean,
       };
     },
     methods:{
@@ -171,7 +174,7 @@
               })
             }
           })
-          this.data = await query.search("*","KSNQ58MRXELY5JCX767TDSA1");
+          this.data = await query.search(`${this.searchQuery}`,"KSNQ58MRXELY5JCX767TDSA1");
         }
         catch(er){
           console.log(er);
@@ -184,6 +187,7 @@
         }
         else{
           this.result=this.data.results;
+          this.topResult=this.result.slice(0,6);
         }
         this.textFilterFields=this.data.textFacets;
         console.log(this.textFilterFields);
@@ -249,7 +253,7 @@
         }
       },
       display():void{
-        console.log(this.selectedFilters);
+        console.log(this.searchQuery);
       },
       isRangeSelected(selectedArray:any[], min:number, max:number) {
     return selectedArray.some(range => range[0] === min && range[1] === max);
@@ -381,6 +385,12 @@ handleResize() {
           this.fetchData(false);
         }
       },
+      // searchQuery:{
+      //   handler(){
+      //     this.fetchData(false);
+      //   }
+      // }
+      // ,
       skipCount:{
         handler(){
           this.fetchData(true);
@@ -404,6 +414,136 @@ handleResize() {
 </script>
 
 <template>
+  <header class="st-sticky st-top-0 st-z-20 st-bg-[#fff]">
+  <div class=" st-flex md:st-gap-[15px]  st-justify-between st-py-[8px] md:st-px-[48px] st-px-[20px] st-items-center st-shadow-[inset_0_-1px_rgb(28_28_28_/_0.15)]">
+    
+    <div class="burgerBox lg:st-hidden st-flex st-gap-[20px]">
+      <button type="button">
+        <svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-hamburger" viewBox="0 0 24 24">
+          <path d="M1 19h22M1 12h22M1 5h22" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"></path>
+        </svg>
+      </button>
+      <div class=""></div>
+      <div class=""></div>
+      <div class=""></div>
+    </div>
+
+    <a href="/" class="">
+      <span class="st-sr-only">Suta</span>
+      <img 
+        class="st-w-[55px] st-max-w-full st-h-auto header__logo-image lcp-candidate" 
+        src="//suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=2283" 
+        alt="" 
+        srcset="//suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=140 140w, //suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=210 210w" 
+        width="2283" 
+        height="1521" 
+        sizes="70px" 
+        loading="eager" 
+        fetchpriority="high"
+      >
+    </a>
+
+    <nav class=" st-hidden lg:st-block">
+      <ul class=" st-flex st-flex-wrap st-justify-center st-align-middle st-gap-[41.6px] st-text-[14px] st-tracking-[1.2px] st-cursor-pointer ">
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out  "><a class="st-visited:text-[#000080]" href="https://www.google.com/" target="_blank">Women</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out  "><a class="st-visited:text-[#000080]" href="https://www.google.co" target="_blank">Suta Wedding</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out  "><a class="st-visited:text-[#000080]" href="https://www.google.c" target="_blank">Men</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out st-text-[#FF0000] "><a class="st-visited:text-[#000080]" href="https://www.google" target="_blank">Sale</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.googl" target="_blank">Kids</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.goog" target="_blank">Accessories</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.goo" target="_blank">Gifts</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.go" target="_blank">Collections</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.g" target="_blank">Our Stores</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.googleee" target="_blank">About Us</a></li>
+        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.ggg" target="_blank">FAQ</a></li>
+      </ul>
+    </nav>
+
+    <nav>
+      <ul class="st-flex st-gap-[10px] md:st-gap-[20px] st-align-middle ">
+        
+        <li class="md:st-hidden">
+          <a title="App Download" target="_blank" class="Header__Icon Icon-Wrapper Icon-Wrapper--clickable suta_download hide-on-desktop" href="https://onelink.to/k35vtm">
+            
+            <svg class="st-w-[35px] st-h-[26px]" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840.57 500">
+              <g>
+                <rect class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x="30" y="25" width="303.16" height="450" rx="30.86" ry="30.86"></rect>
+                <line class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x1="181.58" y1="119.96" x2="181.58" y2="354.65"></line>
+                <line class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x1="93.5" y1="266.57" x2="181.58" y2="354.65"></line>
+                <line class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x1="269.65" y1="266.57" x2="181.58" y2="354.65"></line>
+                
+                <path class="st-stroke-[0px]" d="m30,412.84h303.16v35.12c0,14.92-12.12,27.04-27.04,27.04H55.57c-14.11,0-25.57-11.46-25.57-25.57v-36.59h0Z"></path>
+              </g>
+              <text class="st-text-[228.78px] st-font-medium" transform="translate(366.51 331.21)">
+                <tspan x="0" y="0">APP</tspan>
+              </text>
+            </svg>
+            </a>
+        </li>
+
+        <li><a href=""><svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-account" viewBox="0 0 24 24">
+              <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M3.017 20.747C3.783 16.5 7.922 14.25 12 14.25s8.217 2.25 8.984 6.497" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"></path>
+            </svg></a></li>
+        <li @click="searchFieldToggle=!searchFieldToggle" class="st-hidden md:st-block"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
+              <path d="M15.439 15.439L12.6315 12.6314M14.6368 7.81841C14.6368 11.5841 11.5841 14.6368 7.81841 14.6368C4.05271 14.6368 1 11.5841 1 7.81841C1 4.05271 4.05271 1 7.81841 1C11.5841 1 14.6368 4.05271 14.6368 7.81841Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg></li>
+        <li><a href=""><svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-cart" viewBox="0 0 24 24">
+              <path d="M10 7h13l-4 9H7.5L5 3H1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="9" cy="20" r="1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>
+              <circle cx="17" cy="20" r="1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>
+            </svg></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+  <section v-if="searchFieldToggle" class="searchSpace st-absolute st-z-[3000]">
+    <div class="  st-search-autocomplete-desktop site-nav__link st-search-bar-container st-desktop-searchbox st-hidden-sm openSearch st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
+   <div class="st-search-bar st-for-desktop  st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
+      <span class=" st-icon-search st-translate-y-[7px]">
+         <svg data-icon="search" viewBox="0 0 512 512" width="14px" height="20px">
+            <path d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"></path>
+         </svg>
+      </span>
+      <input @input="fetchData(false)" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
+      <span @click="searchQuery='', fetchData(false)" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
+      <span @click="searchQuery='' , fetchData(false)" class=" close_search st-translate-y-[10px] st-cursor-pointer">
+         <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
+            <path class="active-path" d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z" data-old_color="#000000" data-original="#000000" fill="#4E3830"></path>
+         </svg>
+      </span>
+   </div>
+</div>
+<div class="st-row st-hidden-sm st-flex-wrap st-hidden lg:st-flex">
+   <div class="st-col-lg-3 st-col-md-3 st-left-col st-w-[25%] st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]" style="">
+      <div class="st-left-col-header st-relative st-pb-[10px] st-mb-[10px] after:st-absolute after:st-inline-block after:st-w-[auto] after:st-h-[1px] after:st-right-[0px] after:st-bottom-[0] after:st-left-[0px] after:st-bg-[#e4e4e9]"><span class="st-whitespace-normal st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold"> Search Suggestions </span></div>
+      <div>
+         <ul class="sm:st-gap-2.5 st-trending-list st-inline-flex st-flex-wrap st-flex-col st-gap-2.5 st-m-0 st-p-0 st-w-full">
+            <li class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span><span class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">Green Blouses</span></span></li>
+            <li class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span><span class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">Green Saree - Bestsellers</span></span></li>
+            <li class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span><span class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">Green Sarees</span></span></li>
+         </ul>
+      </div>
+      <div class="no-trending-search-text" style="display: none;"><span data-v-270509ef="" class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>
+   </div>
+   <div class="st-col-lg-9 st-col-md-9 st-right-col st-w-[75%] st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
+      <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">Search Results</span></div>
+      <!---->
+      <div class="st-row st-cols-2 st-cols-sm-2 st-cols-md-4 st-product-wrapper st-flex st-flex-nowrap st-overflow-y-auto">
+         <div v-for="(value,index) in topResult" :key="index" data-v-16186602="" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" data-product-id="4621591969857">
+            <card  :key="value"  :user-data="value" :ratio="layoutRatio"/>
+         </div>
+         
+      </div>
+   </div>
+</div>
+<div class="st-row st-flex st-m-[0]">
+   <div class="st-left-col st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] !st-block"></div>
+   <div class="st-right-col st-right-col st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
+      <div @click="searchFieldToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{data.totalHits}}</span>) product<span style="">s</span></span></div>
+   </div>
+</div>
+  </section>
   <section class="mobileBottom md:st-hidden ">
   <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[10px]">
     <ul class="mobile-bottom-nav--wrapper st-flex st-justify-evenly">
@@ -491,7 +631,7 @@ handleResize() {
       <section class="mobile">
         <div class="lg:st-hidden">
           <div  class=" st-w-full st-text-[14px]  md:st-border-t md:st-border-[#e8e8e1]">
-            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ this.data.totalHits }}</span><span class=""> Products</span><span class=""></span>
+            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ data.totalHits }}</span><span class=""> Products</span><span class=""></span>
             </span>
             </div>
           </div>
