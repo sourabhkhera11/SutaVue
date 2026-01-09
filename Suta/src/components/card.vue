@@ -1,5 +1,5 @@
 <template>
-  <div class="product  md:st-mb-[30px] st-px-[2.5px] md:st-px-[0px]">
+  <div class="product st-mt-[20px] md:st-mt-[0px]  md:st-mb-[30px] st-px-[2.5px] md:st-px-[0px]">
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 ">

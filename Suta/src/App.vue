@@ -95,6 +95,7 @@
         layoutRatio:getInitialRatio(),
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
+        filterCount:0 as number,
       };
     },
     methods:{
@@ -390,6 +391,13 @@ handleResize() {
     productRemaining() {
       if (!this.data) return false;
       return (this.data.totalHits - 32 - (this.skipCount * 32)) < 32;
+  },
+  selectedFilterCount(){
+    let total=this.activeBit?1:0;
+    total+=this.selectedFilters.reduce((sum,item)=>{
+      return sum+(item.selected?item.selected.length:0);
+    },0);
+    return total;
   }
 },
   })
@@ -492,8 +500,8 @@ handleResize() {
         <div class=" ">
           <div class="filterbar st-flex st-align-middle st-flex-wrap md:st-gap-[50px] lg:st-justify-between st-mt-[0px] lg:st-mt-[50px] st-shadow-[0_1px_rgb(221,221,221),_0_-1px_rgb(221,221,221)] md:st-m-[0px] md:lg:st-[-64px] st-bg-[#fff]">
             <div class="filtersort  lg:st-hidden st-flex st-tracking-[1.98px] st-grow  st-text-[11px] st-justify-center st-align-middle ">
-              <div @click="mobileFilterToggle=true" class="filter st-basis-[50%] st-text-[#1c1c1ccc] st-px-[3px] st-text-center st-py-[13px] st-border-r st-border-[#e8e8e1]">
-                FILTER
+              <div @click="mobileFilterToggle=true" class="filter st-basis-[50%] st-text-[#1c1c1ccc] st-px-[3px] st-text-center st-py-[13px] st-border-r st-border-[#e8e8e1] st-font-Futura">
+                FILTER <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span>
               </div>
               <div @click="mobileSortToggle=true" class="sortby st-py-[13px] st-basis-[50%] st-text-[#1c1c1ccc] st-px-[3px] st-border-r st-border-[#e8e8e1] st-text-center">
                 SORT BY
@@ -648,7 +656,7 @@ handleResize() {
 </div> 
 </div>
 <div  class="apply-all st-fixed st-m-0 st-left-[unset] st-right-0 st-bottom-0 st-w-[inherit] st-bg-white st-flex st-items-center st-justify-center st-text-center st-border-t-[1px] st-border-solid st-border-[#eaeaec] st-p-[16px] st-gap-[8px]">
-  <span data-v-da40671c="" @click="clearAllFiler() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <!----></span>
+  <span data-v-da40671c="" @click="clearAllFiler() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
   <span @click="mobileFilterToggle=false" class="apply-btn st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">View Results</span>
 </div>
 </div>
