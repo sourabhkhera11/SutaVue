@@ -99,6 +99,10 @@
         topResult: {} as Record<string,any>,
         searchQuery:"" as string,
         searchFieldToggle:false as boolean,
+        autoData:{} as Record<string,any>,
+        autoResult:{} as Record<string,any>,
+        popularChoice:"AND showInSuggestion = 1" as string,
+        searchToggle:true as boolean,
       };
     },
     methods:{
@@ -107,11 +111,11 @@
         try{
           const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
           let query=searchClient
-          .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at")
+          .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
           .count(32)
           .skip(this.skipCount*32)
-          .filter(`(discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
-          .sort("-isActive","saree_position",`${this.sortBy}`)
+          .filter(`isSearchable = 1 AND (discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
+          .sort("-isActive","saree_position",`${this.sortBy}`,"-_rank")
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
             {
@@ -190,12 +194,31 @@
           this.topResult=this.result.slice(0,6);
         }
         this.textFilterFields=this.data.textFacets;
-        console.log(this.textFilterFields);
+        // console.log(this.textFilterFields);
         this.numericFilterFields=this.data.numericFacets;
-        console.log(this.numericFilterFields);
-        for (const element of this.result) {
-          console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive);
+        // console.log(this.numericFilterFields);
+        // for (const element of this.result) {
+        //   console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive+" "+element.collections.find((ele:any)=> ele==='bestseller sarees' || ele==="bestsellers" )+" "+element._rank);
+        // }
+      },
+      async searchData():Promise<void>{
+        try{
+          const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
+          let query=searchClient
+          .fields("id","displayLabel")
+          .count(10)
+          .filter(`isSearchable = 1  ${this.popularChoice}`)
+          this.autoData = await query.search(`${this.searchQuery}`,"X7PKBZVRIHHER13JKQTANV9Y");
         }
+        catch(er){
+          console.log(er);
+        }
+        this.autoResult=this.autoData.results;
+        // console.log(this.autoData);
+        
+        // for (const element of this.autoResult) {
+        //   console.log(element.displayLabel);
+        // }
       },
       sortByWho(element:string):void{
         switch (element) {
@@ -357,9 +380,23 @@ checkSelected(item:any, subItem:any) {
 handleResize() {
       this.layoutRatio = getInitialRatio();
 },
-
+checkSearchQuery(){
+  if(this.searchQuery!=""){
+    this.searchToggle=false;
+    this.popularChoice="";
+  }
+  else{
+    this.searchToggle=true;
+    this.popularChoice="AND showInSuggestion = 1";
+  }
+},
+fillSuggestion(element:string){
+  this.searchQuery=element;
+  this.fetchData(false);
+}
     },
     mounted(){
+      this.searchData();
       this.fetchData(false);
       window.addEventListener("scroll",this.handleScroll);
       this.handleScroll();
@@ -385,12 +422,13 @@ handleResize() {
           this.fetchData(false);
         }
       },
-      // searchQuery:{
-      //   handler(){
-      //     this.fetchData(false);
-      //   }
-      // }
-      // ,
+      searchQuery:{
+        handler(){
+          this.checkSearchQuery();
+          this.searchData();
+        }
+      }
+      ,
       skipCount:{
         handler(){
           this.fetchData(true);
@@ -485,7 +523,7 @@ handleResize() {
               <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
               <path d="M3.017 20.747C3.783 16.5 7.922 14.25 12 14.25s8.217 2.25 8.984 6.497" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"></path>
             </svg></a></li>
-        <li @click="searchFieldToggle=!searchFieldToggle" class="st-hidden md:st-block"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
+        <li @click="searchFieldToggle=!searchFieldToggle" class="st-hidden md:st-block st-cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
               <path d="M15.439 15.439L12.6315 12.6314M14.6368 7.81841C14.6368 11.5841 11.5841 14.6368 7.81841 14.6368C4.05271 14.6368 1 11.5841 1 7.81841C1 4.05271 4.05271 1 7.81841 1C11.5841 1 14.6368 4.05271 14.6368 7.81841Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg></li>
         <li><a href=""><svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-cart" viewBox="0 0 24 24">
@@ -497,8 +535,8 @@ handleResize() {
     </nav>
   </div>
 </header>
-  <section v-if="searchFieldToggle" class="searchSpace st-absolute st-z-[3000]">
-    <div class="  st-search-autocomplete-desktop site-nav__link st-search-bar-container st-desktop-searchbox st-hidden-sm openSearch st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
+  <section @click.self="searchFieldToggle=false" v-if="searchFieldToggle" class="searchSpace st-fixed st-z-[3000] st-h-full">
+    <div   class="  st-search-autocomplete-desktop site-nav__link st-search-bar-container st-desktop-searchbox st-hidden-sm openSearch st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
    <div class="st-search-bar st-for-desktop  st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
       <span class=" st-icon-search st-translate-y-[7px]">
          <svg data-icon="search" viewBox="0 0 512 512" width="14px" height="20px">
@@ -506,22 +544,36 @@ handleResize() {
          </svg>
       </span>
       <input @input="fetchData(false)" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
-      <span @click="searchQuery='', fetchData(false)" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
-      <span @click="searchQuery='' , fetchData(false)" class=" close_search st-translate-y-[10px] st-cursor-pointer">
+      <span v-show="searchQuery" @click="searchQuery='', fetchData(false)" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
+      <span @click="searchFieldToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
             <path class="active-path" d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z" data-old_color="#000000" data-original="#000000" fill="#4E3830"></path>
          </svg>
       </span>
    </div>
 </div>
+
 <div class="st-row st-hidden-sm st-flex-wrap st-hidden lg:st-flex">
-   <div class="st-col-lg-3 st-col-md-3 st-left-col st-w-[25%] st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]" style="">
-      <div class="st-left-col-header st-relative st-pb-[10px] st-mb-[10px] after:st-absolute after:st-inline-block after:st-w-[auto] after:st-h-[1px] after:st-right-[0px] after:st-bottom-[0] after:st-left-[0px] after:st-bg-[#e4e4e9]"><span class="st-whitespace-normal st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold"> Search Suggestions </span></div>
+  <section v-if="searchToggle" class="st-col-lg-3 st-col-md-3 st-left-col st-w-[25%] st-trending-search st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]  st-mb-[10px] lg:st-mb-[0]" style="">
+   <div id="st-before-search">
+      <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span></div>
+      <div>
+         <ul class="sm:st-gap-[10] st-trending-list st-inline-flex st-flex-wrap st-flex-row st-gap-2.5 st-m-0 st-p-0 st-w-full">
+            <li v-for="ele in autoResult" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
+              <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span></span>
+            </li>
+         </ul>
+      </div>
+   </div>
+</section>
+   <div v-else class="st-col-lg-3 st-col-md-3 st-left-col st-w-[25%] st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]" style="">
+      <div class="st-left-col-header st-relative st-pb-[10px] st-mb-[10px] after:st-absolute after:st-inline-block after:st-w-[auto] after:st-h-[1px] after:st-right-[0px] after:st-bottom-[0] after:st-left-[0px] after:st-bg-[#e4e4e9]"><span class="st-whitespace-normal st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold"> Search Suggestions </span>
+      </div>
       <div>
          <ul class="sm:st-gap-2.5 st-trending-list st-inline-flex st-flex-wrap st-flex-col st-gap-2.5 st-m-0 st-p-0 st-w-full">
-            <li class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span><span class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">Green Blouses</span></span></li>
-            <li class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span><span class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">Green Saree - Bestsellers</span></span></li>
-            <li class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span><span class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">Green Sarees</span></span></li>
+            <li v-for="ele in autoResult" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
+              <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span>
+            </span></li>
          </ul>
       </div>
       <div class="no-trending-search-text" style="display: none;"><span data-v-270509ef="" class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>

@@ -3,8 +3,11 @@
     <div class="productcard-img st-relative st-group">
       
       <div class="badge st-z-[1] st-absolute st-top-0 ">
-        <span v-if="userData.collections.label==='bestseller sarees' || userData.collections.label==='most loved sarees'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
-          {{userData.collections.label.split("sarees")[0].toUpperCase()}}
+        <span v-if="userData.collections.find((ele:any)=> ele==='bestseller sarees' || ele==='bestsellers' )"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
+          BESTSELLER
+        </span>
+        <span v-else-if="userData.collections.find((ele:any)=> ele==='most loved sarees' )"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
+          MOST LOVED
         </span>
         <span v-else-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           NEW
