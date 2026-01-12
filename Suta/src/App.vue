@@ -6,7 +6,7 @@
       if (typeof window !== 'undefined') {
         return window.innerWidth >= 1024 ? '33.33%' : '50%';
       }
-      return '50%%'; 
+      return '50%'; 
   };
   export default defineComponent({
     components:{
@@ -379,6 +379,9 @@ checkSelected(item:any, subItem:any) {
   },
 handleResize() {
       this.layoutRatio = getInitialRatio();
+      if(this.layoutRatio==="50%"){
+        this.searchFieldToggle=true;
+      }
 },
 checkSearchQuery(){
   if(this.searchQuery!=""){
@@ -432,6 +435,11 @@ fillSuggestion(element:string){
       skipCount:{
         handler(){
           this.fetchData(true);
+        }
+      },
+      layoutRatio:{
+        handler(){
+          this.handleResize();
         }
       },
     },
@@ -543,7 +551,7 @@ fillSuggestion(element:string){
             <path d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"></path>
          </svg>
       </span>
-      <input @input="fetchData(false)" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
+      <input @input="fetchData(false)" @keyup.enter="searchFieldToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
       <span v-show="searchQuery" @click="searchQuery='', fetchData(false)" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
       <span @click="searchFieldToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
