@@ -379,9 +379,6 @@ checkSelected(item:any, subItem:any) {
   },
 handleResize() {
       this.layoutRatio = getInitialRatio();
-      if(this.layoutRatio==="50%"){
-        this.searchFieldToggle=true;
-      }
 },
 checkSearchQuery(){
   if(this.searchQuery!=""){
@@ -435,11 +432,6 @@ fillSuggestion(element:string){
       skipCount:{
         handler(){
           this.fetchData(true);
-        }
-      },
-      layoutRatio:{
-        handler(){
-          this.handleResize();
         }
       },
     },
@@ -531,7 +523,7 @@ fillSuggestion(element:string){
               <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
               <path d="M3.017 20.747C3.783 16.5 7.922 14.25 12 14.25s8.217 2.25 8.984 6.497" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"></path>
             </svg></a></li>
-        <li @click="searchFieldToggle=!searchFieldToggle" class="st-hidden md:st-block st-cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
+        <li @click="searchFieldToggle=!searchFieldToggle" class=" md:st-block st-cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
               <path d="M15.439 15.439L12.6315 12.6314M14.6368 7.81841C14.6368 11.5841 11.5841 14.6368 7.81841 14.6368C4.05271 14.6368 1 11.5841 1 7.81841C1 4.05271 4.05271 1 7.81841 1C11.5841 1 14.6368 4.05271 14.6368 7.81841Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg></li>
         <li><a href=""><svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-cart" viewBox="0 0 24 24">
@@ -544,8 +536,8 @@ fillSuggestion(element:string){
   </div>
 </header>
  <section @click.self="searchFieldToggle=false" v-if="searchFieldToggle" class="searchSpace st-fixed st-z-[3000] st-h-full st-w-full">
-    <div   class="  st-search-autocomplete-desktop site-nav__link st-search-bar-container st-desktop-searchbox st-hidden-sm openSearch st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
-   <div class="st-search-bar st-for-desktop  st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
+    <div   class=" st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
+   <div class=" st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
       <span class=" st-icon-search st-translate-y-[7px]">
          <svg data-icon="search" viewBox="0 0 512 512" width="14px" height="20px">
             <path d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"></path>
@@ -553,23 +545,23 @@ fillSuggestion(element:string){
       </span>
       <input @input="fetchData(false)" @keyup.enter="searchFieldToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
       <span v-show="searchQuery" @click="searchQuery='', fetchData(false)" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
-      <span @click="searchFieldToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
+      <span @click="searchFieldToggle=false" class=" close_search st-hidden md:st-block st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
             <path class="active-path" d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z" data-old_color="#000000" data-original="#000000" fill="#4E3830"></path>
          </svg>
       </span>
    </div>
     </div>
-    <section v-if="autoResult.length===0" class="lower st-hidden-sm  st-hidden lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
+    <section v-if="autoResult.length===0" class="lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
   <p class="st-font-[600] st-my-[10px]">No Results found for '{{searchQuery}}'</p>
   <p class="st-mb-[10px]">Try Searching some other keywords</p>
     </section>
-    <div v-else class="st-row st-hidden-sm st-flex-wrap st-hidden lg:st-flex">
-  <section v-if="searchToggle" class="st-col-lg-3 st-col-md-3 st-left-col st-w-[25%] st-trending-search st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]  st-mb-[10px] lg:st-mb-[0]" style="">
+    <div v-else class="st-row st-flex-wrap st-flex st-flex-col md:st-flex-row">
+  <section v-if="searchToggle" class="st-col-lg-3 st-col-md-3 st-left-col md:st-w-[25%] st-trending-search st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]  st-mb-[10px] lg:st-mb-[0]" style="">
    <div id="st-before-search">
       <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span></div>
       <div>
-         <ul class="sm:st-gap-[10] st-trending-list st-inline-flex st-flex-wrap st-flex-row st-gap-2.5 st-m-0 st-p-0 st-w-full">
+         <ul class="sm:st-gap-[10] st-trending-list st-inline-flex st-flex-wrap md:st-flex-row st-gap-2.5 st-m-0 st-p-0 st-w-full st-flex-col">
             <li v-for="ele in autoResult" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
               <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span></span>
             </li>
@@ -577,7 +569,7 @@ fillSuggestion(element:string){
       </div>
    </div>
 </section>
-   <div v-else class="st-col-lg-3 st-col-md-3 st-left-col st-w-[25%] st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]" style="">
+   <div v-else class="st-col-lg-3 st-col-md-3 st-left-col md:st-w-[25%] st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]" style="">
       <div class="st-left-col-header st-relative st-pb-[10px] st-mb-[10px] after:st-absolute after:st-inline-block after:st-w-[auto] after:st-h-[1px] after:st-right-[0px] after:st-bottom-[0] after:st-left-[0px] after:st-bg-[#e4e4e9]"><span class="st-whitespace-normal st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold"> Search Suggestions </span>
       </div>
       <div>
@@ -589,7 +581,7 @@ fillSuggestion(element:string){
       </div>
       <div class="no-trending-search-text" style="display: none;"><span data-v-270509ef="" class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>
    </div>
-   <div class="st-col-lg-9 st-col-md-9 st-right-col st-w-[75%] st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
+   <div class="st-col-lg-9 st-col-md-9 st-right-col md:st-w-[75%] st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
       <div class="st-trending-header st-mb-[10px]">
         <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">Search Results</span></div>
       <!---->
