@@ -1,8 +1,10 @@
 <script  lang="ts">
-  import card from './components/card.vue';
   import { defineComponent } from 'vue';
   import SearchClient from "@gaspl/search-client";
-import { transform } from 'typescript';
+  import { transform } from 'typescript';
+  import card from './components/card.vue';
+  
+  // TODO - declare it as a computed property & also create an isDeviceMobile()
   function getInitialRatio(){
       if (typeof window !== 'undefined') {
         return window.innerWidth >= 1024 ? '33.33%' : '50%';
@@ -15,24 +17,30 @@ import { transform } from 'typescript';
     },
     data(){
       return{
+        // TODO - Rename them for better readability
         data: {} as Record<string,any>,
         result:{} as Record<string,any>,
         sortBy:"" as string,
+        // TODO - Convert this to array of objects  
         sortList:["Price: Low to High","Price: High to Low","Discount: High to Low","Date: Old to New","Date: New to Old"] as Array<string>,
+        // TODO - remove unused variables
         rawData:{} as Record<string,any>,
+        // TODO - Merge these three with filters variable, and use only single variable for filtering
         textFilterFields:{} as Record<string,any>,
         numericFilterFields:{} as Record<string,any>,
         visibleStates:{
           "available":false,
         } as Record<string,boolean>,
+        // TODO - remove unused variables
         productType:[] as string[],
+        // TODO - Rename "name" with "label"
         activeBit:false as boolean,
         filters:[
           {
           "name":"Price",
           "field":"discounted_price",
           "selected":[],
-          "type":"numeric"
+          "type":"numeric",
         },
         {
           "name":"Discount",
@@ -88,18 +96,23 @@ import { transform } from 'typescript';
           "selected":[],
           "type":"text"
         },] as Record<string,any>[],
+        // TODO - remove this and manage the functionality with filters variable
         selectedFilters:[] as Record<string,any>[],
         skipCount:0 as number,
         isLoading:false as boolean,
         showUp:false as boolean,
         showDown:true as boolean,
+        // TODO - use computed instead
         layoutRatio:getInitialRatio(),
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
+        // TODO - rename to autocompleteSearchResults
         topResult: {} as Record<string,any>,
         searchQuery:"" as string,
+        // TODO - rename to autocompleteSearch...
         searchFieldToggle:false as boolean,
+        // TODO - rename to a better name
         autoData:{} as Record<string,any>,
         autoResult:{} as Record<string,any>,
         popularChoice:"AND showInSuggestion = 1" as string,
@@ -111,12 +124,18 @@ import { transform } from 'typescript';
       async fetchData(isLoadMore:boolean=false):Promise<void>{
         this.isLoading=true;
         try{
+
+        // TODO - declare them globally, object as well
           const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
           let query=searchClient
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
+          // TODO - create a variable for this as pagesize
           .count(32)
+          // TODO - recheck condition
           .skip(this.skipCount*32)
+          // TODO - recheck condition
           .filter(`isSearchable = 1 AND (discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
+          // TODO - create a variable for this
           .sort("-isActive","saree_position",`${this.sortBy}`,"-_rank")
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
@@ -171,6 +190,7 @@ import { transform } from 'typescript';
           }
           ]);
           this.selectedFilters.forEach((ele:any)=>{
+            // TODO - avoid repeated condition
             if(ele.type==="text" && ele.selected?.length >0){
               query=query.textFacetFilters(ele.field,ele.selected);
             }
@@ -184,6 +204,7 @@ import { transform } from 'typescript';
         }
         catch(er){
           console.log(er);
+          // TODO - Better error handling
         }
         finally{
           this.isLoading=false;
@@ -195,6 +216,7 @@ import { transform } from 'typescript';
           this.result=this.data.results;
           this.topResult=this.result.slice(0,6);
         }
+        // TODO - use filters variable instead
         this.textFilterFields=this.data.textFacets;
         // console.log(this.textFilterFields);
         this.numericFilterFields=this.data.numericFacets;
