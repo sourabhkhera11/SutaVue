@@ -202,11 +202,11 @@ import { transform } from 'typescript';
         // for (const element of this.result) {
         //   console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive+" "+element.collections.find((ele:any)=> ele==='bestseller sarees' || ele==="bestsellers" )+" "+element._rank);
         // }
-        for(const item of this.selectedFilters){
-          console.log(item.field);
-          console.log(item.selected);
+        // for(const item of this.selectedFilters){
+        //   console.log(item.field);
+        //   console.log(item.selected);
           
-        }
+        // }
       },
       async searchData():Promise<void>{
         try{
@@ -248,7 +248,6 @@ import { transform } from 'typescript';
               this.sortBy="";
               break;
           }
-          console.log(this.sortBy);
           this.fetchData(false);
       },
       toggle(id:string):void{
@@ -480,7 +479,6 @@ restoreState() {
           this.selectedFilters=this.filters.filter((ele)=>{
             return ele.selected.length>0;
           });
-          this.display();
           if(this.isRestoring)return;
           this.updateURL();
           this.fetchData(false);
