@@ -535,7 +535,7 @@ fillSuggestion(element:string){
     </nav>
   </div>
 </header>
-  <section @click.self="searchFieldToggle=false" v-if="searchFieldToggle" class="searchSpace st-fixed st-z-[3000] st-h-full st-w-full">
+ <section @click.self="searchFieldToggle=false" v-if="searchFieldToggle" class="searchSpace st-fixed st-z-[3000] st-h-full st-w-full">
     <div   class="  st-search-autocomplete-desktop site-nav__link st-search-bar-container st-desktop-searchbox st-hidden-sm openSearch st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
    <div class="st-search-bar st-for-desktop  st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
       <span class=" st-icon-search st-translate-y-[7px]">
@@ -551,12 +551,12 @@ fillSuggestion(element:string){
          </svg>
       </span>
    </div>
-</div>
-<section v-if="autoResult.length===0" class="lower st-hidden-sm  st-hidden lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
+    </div>
+    <section v-if="autoResult.length===0" class="lower st-hidden-sm  st-hidden lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
   <p class="st-font-[600] st-my-[10px]">No Results found for '{{searchQuery}}'</p>
   <p class="st-mb-[10px]">Try Searching some other keywords</p>
-</section>
-<div v-else class="st-row st-hidden-sm st-flex-wrap st-hidden lg:st-flex">
+    </section>
+    <div v-else class="st-row st-hidden-sm st-flex-wrap st-hidden lg:st-flex">
   <section v-if="searchToggle" class="st-col-lg-3 st-col-md-3 st-left-col st-w-[25%] st-trending-search st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]  st-mb-[10px] lg:st-mb-[0]" style="">
    <div id="st-before-search">
       <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span></div>
@@ -592,14 +592,14 @@ fillSuggestion(element:string){
          
       </div>
    </div>
-</div>
-<div v-if="autoResult.length>0" class="st-row st-flex st-m-[0]">
+    </div>
+    <div v-if="autoResult.length>0" class="st-row st-flex st-m-[0]">
    <div class="st-left-col st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] !st-block"></div>
    <div class="st-right-col st-right-col st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
       <div @click="searchFieldToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{data.totalHits}}</span>) product<span style="">s</span></span></div>
    </div>
-</div>
-  </section>
+    </div>
+</section>
   <section class="mobileBottom md:st-hidden ">
   <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[10px]">
     <ul class="mobile-bottom-nav--wrapper st-flex st-justify-evenly">
@@ -694,7 +694,7 @@ fillSuggestion(element:string){
       </section>
       <section class=" container  searchbar content st-absolute st-sticky st-top-[53px] st-z-[10]">
         <div class=" ">
-          <div class="filterbar st-flex st-align-middle st-flex-wrap md:st-gap-[50px] lg:st-justify-between st-mt-[0px] lg:st-mt-[50px] st-shadow-[0_1px_rgb(221,221,221),_0_-1px_rgb(221,221,221)] md:st-m-[0px] md:lg:st-[-64px] st-bg-[#fff]">
+          <div class="filterbar st-flex st-align-middle st-flex-wrap md:st-gap-[50px] lg:st-justify-between st-mt-[0px] lg:st-mt-[50px] st-shadow-[0_1px_rgb(221,221,221),_0_-1px_rgb(221,221,221)] xl:st-mx-[-64px] md:lg:st-[-64px] st-bg-[#fff]">
             <div class="filtersort  lg:st-hidden st-flex st-tracking-[1.98px] st-grow  st-text-[11px] st-justify-center st-align-middle ">
               <div @click="mobileFilterToggle=true" class="filter st-basis-[50%] st-text-[#1c1c1ccc] st-px-[3px] st-text-center st-py-[13px] st-border-r st-border-[#e8e8e1] st-font-Futura">
                 FILTER <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span>
