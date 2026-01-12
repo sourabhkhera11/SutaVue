@@ -103,6 +103,7 @@
         autoResult:{} as Record<string,any>,
         popularChoice:"AND showInSuggestion = 1" as string,
         searchToggle:true as boolean,
+        isRestoring:false as boolean,
       };
     },
     methods:{
@@ -398,18 +399,73 @@ checkSearchQuery(){
 fillSuggestion(element:string){
   this.searchQuery=element;
   this.fetchData(false);
+},
+updateURL(){
+  if (this.isRestoring) return;
+  const params=new URLSearchParams();
+  if(this.activeBit){
+    params.set('inStock','true');
+  }
+  if(this.searchQuery){
+    params.set('q',this.searchQuery);
+  }
+  this.filters.forEach(filter=>{
+    if(filter.selected && filter.selected.length>0){
+      if(filter.type==='numeric'){
+        const rangeString=filter.selected.map(range=>`${range[0]}-${range[1]}`).join(',');
+        params.set(filter.field,rangeString);
+      }
+      else{
+        params.set(filter.field,filter.selected.join(','));
+      }
+    }
+  });
+  const newUrl=`${window.location.pathname}?${params.toString()}`;
+  window.history.pushState({path:newUrl},'',newUrl);
+},
+restoreState() {
+    this.isRestoring = true;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('inStock')) {
+        this.activeBit = params.get('inStock') === 'true';
 }
+    const q = params.get('q');
+    if (q) this.searchQuery = q;
+    this.filters.forEach(filter => {
+      const value = params.get(filter.field);
+      if (value) {
+        if (filter.type === 'numeric') {
+          filter.selected = value.split(',').map(rangeStr => {
+            return rangeStr.split('-').map(Number); 
+          });
+        } else {
+          filter.selected = value.split(',');
+        }
+      } else {
+        filter.selected = [];
+      }
+    });
+    this.fetchData(false); 
+    this.$nextTick(() => {
+      this.isRestoring = false;
+    });
+  }
     },
     mounted(){
       this.searchData();
-      this.fetchData(false);
+      // this.fetchData(false);
+      this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
       this.handleScroll();
       window.addEventListener('resize', this.handleResize);
+      window.addEventListener('popstate', this.restoreState);
     },
     beforeDestroy(){
       window.removeEventListener("scroll",this.handleScroll);
       window.removeEventListener('resize', this.handleResize);
+    },
+    beforeUnmount(){
+      window.removeEventListener('popstate', this.restoreState);
     },
     watch:{
       filters:{
@@ -418,17 +474,20 @@ fillSuggestion(element:string){
             return ele.selected.length>0;
           });
           this.display();
+          this.updateURL();
           this.fetchData(false);
         },
         deep:true
       },
       activeBit:{
         handler(){
+          this.updateURL();
           this.fetchData(false);
         }
       },
       searchQuery:{
         handler(){
+          this.updateURL();
           this.checkSearchQuery();
           this.searchData();
         }
