@@ -508,7 +508,14 @@ restoreState() {
         handler(){
           this.updateURL();
         }
-      }
+      },
+    searchFieldToggle(newValue) { 
+    if (newValue) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
     },
     computed: {
     productRemaining() {
