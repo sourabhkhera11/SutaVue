@@ -2,6 +2,7 @@
   import card from './components/card.vue';
   import { defineComponent } from 'vue';
   import SearchClient from "@gaspl/search-client";
+import { transform } from 'typescript';
   function getInitialRatio(){
       if (typeof window !== 'undefined') {
         return window.innerWidth >= 1024 ? '33.33%' : '50%';
@@ -545,7 +546,7 @@ restoreState() {
     <a href="/" class="">
       <span class="st-sr-only">Suta</span>
       <img 
-        class="st-w-[55px] st-max-w-full st-h-auto header__logo-image lcp-candidate" 
+        class="st-w-[70px] st-max-w-full st-h-auto header__logo-image lcp-candidate" 
         src="//suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=2283" 
         alt="" 
         srcset="//suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=140 140w, //suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=210 210w" 
@@ -657,7 +658,7 @@ restoreState() {
       </div>
       <div class="no-trending-search-text" style="display: none;"><span data-v-270509ef="" class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>
    </div>
-   <div class="st-col-lg-9 st-col-md-9 st-right-col md:st-w-[75%]  st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
+   <div class="sidebar st-col-lg-9 st-col-md-9 st-right-col md:st-w-[75%]  st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
       <div class="st-trending-header st-mb-[10px]">
         <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">Search Results</span></div>
       <!---->
@@ -676,7 +677,7 @@ restoreState() {
     </div>
 </section>
   <section class="mobileBottom md:st-hidden ">
-  <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[10px]">
+  <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[5px] st-text-[#000000a1]">
     <ul class="mobile-bottom-nav--wrapper st-flex st-justify-evenly">
       <li class="mobile-bottom-nav--item">
         <a href="/" class="st-flex st-flex-col st-items-center">
@@ -750,11 +751,11 @@ restoreState() {
   </div>
  </section>
       <section class="hero-section">
-        <div class="ypadding st-flex st-py-[16px] st-items-center st-justify-center">
-          <div class="wid md:st-max-w-[680px] st-max-w-[335px] st-text-center">
+        <div class="ypadding st-flex st-py-[32px] st-items-center st-justify-center">
+          <div class="wid md:st-max-w-[680px] st-max-w-[370px] st-text-center">
             <div class="textCenter ">
               <h3 class="st-leading-[33px] md:st-text-[22px] st-text-[18px] st-tracking-[3.96px]">ALL COLLECTIONS - ONLINE SAREE SHOPPING</h3>
-              <p class="st-inline st-text-[14px] st-leading-[23.1px]">Explore Suta's latest saree collection and discover the diverse weaves of India. Online saree shopping has never been easier with ... </p><span class="st-text-[#FF0000]">Read More</span>
+              <p class="st-inline st-text-[14px] st-leading-[23.1px]">Explore Suta's latest saree collection and discover the diverse weaves of India. Online saree shopping has never been easier with ... </p><span class="st-text-[#FF0000] st-text-[14px]">Read More</span>
             </div>
           </div>
         </div>
@@ -767,7 +768,7 @@ restoreState() {
             </div>
           </div>
       </section>
-      <section class=" container  searchbar content st-absolute st-sticky st-top-[53px] st-z-[10]">
+      <section class=" container  searchbar content st-absolute st-sticky st-top-[63px] st-z-[10]">
         <div class=" ">
           <div class="filterbar st-flex st-align-middle st-flex-wrap md:st-gap-[50px] lg:st-justify-between st-mt-[0px] lg:st-mt-[50px] st-shadow-[0_1px_rgb(221,221,221),_0_-1px_rgb(221,221,221)] xl:st-mx-[-64px] md:lg:st-[-64px] st-bg-[#fff]">
             <div class="filtersort  lg:st-hidden st-flex st-tracking-[1.98px] st-grow  st-text-[11px] st-justify-center st-align-middle ">
@@ -837,7 +838,7 @@ restoreState() {
     <h3 class="st-text-[15px]" >Availability</h3>
     <span class="st-flex">
       <p v-if="activeBit" @click.stop="activeBit=false">Clear</p>
-      <svg @click="toggle('available')" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+      <svg @click="toggle('available')" :class="{'st-rotate-180':visibleStates['available']}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd"
           d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
           fill="#000000">
@@ -871,7 +872,7 @@ restoreState() {
         <h3 class="st-text-[15px] " >{{item.name}}</h3>
         <span class="st-flex st-align-top">
           <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
-          <svg @click="toggle(item.name)" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+          <svg @click="toggle(item.name)" :class="{'st-rotate-180':visibleStates[item.name]}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
         </svg></span>
       </div>
@@ -954,7 +955,7 @@ restoreState() {
     <h3 class="st-text-[15px]" >Availability</h3>
     <span class="st-flex">
       <p v-if="activeBit" @click.stop="activeBit=false">Clear</p>
-      <svg @click="toggle('available')" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+      <svg @click="toggle('available')" :class="{'st-rotate-180':visibleStates['available']}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
         <path fill-rule="evenodd" clip-rule="evenodd"
           d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
           fill="#000000">
@@ -988,7 +989,7 @@ restoreState() {
         <h3 class="st-text-[15px] " >{{item.name}}</h3>
         <span class="st-flex st-align-top">
           <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
-          <svg @click="toggle(item.name)" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+          <svg @click="toggle(item.name)" :class="{'st-rotate-180':visibleStates[item.name]}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
         </svg></span>
       </div>
