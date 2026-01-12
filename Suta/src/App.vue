@@ -448,6 +448,9 @@ restoreState() {
         filter.selected = [];
       }
     });
+    this.selectedFilters=this.filters.filter((ele)=>{
+            return ele.selected.length>0;
+          });
     this.fetchData(false); 
     this.$nextTick(() => {
       this.isRestoring = false;
@@ -477,6 +480,7 @@ restoreState() {
             return ele.selected.length>0;
           });
           this.display();
+          if(this.isRestoring)return;
           this.updateURL();
           this.fetchData(false);
         },
