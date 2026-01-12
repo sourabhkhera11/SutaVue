@@ -22,10 +22,10 @@
         textFilterFields:{} as Record<string,any>,
         numericFilterFields:{} as Record<string,any>,
         visibleStates:{
-          "available":true,
+          "available":false,
         } as Record<string,boolean>,
         productType:[] as string[],
-        activeBit:true as boolean,
+        activeBit:false as boolean,
         filters:[
           {
           "name":"Price",
@@ -409,6 +409,9 @@ updateURL(){
   if(this.searchQuery){
     params.set('q',this.searchQuery);
   }
+  if(this.sortBy){
+    params.set('s',this.sortBy);
+  }
   this.filters.forEach(filter=>{
     if(filter.selected && filter.selected.length>0){
       if(filter.type==='numeric'){
@@ -426,11 +429,11 @@ updateURL(){
 restoreState() {
     this.isRestoring = true;
     const params = new URLSearchParams(window.location.search);
-    if (params.has('inStock')) {
-        this.activeBit = params.get('inStock') === 'true';
-}
+    this.activeBit = params.get('inStock') === 'true';
     const q = params.get('q');
     if (q) this.searchQuery = q;
+    const s= params.get('s');
+    if(s) this.sortBy=s;
     this.filters.forEach(filter => {
       const value = params.get(filter.field);
       if (value) {
@@ -498,6 +501,11 @@ restoreState() {
           this.fetchData(true);
         }
       },
+      sortBy:{
+        handler(){
+          this.updateURL();
+        }
+      }
     },
     computed: {
     productRemaining() {
