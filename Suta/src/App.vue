@@ -1110,7 +1110,7 @@ isDeviceTablet(){
 </div>
 </div>
                 <div class="productlist st-flex st-flex-wrap md:st-mx-[-15px] st-mx-[2.5px] " >
-                  <card v-for="(value,index) in products" :key="index" :class="layoutRatio,layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
+                  <card v-for="(value,index) in products" :key="index" :class="[layoutClass || layoutRatio ]"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
