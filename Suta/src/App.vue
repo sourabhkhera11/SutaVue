@@ -112,6 +112,7 @@
     },
     methods:{
       async fetchData(isLoadMore:boolean=false):Promise<void>{
+        window
         this.isLoading=true;
         try{
 
@@ -190,6 +191,8 @@
               })
             }
           })
+
+          // TODO: totalhits, isLoadMoreVisible, productResults
           this.fetchedRawData = await query.search(`${this.searchQuery}`,"KSNQ58MRXELY5JCX767TDSA1");
         }
         catch(er){
@@ -258,9 +261,11 @@
           }
           this.fetchData(false);
       },
+      // TODO: remove this and handle from filter variable
       toggle(id:string):void{
         this.visibleStates[id]=!this.visibleStates[id];
       },
+      // TODO: remove this and handle from filter variable
       heading(label:string):string{
         switch (label) {
           case "discounted_price":
@@ -289,12 +294,15 @@
             break;
         }
       },
+      // TODO: remove this
       display():void{
         console.log(this.searchQuery);
       },
+      // TODO: remove this and handle from filter variable
       isRangeSelected(selectedArray:any[], min:number, max:number) {
     return selectedArray.some(range => range[0] === min && range[1] === max);
     },  
+      // TODO: remove this and handle from filter variable
     toggleRange(selectedArray:any[],min:number,max:number){
       const index = selectedArray.findIndex(range => range[0] === min && range[1] === max);
       if (index === -1) {
@@ -312,6 +320,7 @@
         ele.selected.length=0;
       })
     },
+      // TODO: remove this and handle from filter variable
     isActive():string{
       if(this.activeBit){
         return "AND isActive=1";
@@ -319,6 +328,7 @@
       return "";
     }
   ,
+      // TODO: remove this and handle using v-model
   removeFilter(selectedArray:any[],item:any){
     const index=selectedArray.indexOf(item);
     selectedArray.splice(index,1);
@@ -329,11 +339,13 @@
   skipCountFunction(){
     this.skipCount++;
   },
+      // TODO: remove the single use variable
   handleScroll(){
     this.showUp=window.scrollY>50;
     const bottomOfWindow=window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50;
-    this.showDown=!bottomOfWindow;
+    this.showDown=!window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50;
   },
+      // TODO: try to improve logic
   move(direction:string){
     const amount=500;
     window.scrollBy({
@@ -341,6 +353,7 @@
       behavior:'smooth'
     });
   },
+      // TODO: try to improve logic
 feedRatio(grid:string):void{
   switch (grid) {
     case "1by1":
@@ -364,6 +377,7 @@ feedRatio(grid:string):void{
   }
   // console.log(this.layoutRatio);
 },
+      // TODO: do this while updating filters variable
 getSortedSubItems(item:any) {
     let sourceList = [];
     if (item.type === 'numeric') {
@@ -476,7 +490,9 @@ isDeviceTablet(){
       // this.fetchData(false);
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
+      document.querySelector('input[name=st]').addEventListner('keyup', inputHandler)
       this.handleScroll();
+      
       // window.addEventListener('resize', this.handleResize);
       window.addEventListener('popstate', this.restoreState);
     },
@@ -488,6 +504,7 @@ isDeviceTablet(){
       window.removeEventListener('popstate', this.restoreState);
     },
     watch:{
+      // TODO: create a push filter function and do that there
       filters:{
         handler(){
           this.selectedFilters=this.filters.filter((ele)=>{
