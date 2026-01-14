@@ -2,6 +2,10 @@
   import { defineComponent } from 'vue';
   import SearchClient from "@gaspl/search-client";
   import card from './components/card.vue';
+  const appId = "26u1hqhy378jlrgxwpaug571";
+  const readToken = "SVXPVV89J7GCA4D8DMP7S4N4";
+  const collectionId = "KSNQ58MRXELY5JCX767TDSA1"
+  const searchClient = new SearchClient(appId, readToken);
   
   // TODO - declare it as a computed property & also create an isDeviceMobile() ->Done
   export default defineComponent({
@@ -13,6 +17,7 @@
         // TODO - Rename them for better readability ->Done
         fetchedRawData: {} as Record<string,any>,
         products:{} as Record<any,any>,
+        // sortParameters:["-isActive","saree_position","-_rank",`${this.sortBy}`],
         sortBy:"" as string,
         // TODO - Convert this to array of objects -> Done + all implimentation
         sortList:[
@@ -117,7 +122,7 @@
         },] as Record<string,any>[],
         // TODO - remove this and manage the functionality with filters variable
         selectedFilters:[] as Record<string,any>[],
-        skipCount:0 as number,
+        pageNumber:0 as number,
         isLoading:false as boolean,
         showUp:false as boolean,
         showDown:true as boolean,
@@ -137,25 +142,21 @@
         popularChoice:"AND showInSuggestion = 1" as string,
         searchToggle:true as boolean,
         isRestoring:false as boolean,
+        pageSize:32 as number,
       };
     },
     methods:{
       async fetchData(isLoadMore:boolean=false):Promise<void>{
         this.isLoading=true;
         try{
-
-        // TODO - declare them globally, object as well
-          const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
-          let query=searchClient
+          searchClient
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
-          // TODO - create a variable for this as pagesize
-          .count(32)
-          // TODO - recheck condition
-          .skip(this.skipCount*32)
+          .count(this.pageSize)
+          .skip(this.pageNumber*this.pageSize)
           // TODO - recheck condition
           .filter(`isSearchable = 1 AND (discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
           // TODO - create a variable for this
-          .sort("-isActive","saree_position",`${this.sortBy}`,"-_rank")
+          .sort("-isActive","saree_position","-_rank",`${this.sortBy}`)
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
             {
@@ -209,19 +210,21 @@
           }
           ]);
           this.selectedFilters.forEach((ele:any)=>{
-            // TODO - avoid repeated condition
-            if(ele.type==="text" && ele.selected?.length >0){
-              query=query.textFacetFilters(ele.field,ele.selected);
-            }
-            else if(ele.type==="numeric" && ele.selected?.length>0){
-              ele.selected.forEach((range:any)=>{
-                query=query.numericFacetFilters(ele.field,range[0],range[1]);
-              })
+            // TODO - avoid repeated condition -> Done
+            if(ele.selected?.length>0){
+              if(ele.type==="text" ){
+                searchClient.textFacetFilters(ele.field,ele.selected);
+              }
+              else if(ele.type==="numeric"){
+                ele.selected.forEach((range:any)=>{
+                  searchClient.numericFacetFilters(ele.field,range[0],range[1]);
+                })
+              }
             }
           })
 
           // TODO: totalhits, isLoadMoreVisible, productResults
-          this.fetchedRawData = await query.search(`${this.searchQuery}`,"KSNQ58MRXELY5JCX767TDSA1");
+          this.fetchedRawData = await searchClient.search(`${this.searchQuery}`,collectionId);
         }
         catch(er){
           console.log(er);
@@ -307,9 +310,6 @@
   },
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  },
-  skipCountFunction(){
-    this.skipCount++;
   },
       // TODO: remove the single use variable
   handleScroll(){
@@ -502,7 +502,7 @@ isDeviceTablet(){
         }
       }
       ,
-      skipCount:{
+      pageNumber:{
         handler(){
           this.fetchData(true);
         }
@@ -523,7 +523,7 @@ isDeviceTablet(){
     computed: {
     productRemaining() {
       if (!this.fetchedRawData) return false;
-      return (this.fetchedRawData.totalHits - 32 - (this.skipCount * 32)) < 32;
+      return (this.fetchedRawData.totalHits - 32 - (this.pageNumber * 32)) < 32;
   },
   selectedFilterCount(){
     let total=this.activeBit?1:0;
@@ -1104,7 +1104,7 @@ isDeviceTablet(){
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
     <a class="">
-      <div v-if="!isLoading && !productRemaining" @click="skipCountFunction()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
+      <div v-if="!isLoading && !productRemaining" @click="pageNumber++" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
         LOAD MORE 
       </div>
       <div v-if="!isLoading && productRemaining"  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
