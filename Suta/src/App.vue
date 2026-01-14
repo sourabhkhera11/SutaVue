@@ -46,65 +46,74 @@
         activeBit:false as boolean,
         filters:[
           {
-          "name":"Price",
-          "field":"discounted_price",
-          "selected":[],
-          "type":"numeric",
-          values: []
+          label:"Price",
+          field:"discounted_price",
+          selected:[],
+          type:"numeric",
+          isOpen:false
         },
         {
-          "name":"Discount",
-          "field":"discount",
-          "selected":[],
-          "type":"numeric"
+          label:"Discount",
+          field:"discount",
+          selected:[],
+          type:"numeric",
+          isOpen:false
         },
         {
-          "name":"Category",
-          "field":"product_type",
-          "selected":[],
-          "type":"text"
+          label:"Category",
+          field:"product_type",
+          selected:[],
+          type:"text",
+          isOpen:false
         },
         {
-          "name":"Blouse Piece",
-          "field":"st_blousetype",
-          "selected":[],
-          "type":"text"
+          label:"Blouse Piece",
+          field:"st_blousetype",
+          selected:[],
+          type:"text",
+          isOpen:false
         },
       {
-          "name":"Size",
-          "field":"size",
-          "selected":[],
-          "type":"text"
+          label:"Size",
+          field:"size",
+          selected:[],
+          type:"text",
+          isOpen:false
         },
       {
-          "name":"Colour",
-          "field":"colour",
-          "selected":[],
-          "type":"text"
+          label:"Colour",
+          field:"colour",
+          selected:[],
+          type:"text",
+          isOpen:false
         },
       {
-          "name":"Fabric",
-          "field":"fabric",
-          "selected":[],
-          "type":"text"
+          label:"Fabric",
+          field:"fabric",
+          selected:[],
+          type:"text",
+          isOpen:false
         },
       {
-          "name":"Occasion",
-          "field":"st_occasion",
-          "selected":[],
-          "type":"text"
+          label:"Occasion",
+          field:"st_occasion",
+          selected:[],
+          type:"text",
+          isOpen:false
         },
       {
-          "name":"Technique",
-          "field":"st_technique",
-          "selected":[],
-          "type":"text"
+          label:"Technique",
+          field:"st_technique",
+          selected:[],
+          type:"text",
+          isOpen:false
         },
       {
-          "name":"Pattern",
-          "field":"st_pattern",
-          "selected":[],
-          "type":"text"
+          label:"Pattern",
+          field:"st_pattern",
+          selected:[],
+          type:"text",
+          isOpen:false
         },] as Record<string,any>[],
         // TODO - remove this and manage the functionality with filters variable
         selectedFilters:[] as Record<string,any>[],
@@ -257,7 +266,7 @@
         this.autosuggestionResult=this.autosuggestionRawData.results;
       
       },
-      // TODO: remove this and handle from filter variable
+      // TODO:(toggle) remove this and handle from filter variable->Done
       toggle(id:string):void{
         this.visibleStates[id]=!this.visibleStates[id];
       },
@@ -875,16 +884,16 @@ isDeviceTablet(){
 <div class="Fields">
   <div v-for="item in filters" >
     <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
-      <div   @click="toggle(item.name)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
-        <h3 class="st-text-[15px] " >{{item.name}}</h3>
+      <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
+        <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
           <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
-          <svg @click="toggle(item.name)" :class="{'st-rotate-180':visibleStates[item.name]}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+          <svg :class="{'st-rotate-180':item.isOpen}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
         </svg></span>
       </div>
-      <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
-        <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+      <div v-if="item.isOpen" class=" st-transition-all st-duration-300 st-ease-in-out">
+        <ul v-if="item.type==='numeric' && item.label==='Price'" class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
@@ -900,7 +909,7 @@ isDeviceTablet(){
             </div>
           </li>
         </ul>
-        <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body st-flex-col  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+        <ul v-else-if="item.type==='numeric' && item.label==='Discount'" class="st-widget-body st-flex-col  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
@@ -992,16 +1001,16 @@ isDeviceTablet(){
     <div class="Fields">
   <div v-for="item in filters" >
     <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
-      <div   @click="toggle(item.name)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
-        <h3 class="st-text-[15px] " >{{item.name}}</h3>
+      <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
+        <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
           <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
-          <svg @click="toggle(item.name)" :class="{'st-rotate-180':visibleStates[item.name]}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+          <svg :class="{'st-rotate-180':item.isOpen}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
         </svg></span>
       </div>
-      <div v-if="visibleStates[item.name]" class=" st-transition-all st-duration-300 st-ease-in-out">
-        <ul v-if="item.type==='numeric' && item.name==='Price'" class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+      <div v-if="item.isOpen" class=" st-transition-all st-duration-300 st-ease-in-out">
+        <ul v-if="item.type==='numeric' && item.label==='Price'" class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
@@ -1017,7 +1026,7 @@ isDeviceTablet(){
             </div>
           </li>
         </ul>
-        <ul v-else-if="item.type==='numeric' && item.name==='Discount'" class="st-widget-body st-flex-col  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+        <ul v-else-if="item.type==='numeric' && item.label==='Discount'" class="st-widget-body st-flex-col  st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
@@ -1063,13 +1072,13 @@ isDeviceTablet(){
       </div>
 
       <template v-for="(fields, index) in selectedFilters">
-        <div v-for="(items, subIndex) in fields.selected" :key="fields.name + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
+        <div v-for="(items, subIndex) in fields.selected" :key="fields.label + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
           
-          <div v-if="fields.type==='numeric' && fields.name==='Price'" class="tag-content">
+          <div v-if="fields.type==='numeric' && fields.label==='Price'" class="tag-content">
             <span>₹{{ items[0] }}.00</span> - <span>₹{{ items[1] }}.00</span>
           </div>
           
-          <div v-else-if="fields.type==='numeric' && fields.name==='Discount'" class="tag-content">
+          <div v-else-if="fields.type==='numeric' && fields.label==='Discount'" class="tag-content">
             <span>{{ items[0] }}%</span> And <span>Above</span>
           </div>
           
