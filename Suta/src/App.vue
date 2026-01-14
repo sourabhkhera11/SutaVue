@@ -14,8 +14,28 @@
         fetchedRawData: {} as Record<string,any>,
         products:{} as Record<any,any>,
         sortBy:"" as string,
-        // TODO - Convert this to array of objects  
-        sortList:["Price: Low to High","Price: High to Low","Discount: High to Low","Date: Old to New","Date: New to Old"] as Array<string>,
+        // TODO - Convert this to array of objects -> Done + all implimentation
+        sortList:[
+          {
+            label:"Price: Low to High",
+            field:"discounted_price"
+          },
+          {
+            label:"Price: High to Low",
+            field:"-discounted_price"
+          },
+          {
+            label:"Discount: High to Low",
+            field:"-discount"
+          },
+          {
+            label:"Date: Old to New",
+            field:"created_at"
+          },
+          {
+            label:"Date: New to Old",
+            field:"-created_at"
+          },] as Array<any>,
         // TODO - Merge these three with filters variable, and use only single variable for filtering
         textFilterFields:{} as Record<string,any>,
         numericFilterFields:{} as Record<string,any>,
@@ -112,7 +132,6 @@
     },
     methods:{
       async fetchData(isLoadMore:boolean=false):Promise<void>{
-        window
         this.isLoading=true;
         try{
 
@@ -238,65 +257,9 @@
         this.autosuggestionResult=this.autosuggestionRawData.results;
       
       },
-      sortByWho(element:string):void{
-        switch (element) {
-            case "Price: Low to High":
-              this.sortBy='discounted_price';
-              break;
-            case "Price: High to Low":
-              this.sortBy='-discounted_price';
-              break;
-            case "Discount: High to Low":
-              this.sortBy='-discount';
-              break;
-            case "Date: Old to New":
-              this.sortBy="created_at";
-              break;
-            case "Date: New to Old":
-              this.sortBy="-created_at";
-              break;
-            default:
-              this.sortBy="";
-              break;
-          }
-          this.fetchData(false);
-      },
       // TODO: remove this and handle from filter variable
       toggle(id:string):void{
         this.visibleStates[id]=!this.visibleStates[id];
-      },
-      // TODO: remove this and handle from filter variable
-      heading(label:string):string{
-        switch (label) {
-          case "discounted_price":
-            return "Price";
-            break;
-          case "discount":
-            return "Discount";
-            break;
-          case "product_type":
-            return "Category";
-            break;
-          case "st_blousetype":
-            return "Blouse Piece";
-            break;
-          case "st_occasion":
-            return "Occasion";
-            break;
-          case "st_technique":
-            return "Technique"
-            break;
-          case "st_pattern":
-            return "Pattern"
-            break;
-          default:
-            return label.charAt(0)?.toUpperCase()+label.slice(1);
-            break;
-        }
-      },
-      // TODO: remove this
-      display():void{
-        console.log(this.searchQuery);
       },
       // TODO: remove this and handle from filter variable
       isRangeSelected(selectedArray:any[], min:number, max:number) {
@@ -490,7 +453,7 @@ isDeviceTablet(){
       // this.fetchData(false);
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
-      document.querySelector('input[name=st]').addEventListner('keyup', inputHandler)
+      // document.querySelector('input[name=st]').addEventListner('keyup', inputHandler)
       this.handleScroll();
       
       // window.addEventListener('resize', this.handleResize);
@@ -857,8 +820,8 @@ isDeviceTablet(){
                 </div>
     
     <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
-      <li @click="sortByWho('default')" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
-      <li v-for="(item,index) in sortList" :key="index" @click="sortByWho(item)" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item }}</li>
+      <li @click="sortBy='',fetchData(false)" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <li v-for="(item,index) in sortList" :key="index" @click="sortBy=item.field,fetchData(false)" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
   </span>
             </div>
@@ -984,8 +947,8 @@ isDeviceTablet(){
   <span @click="mobileSortToggle=false" class="closeFilter st-block st-text-[30px] st-top-[5px] st-text-black st-absolute st-z-[9] st-right-[15px]">×</span>
   <label  class="!st-text-[16.0004px] st-font-normal st-block st-pb-[14px] st-mx-[-20px] st-mb-[20px] st-border-b-[1px] st-border-solid st-border-[#e7e7e7]">Sort by</label>
     <ul class="list st-m-0 st-list-none">
-      <li @click="sortByWho('default'),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
-      <li v-for="(item,index) in sortList" :key="index" @click="sortByWho(item),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item }}</li>
+      <li @click="sortBy='',fetchData(false),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <li v-for="(item,index) in sortList" :key="index" @click="sortBy=item.field, fetchData(false),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
 </div>
         </div>
