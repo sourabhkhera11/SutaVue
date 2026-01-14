@@ -10,22 +10,18 @@
     },
     data(){
       return{
-        // TODO - Rename them for better readability
+        // TODO - Rename them for better readability ->Done
         fetchedRawData: {} as Record<string,any>,
-        result:{} as Record<string,any>,
+        products:{} as Record<any,any>,
         sortBy:"" as string,
         // TODO - Convert this to array of objects  
         sortList:["Price: Low to High","Price: High to Low","Discount: High to Low","Date: Old to New","Date: New to Old"] as Array<string>,
-        // TODO - remove unused variables
-        rawData:{} as Record<string,any>,
         // TODO - Merge these three with filters variable, and use only single variable for filtering
         textFilterFields:{} as Record<string,any>,
         numericFilterFields:{} as Record<string,any>,
         visibleStates:{
           "available":false,
         } as Record<string,boolean>,
-        // TODO - remove unused variables
-        productType:[] as string[],
         // TODO - Rename "name" with "label"
         activeBit:false as boolean,
         filters:[
@@ -34,6 +30,7 @@
           "field":"discounted_price",
           "selected":[],
           "type":"numeric",
+          values: []
         },
         {
           "name":"Discount",
@@ -95,20 +92,19 @@
         isLoading:false as boolean,
         showUp:false as boolean,
         showDown:true as boolean,
-        // TODO - use computed instead
-        // layoutRatio:getInitialRatio(),
+        // TODO - use computed instead->Done
         layoutClass:"" as string,
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
-        // TODO - rename to autocompleteSearchResults
-        topResult: {} as Record<string,any>,
+        // TODO - rename to autocompleteSearchResults->Done
+        autocompleteSearchResults: {} as Record<string,any>,
         searchQuery:"" as string,
-        // TODO - rename to autocompleteSearch...
-        searchFieldToggle:false as boolean,
-        // TODO - rename to a better name
-        autoData:{} as Record<string,any>,
-        autoResult:{} as Record<string,any>,
+        // TODO - rename to autocompleteSearch... ->Done
+        autocompleteSearchToggle:false as boolean,
+        // TODO - rename to a better name ->Done
+        autosuggestionRawData:{} as Record<string,any>,
+        autosuggestionResult:{} as Record<string,any>,
         popularChoice:"AND showInSuggestion = 1" as string,
         searchToggle:true as boolean,
         isRestoring:false as boolean,
@@ -204,11 +200,11 @@
           this.isLoading=false;
         }
         if(isLoadMore){
-          this.result=[...this.result,...this.fetchedRawData.results];
+          this.products=[...this.products,...this.fetchedRawData.results];
         }
         else{
-          this.result=this.fetchedRawData.results;
-          this.topResult=this.result.slice(0,6);
+          this.products=this.fetchedRawData.results;
+          this.autocompleteSearchResults=this.products.slice(0,6);
         }
         // TODO - use filters variable instead
         this.textFilterFields=this.fetchedRawData.textFacets;
@@ -231,17 +227,13 @@
           .fields("id","displayLabel")
           .count(10)
           .filter(`isSearchable = 1  ${this.popularChoice}`)
-          this.autoData = await query.search(`${this.searchQuery}`,"X7PKBZVRIHHER13JKQTANV9Y");
+          this.autosuggestionRawData = await query.search(`${this.searchQuery}`,"X7PKBZVRIHHER13JKQTANV9Y");
         }
         catch(er){
           console.log(er);
         }
-        this.autoResult=this.autoData.results;
-        // console.log(this.autoData);
-        
-        // for (const element of this.autoResult) {
-        //   console.log(element.displayLabel);
-        // }
+        this.autosuggestionResult=this.autosuggestionRawData.results;
+      
       },
       sortByWho(element:string):void{
         switch (element) {
@@ -531,7 +523,7 @@ isDeviceTablet(){
           this.updateURL();
         }
       },
-    searchFieldToggle(newValue) { 
+    autocompleteSearchToggle(newValue) { 
     if (newValue) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -635,7 +627,7 @@ isDeviceTablet(){
               <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
               <path d="M3.017 20.747C3.783 16.5 7.922 14.25 12 14.25s8.217 2.25 8.984 6.497" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"></path>
             </svg></a></li>
-        <li @click="searchFieldToggle=!searchFieldToggle" class=" md:st-block st-cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
+        <li @click="autocompleteSearchToggle=!autocompleteSearchToggle" class=" md:st-block st-cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
               <path d="M15.439 15.439L12.6315 12.6314M14.6368 7.81841C14.6368 11.5841 11.5841 14.6368 7.81841 14.6368C4.05271 14.6368 1 11.5841 1 7.81841C1 4.05271 4.05271 1 7.81841 1C11.5841 1 14.6368 4.05271 14.6368 7.81841Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg></li>
         <li><a href=""><svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-cart" viewBox="0 0 24 24">
@@ -647,7 +639,7 @@ isDeviceTablet(){
     </nav>
   </div>
 </header>
- <section @click.self="searchFieldToggle=false" v-if="searchFieldToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
+ <section @click.self="autocompleteSearchToggle=false" v-if="autocompleteSearchToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
     <div   class=" st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
    <div class=" st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
       <span class=" st-icon-search st-translate-y-[7px]">
@@ -655,16 +647,16 @@ isDeviceTablet(){
             <path d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"></path>
          </svg>
       </span>
-      <input @input="fetchData(false)" @keyup.enter="searchFieldToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
+      <input @input="fetchData(false)" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
       <span v-show="searchQuery" @click="searchQuery='', fetchData(false)" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
-      <span @click="searchFieldToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
+      <span @click="autocompleteSearchToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
             <path class="active-path" d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z" data-old_color="#000000" data-original="#000000" fill="#4E3830"></path>
          </svg>
       </span>
    </div>
     </div>
-    <section v-if="autoResult.length===0" class="lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
+    <section v-if="autosuggestionResult.length===0" class="lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
   <p class="st-font-[600] st-my-[10px]">No Results found for '{{searchQuery}}'</p>
   <p class="st-mb-[10px]">Try Searching some other keywords</p>
     </section>
@@ -674,7 +666,7 @@ isDeviceTablet(){
       <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span></div>
       <div>
          <ul class="sm:st-gap-[10] st-trending-list st-inline-flex st-flex-wrap md:st-flex-row st-gap-2.5 st-m-0 st-p-0 st-w-full st-flex-col">
-            <li v-for="ele in autoResult" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
+            <li v-for="ele in autosuggestionResult" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
               <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span></span>
             </li>
          </ul>
@@ -686,7 +678,7 @@ isDeviceTablet(){
       </div>
       <div>
          <ul class="sm:st-gap-2.5 st-trending-list st-inline-flex st-flex-wrap st-flex-col st-gap-2.5 st-m-0 st-p-0 st-w-full">
-            <li v-for="ele in autoResult.slice(0,5)" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
+            <li v-for="ele in autosuggestionResult.slice(0,5)" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
               <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span>
             </span></li>
          </ul>
@@ -698,16 +690,16 @@ isDeviceTablet(){
         <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">Search Results</span></div>
       <!---->
       <div class="st-row st-cols-2 st-cols-sm-2 st-cols-md-4 st-product-wrapper st-flex st-flex-nowrap st-overflow-y-auto">
-         <div v-for="(value,index) in topResult" :key="index" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" >
+         <div v-for="(value,index) in autocompleteSearchResults" :key="index" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" >
             <card  :key="value"  :user-data="value" :ratio="layoutClass"/>
          </div>
       </div>
    </div>
     </div>
-    <div v-if="autoResult.length>0" class="st-row st-flex st-m-[0] ">
+    <div v-if="autosuggestionResult.length>0" class="st-row st-flex st-m-[0] ">
    <div class="st-left-col st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] !st-block"></div>
    <div class="st-right-col st-right-col st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
-      <div @click="searchFieldToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{fetchedRawData.totalHits}}</span>) product<span style="">s</span></span></div>
+      <div @click="autocompleteSearchToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{fetchedRawData.totalHits}}</span>) product<span style="">s</span></span></div>
    </div>
     </div>
 </section>
@@ -1118,7 +1110,7 @@ isDeviceTablet(){
 </div>
 </div>
                 <div class="productlist st-flex st-flex-wrap md:st-mx-[-15px] st-mx-[2.5px] " >
-                  <card v-for="(value,index) in result" :key="index" :class="layoutRatio,layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
+                  <card v-for="(value,index) in products" :key="index" :class="layoutRatio,layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
