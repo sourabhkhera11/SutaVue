@@ -72,3 +72,18 @@ body{
     margin: auto;
   }
 }
+.oneByone{
+  flex-basis: 100%;
+}
+.twoBytwo{
+  flex-basis: 50%;
+}
+.threeBythree{
+  flex-basis: 33.33%;
+}
+.fourByfour{
+  flex-basis: 25%;
+}
+.sixBysix{
+  flex-basis: 16.66%;
+}

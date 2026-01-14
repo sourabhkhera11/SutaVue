@@ -1,16 +1,9 @@
 <script  lang="ts">
   import { defineComponent } from 'vue';
   import SearchClient from "@gaspl/search-client";
-  import { transform } from 'typescript';
   import card from './components/card.vue';
   
-  // TODO - declare it as a computed property & also create an isDeviceMobile()
-  function getInitialRatio(){
-      if (typeof window !== 'undefined') {
-        return window.innerWidth >= 1024 ? '33.33%' : '50%';
-      }
-      return '50%'; 
-  };
+  // TODO - declare it as a computed property & also create an isDeviceMobile() ->Done
   export default defineComponent({
     components:{
       card
@@ -18,7 +11,7 @@
     data(){
       return{
         // TODO - Rename them for better readability
-        data: {} as Record<string,any>,
+        fetchedRawData: {} as Record<string,any>,
         result:{} as Record<string,any>,
         sortBy:"" as string,
         // TODO - Convert this to array of objects  
@@ -103,7 +96,8 @@
         showUp:false as boolean,
         showDown:true as boolean,
         // TODO - use computed instead
-        layoutRatio:getInitialRatio(),
+        // layoutRatio:getInitialRatio(),
+        layoutClass:"" as string,
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
@@ -200,7 +194,7 @@
               })
             }
           })
-          this.data = await query.search(`${this.searchQuery}`,"KSNQ58MRXELY5JCX767TDSA1");
+          this.fetchedRawData = await query.search(`${this.searchQuery}`,"KSNQ58MRXELY5JCX767TDSA1");
         }
         catch(er){
           console.log(er);
@@ -210,16 +204,16 @@
           this.isLoading=false;
         }
         if(isLoadMore){
-          this.result=[...this.result,...this.data.results];
+          this.result=[...this.result,...this.fetchedRawData.results];
         }
         else{
-          this.result=this.data.results;
+          this.result=this.fetchedRawData.results;
           this.topResult=this.result.slice(0,6);
         }
         // TODO - use filters variable instead
-        this.textFilterFields=this.data.textFacets;
+        this.textFilterFields=this.fetchedRawData.textFacets;
         // console.log(this.textFilterFields);
-        this.numericFilterFields=this.data.numericFacets;
+        this.numericFilterFields=this.fetchedRawData.numericFacets;
         // console.log(this.numericFilterFields);
         // for (const element of this.result) {
         //   console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive+" "+element.collections.find((ele:any)=> ele==='bestseller sarees' || ele==="bestsellers" )+" "+element._rank);
@@ -358,25 +352,25 @@
 feedRatio(grid:string):void{
   switch (grid) {
     case "1by1":
-      this.layoutRatio="100%";
+      this.layoutClass="oneByone";
       break;
     case "2by2":
-      this.layoutRatio="50%";
+      this.layoutClass="twoBytwo";
       break;
     case "3by3":
-      this.layoutRatio= "33.33%";
+      this.layoutClass= "threeBythree";
       break;
     case "4by4":
-      this.layoutRatio= "25%";
+      this.layoutClass= "fourByfour";
       break;
     case "6by6":
-      this.layoutRatio= "16.66%";
+      this.layoutClass= "sixBysix";
       break;
     default:
-      this.layoutRatio= "33.33%";
+      this.layoutClass= "threeBythree";
       break;
   }
-  console.log(this.layoutRatio);
+  // console.log(this.layoutRatio);
 },
 getSortedSubItems(item:any) {
     let sourceList = [];
@@ -405,9 +399,9 @@ checkSelected(item:any, subItem:any) {
       return item.selected.includes(subItem.label); 
     }
   },
-handleResize() {
-      this.layoutRatio = getInitialRatio();
-},
+// handleResize() {
+//       this.layoutRatio = getInitialRatio();
+// },
 checkSearchQuery(){
   if(this.searchQuery!=""){
     this.searchToggle=false;
@@ -477,7 +471,13 @@ restoreState() {
     this.$nextTick(() => {
       this.isRestoring = false;
     });
-  }
+  },
+isDeviceMobile(){
+  return window.matchMedia("(max-width : 767px)").matches;
+},
+isDeviceTablet(){
+  return window.matchMedia("(min-width : 767px) and (max-width : 1024px)").matches;
+}
     },
     mounted(){
       this.searchData();
@@ -485,12 +485,12 @@ restoreState() {
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
       this.handleScroll();
-      window.addEventListener('resize', this.handleResize);
+      // window.addEventListener('resize', this.handleResize);
       window.addEventListener('popstate', this.restoreState);
     },
     beforeDestroy(){
       window.removeEventListener("scroll",this.handleScroll);
-      window.removeEventListener('resize', this.handleResize);
+      // window.removeEventListener('resize', this.handleResize);
     },
     beforeUnmount(){
       window.removeEventListener('popstate', this.restoreState);
@@ -541,8 +541,8 @@ restoreState() {
     },
     computed: {
     productRemaining() {
-      if (!this.data) return false;
-      return (this.data.totalHits - 32 - (this.skipCount * 32)) < 32;
+      if (!this.fetchedRawData) return false;
+      return (this.fetchedRawData.totalHits - 32 - (this.skipCount * 32)) < 32;
   },
   selectedFilterCount(){
     let total=this.activeBit?1:0;
@@ -550,6 +550,14 @@ restoreState() {
       return sum+(item.selected?item.selected.length:0);
     },0);
     return total;
+  },
+  layoutRatio(){
+    if(this.isDeviceMobile() || this.isDeviceTablet()){
+      this.layoutClass= "twoBytwo";
+      return "twoBytwo";
+    }
+      this.layoutClass="threeBythree";
+      return "threeBythree"
   }
 },
   })
@@ -607,7 +615,7 @@ restoreState() {
         <li class="md:st-hidden">
           <a title="App Download" target="_blank" class="Header__Icon Icon-Wrapper Icon-Wrapper--clickable suta_download hide-on-desktop" href="https://onelink.to/k35vtm">
             
-            <svg class="st-w-[35px] st-h-[26px]" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840.57 500">
+            <svg class="st-w-[35px] st-h-[26px]" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840.57 500">
               <g>
                 <rect class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x="30" y="25" width="303.16" height="450" rx="30.86" ry="30.86"></rect>
                 <line class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x1="181.58" y1="119.96" x2="181.58" y2="354.65"></line>
@@ -683,15 +691,15 @@ restoreState() {
             </span></li>
          </ul>
       </div>
-      <div class="no-trending-search-text" style="display: none;"><span data-v-270509ef="" class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>
+      <div class="no-trending-search-text" style="display: none;"><span  class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>
    </div>
    <div class="sidebar st-col-lg-9 st-col-md-9 st-right-col md:st-w-[75%]  st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
       <div class="st-trending-header st-mb-[10px]">
         <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">Search Results</span></div>
       <!---->
       <div class="st-row st-cols-2 st-cols-sm-2 st-cols-md-4 st-product-wrapper st-flex st-flex-nowrap st-overflow-y-auto">
-         <div v-for="(value,index) in topResult" :key="index" data-v-16186602="" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" data-product-id="4621591969857">
-            <card  :key="value"  :user-data="value" :ratio="layoutRatio"/>
+         <div v-for="(value,index) in topResult" :key="index" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" >
+            <card  :key="value"  :user-data="value" :ratio="layoutClass"/>
          </div>
       </div>
    </div>
@@ -699,7 +707,7 @@ restoreState() {
     <div v-if="autoResult.length>0" class="st-row st-flex st-m-[0] ">
    <div class="st-left-col st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] !st-block"></div>
    <div class="st-right-col st-right-col st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
-      <div @click="searchFieldToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{data.totalHits}}</span>) product<span style="">s</span></span></div>
+      <div @click="searchFieldToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{fetchedRawData.totalHits}}</span>) product<span style="">s</span></span></div>
    </div>
     </div>
 </section>
@@ -790,7 +798,7 @@ restoreState() {
       <section class="mobile">
         <div class="lg:st-hidden">
           <div  class=" st-w-full st-text-[14px]  md:st-border-t md:st-border-[#e8e8e1]">
-            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ data.totalHits }}</span><span class=""> Products</span><span class=""></span>
+            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ fetchedRawData.totalHits }}</span><span class=""> Products</span><span class=""></span>
             </span>
             </div>
           </div>
@@ -807,27 +815,27 @@ restoreState() {
               </div>
             </div>
             <div class="sideicons st-px-[20px] st-py-[13px]  st-flex st-gap-[16px] st-leading-[1.5] st-cursor-pointer  ">
-              <span class=" lg:st-hidden st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('1by1')" :class="layoutRatio==='100%'?'st-opacity-100': 'st-opacity-30'">
+              <span class=" lg:st-hidden st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('1by1')" :class="layoutClass==='oneByone'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M0 0h18v18H0z"></path></svg>
               </span>
-              <span class="lg:st-hidden st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('2by2')" :class="layoutRatio==='50%'?'st-opacity-100': 'st-opacity-30'">
+              <span class="lg:st-hidden st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('2by2')" :class="layoutClass==='twoBytwo'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="#000000" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path>
                 </svg>
               </span>
-              <span class="st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('3by3')" :class="layoutRatio==='33.33%'?'st-opacity-100': 'st-opacity-30'">
+              <span class="st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('3by3')" :class="layoutClass==='threeBythree'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path></svg>
               </span>
-              <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('4by4')" :class="layoutRatio==='25%'?'st-opacity-100': 'st-opacity-30'">
+              <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('4by4')" :class="layoutClass==='fourByfour'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="currentColor"d="M0 0h4v4H0zM0 7h4v4H0zM0 14h4v4H0zM7 0h4v4H7zM7 7h4v4H7zM7 14h4v4H7zM14 0h4v4h-4zM14 7h4v4h-4zM14 14h4v4h-4z"></path>
                 </svg>
                 </span>
-                <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('6by6')" :class="layoutRatio==='16.66%'?'st-opacity-100': 'st-opacity-30'">
-                  <svg data-v-da40671c="" role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
+                <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('6by6')" :class="layoutClass==='sixBysix'?'st-opacity-100': 'st-opacity-30'">
+                  <svg  role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
               </span>
             </div>
-            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ this.data.totalHits }}</span><span>products</span></span>
+            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ fetchedRawData.totalHits }}</span><span>products</span></span>
             </div>
 
             <div class="sortby st-hidden lg:st-block st-py-[13px] st-border-l st-border-[#e8e8e1] st-group st-relative st-text-[11px] st-flex st-items-center st-gap-[0px] st-align-middle st-justify-center st-text-[#5c5c5c] st-cursor-pointer">
@@ -839,7 +847,7 @@ restoreState() {
                 </svg>
                 </div>
     
-    <ul id="sortList" data-v-92e5ae27="" class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
+    <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
       <li @click="sortByWho('default')" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
       <li v-for="(item,index) in sortList" :key="index" @click="sortByWho(item)" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item }}</li>
     </ul>
@@ -854,8 +862,8 @@ restoreState() {
   <div class="mobilesearch hidden-desktop st-z-[500] st-inline-block lg:st-hidden st-fixed st-top-[0] st-w-[75%] st-left-[unset] st-right-[-100%] st-h-full st-bg-white st-opacity-0 st-z-[6] open st-opacity-100 st-right-[0] st-overflow-auto">
     <div class="filterHeader st-w-[inherit] st-bg-white st-flex st-justify-between st-items-center st-p-[16px] st-leading-[20px] st-text-[14px] st-text-[#333333] st-font-semibold st-fixed st-z-[1] st-border st-border-solid st-border-[#e8e9eb] st-uppercase" id="mobileHeader">
       <div class="mobile-filter-title"> Filter by</div>
-      <svg @click="mobileFilterToggle=false" data-v-da40671c="" data-v-0cd7b26b="" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="st-cross-btn st-w-[20px] st-fill-[#000000]">
-        <path data-v-da40671c="" data-v-0cd7b26b="" d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"></path>
+      <svg @click="mobileFilterToggle=false"  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="st-cross-btn st-w-[20px] st-fill-[#000000]">
+        <path   d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"></path>
       </svg>
     </div>
     <div class="st-sidebar-content st-relative st-top-[55px] st-px-[15px] lg:st-px-[0] st-pb-[100px] lg:st-pb-[0] lg:st-top-[-20px] st-right-0 st-left-0 st-bottom-0">
@@ -955,7 +963,7 @@ restoreState() {
 </div> 
 </div>
 <div  class="apply-all st-fixed st-m-0 st-left-[unset] st-right-0 st-bottom-0 st-w-[inherit] st-bg-white st-flex st-items-center st-justify-center st-text-center st-border-t-[1px] st-border-solid st-border-[#eaeaec] st-p-[16px] st-gap-[8px]">
-  <span data-v-da40671c="" @click="clearAllFiler() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
+  <span @click="clearAllFiler() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
   <span @click="mobileFilterToggle=false" class="apply-btn st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">View Results</span>
 </div>
 </div>
@@ -1110,7 +1118,7 @@ restoreState() {
 </div>
 </div>
                 <div class="productlist st-flex st-flex-wrap md:st-mx-[-15px] st-mx-[2.5px] " >
-                  <card v-for="(value,index) in result" :key="index" :style="{flexBasis: layoutRatio}" class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutRatio"/>
+                  <card v-for="(value,index) in result" :key="index" :class="layoutRatio,layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
