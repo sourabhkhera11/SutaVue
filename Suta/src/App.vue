@@ -326,30 +326,6 @@
       behavior:'smooth'
     });
   },
-      // TODO: try to improve logic
-feedRatio(grid:string):void{
-  switch (grid) {
-    case "1by1":
-      this.layoutClass="oneByone";
-      break;
-    case "2by2":
-      this.layoutClass="twoBytwo";
-      break;
-    case "3by3":
-      this.layoutClass= "threeBythree";
-      break;
-    case "4by4":
-      this.layoutClass= "fourByfour";
-      break;
-    case "6by6":
-      this.layoutClass= "sixBysix";
-      break;
-    default:
-      this.layoutClass= "threeBythree";
-      break;
-  }
-  // console.log(this.layoutRatio);
-},
       // TODO: do this while updating filters variable
 getSortedSubItems(item:any) {
     let sourceList = [];
@@ -787,23 +763,23 @@ isDeviceTablet(){
               </div>
             </div>
             <div class="sideicons st-px-[20px] st-py-[13px]  st-flex st-gap-[16px] st-leading-[1.5] st-cursor-pointer  ">
-              <span class=" lg:st-hidden st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('1by1')" :class="layoutClass==='oneByone'?'st-opacity-100': 'st-opacity-30'">
+              <span class=" lg:st-hidden st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='oneByone'" :class="layoutClass==='oneByone'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M0 0h18v18H0z"></path></svg>
               </span>
-              <span class="lg:st-hidden st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('2by2')" :class="layoutClass==='twoBytwo'?'st-opacity-100': 'st-opacity-30'">
+              <span class="lg:st-hidden st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='twoBytwo'" :class="layoutClass==='twoBytwo'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="#000000" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path>
                 </svg>
               </span>
-              <span class="st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('3by3')" :class="layoutClass==='threeBythree'?'st-opacity-100': 'st-opacity-30'">
+              <span class="st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='threeBythree'" :class="layoutClass==='threeBythree'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path></svg>
               </span>
-              <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('4by4')" :class="layoutClass==='fourByfour'?'st-opacity-100': 'st-opacity-30'">
+              <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='fourByfour'" :class="layoutClass==='fourByfour'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="currentColor"d="M0 0h4v4H0zM0 7h4v4H0zM0 14h4v4H0zM7 0h4v4H7zM7 7h4v4H7zM7 14h4v4H7zM14 0h4v4h-4zM14 7h4v4h-4zM14 14h4v4h-4z"></path>
                 </svg>
                 </span>
-                <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="feedRatio('6by6')" :class="layoutClass==='sixBysix'?'st-opacity-100': 'st-opacity-30'">
+                <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='sixBysix'" :class="layoutClass==='sixBysix'?'st-opacity-100': 'st-opacity-30'">
                   <svg  role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
               </span>
             </div>
