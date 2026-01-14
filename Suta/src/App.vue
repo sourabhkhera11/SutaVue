@@ -143,10 +143,11 @@
         searchToggle:true as boolean,
         isRestoring:false as boolean,
         pageSize:32 as number,
+        totalHits:this.fetchedRawData?.totalHits as any,
       };
     },
     methods:{
-      async fetchData(isLoadMore:boolean=false):Promise<void>{
+      async fetchData():Promise<void>{
         this.isLoading=true;
         try{
           searchClient
@@ -233,7 +234,7 @@
         finally{
           this.isLoading=false;
         }
-        if(isLoadMore){
+        if(this.pageNumber>0){
           this.products=[...this.products,...this.fetchedRawData.results];
         }
         else{
@@ -392,7 +393,7 @@ checkSearchQuery(){
 },
 fillSuggestion(element:string){
   this.searchQuery=element;
-  this.fetchData(false);
+  this.fetchData();
 },
 updateURL(){
   if (this.isRestoring) return;
@@ -445,7 +446,7 @@ restoreState() {
     this.selectedFilters=this.filters.filter((ele)=>{
             return ele.selected.length>0;
           });
-    this.fetchData(false); 
+    this.fetchData(); 
     this.$nextTick(() => {
       this.isRestoring = false;
     });
@@ -459,7 +460,6 @@ isDeviceTablet(){
     },
     mounted(){
       this.searchData();
-      // this.fetchData(false);
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
       // document.querySelector('input[name=st]').addEventListner('keyup', inputHandler)
@@ -484,14 +484,14 @@ isDeviceTablet(){
           });
           if(this.isRestoring)return;
           this.updateURL();
-          this.fetchData(false);
+          this.fetchData();
         },
         deep:true
       },
       activeBit:{
         handler(){
           this.updateURL();
-          this.fetchData(false);
+          this.fetchData();
         }
       },
       searchQuery:{
@@ -502,11 +502,6 @@ isDeviceTablet(){
         }
       }
       ,
-      pageNumber:{
-        handler(){
-          this.fetchData(true);
-        }
-      },
       sortBy:{
         handler(){
           this.updateURL();
@@ -521,10 +516,6 @@ isDeviceTablet(){
   }
     },
     computed: {
-    productRemaining() {
-      if (!this.fetchedRawData) return false;
-      return (this.fetchedRawData.totalHits - 32 - (this.pageNumber * 32)) < 32;
-  },
   selectedFilterCount(){
     let total=this.activeBit?1:0;
     total+=this.selectedFilters.reduce((sum,item)=>{
@@ -779,7 +770,7 @@ isDeviceTablet(){
       <section class="mobile">
         <div class="lg:st-hidden">
           <div  class=" st-w-full st-text-[14px]  md:st-border-t md:st-border-[#e8e8e1]">
-            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ fetchedRawData.totalHits }}</span><span class=""> Products</span><span class=""></span>
+            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ totalHits }}</span><span class=""> Products</span><span class=""></span>
             </span>
             </div>
           </div>
@@ -816,7 +807,7 @@ isDeviceTablet(){
                   <svg  role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
               </span>
             </div>
-            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ fetchedRawData.totalHits }}</span><span>products</span></span>
+            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ totalHits }}</span><span>products</span></span>
             </div>
 
             <div class="sortby st-hidden lg:st-block st-py-[13px] st-border-l st-border-[#e8e8e1] st-group st-relative st-text-[11px] st-flex st-items-center st-gap-[0px] st-align-middle st-justify-center st-text-[#5c5c5c] st-cursor-pointer">
@@ -1104,10 +1095,10 @@ isDeviceTablet(){
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
     <a class="">
-      <div v-if="!isLoading && !productRemaining" @click="pageNumber++" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
+      <div v-if="!isLoading && !((totalHits - 32 - (pageNumber * 32)) < 32)" @click="pageNumber++ ,fetchData()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
         LOAD MORE 
       </div>
-      <div v-if="!isLoading && productRemaining"  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
+      <div v-if="!isLoading && ((totalHits - 32 - (pageNumber * 32)) < 32)"  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
         RESULTS END HERE 
       </div>
       <div v-if="isLoading"  class="st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-border st-border-black st-text-[13px] st-text-black st-font-[700]">
