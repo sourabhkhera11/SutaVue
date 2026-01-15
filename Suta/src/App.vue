@@ -142,8 +142,8 @@
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
           .count(this.pageSize)
           .skip(this.pageNumber*this.pageSize)
-          .filter(`isSearchable = 1 AND (discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
-          .sort("-isActive","saree_position","-_rank",`${this.sortBy}`)
+          .filter(this.filterQuery())
+          .sort(...this.sortOptionArray())
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
             {
@@ -240,6 +240,24 @@
         this.autosuggestionResult=this.autosuggestionRawData.results;
       
       },
+      filterQuery(){
+        const baseCondition=[
+          "isSearchable = 1",
+          "price>0",
+          "discount>=0"
+        ];
+        if(this.isActive()){
+          baseCondition.push("isActive=1");
+        }
+        return baseCondition.join(" AND ");
+      },
+      sortOptionArray(){
+        const sortFields=["-isActive", "saree_position", "-_rank"];
+        if(this.sortBy){
+          sortFields.push(this.sortBy);
+        }
+        return sortFields;
+      },
       isRangeSelected(selectedArray:any[], min:number, max:number) {
     return selectedArray.some(range => range[0] === min && range[1] === max);
     },  
@@ -259,14 +277,14 @@
         ele.selected.length=0;
       })
     },
-    isActive():string{
+    isActive():boolean{
       const availableFilter=this.filters.find((ele)=>{
         return ele.label==="Availability";
       })
       if(availableFilter && availableFilter.selected.length>0){
-        return "AND isActive=1";
+        return true;
       }
-      return "";
+      return false;
     }
   ,
   removeFilter(selectedArray:any[],item:any){
