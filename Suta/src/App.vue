@@ -284,7 +284,13 @@
     },
       // TODO: remove this and handle from filter variable
     isActive():string{
-      if(this.activeBit){
+      const availableFilter=this.filters.find((ele)=>{
+        return ele.label==="Availability";
+      })
+      if(availableFilter && availableFilter.selected.length>0){
+        return "AND isActive=1";
+      }
+      if(this.activeBit ){
         return "AND isActive=1";
       }
       return "";
@@ -373,9 +379,13 @@ updateURL(){
         const rangeString=filter.selected.map(range=>`${range[0]}-${range[1]}`).join(',');
         params.set(filter.field,rangeString);
       }
+      else if(filter.type==='constant'){
+        params.set('In Stock Only','true');
+      }
       else{
         params.set(filter.field,filter.selected.join(','));
       }
+
     }
   });
   const newUrl=`${window.location.pathname}?${params.toString()}`;
@@ -383,30 +393,33 @@ updateURL(){
 },
 restoreState() {
     this.isRestoring = true;
-    const params = new URLSearchParams(window.location.search);
-    this.activeBit = params.get('inStock') === 'true';
-    const q = params.get('q');
-    if (q) this.searchQuery = q;
-    const s= params.get('s');
-    if(s) this.sortBy=s;
-    this.filters.forEach(filter => {
-      const value = params.get(filter.field);
-      if (value) {
-        if (filter.type === 'numeric') {
-          filter.selected = value.split(',').map(rangeStr => {
-            return rangeStr.split('-').map(Number); 
-          });
-        } else {
-          filter.selected = value.split(',');
-        }
+  const params = new URLSearchParams(window.location.search);
+  let availableF = this.filters.find((ele) => ele.label === 'Availability');
+  if (availableF) {
+    const stockVal = params.get('In Stock Only');
+    availableF.selected = stockVal ? ['In Stock Only'] : [];
+  }
+  this.filters.forEach(filter => {
+    if (filter.label === 'Availability') return; 
+
+    const value = params.get(filter.field);
+    if (value) {
+      if (filter.type === 'numeric') {
+        filter.selected = value.split(',').map(rangeStr => {
+          return rangeStr.split('-').map(Number);
+        });
       } else {
-        filter.selected = [];
+        filter.selected = value.split(',');
       }
-    });
-    this.fetchData(); 
-    this.$nextTick(() => {
-      this.isRestoring = false;
-    });
+    } else {
+      filter.selected = [];
+    }
+  });
+
+  this.fetchData();
+  this.$nextTick(() => {
+    this.isRestoring = false;
+  });
   },
 isDeviceMobile(){
   return window.matchMedia("(max-width : 767px)").matches;
@@ -941,7 +954,7 @@ isDeviceTablet(){
 </div>
     <div class="Fields">
   <div v-for="item in filters" >
-    <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+    <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
@@ -982,6 +995,22 @@ isDeviceTablet(){
             </div>
           </li>
         </ul>
+        <ul v-else-if="item.label==='Availability'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+      <li>
+        <div class="outer-checkbox">
+          <label class="st-flex st-m-0 st-mb-[12px]">
+            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
+            <div
+              class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+              <div
+                class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                In Stock Only
+              </div>
+            </div>
+          </label>
+        </div>
+      </li>
+    </ul>
         <ul v-else class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
                           <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.label"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
