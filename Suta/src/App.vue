@@ -37,12 +37,6 @@
             label:"Date: New to Old",
             field:"-created_at"
           },] as Array<any>,
-        // TODO - Merge these three with filters variable, and use only single variable for filtering
-        textFilterFields:{} as Record<string,any>,
-        numericFilterFields:{} as Record<string,any>,
-        visibleStates:{
-          "available":false,
-        } as Record<string,boolean>,
         filters:[
           {
             label:"Availability",
@@ -55,7 +49,7 @@
           field:"discounted_price",
           selected:[],
           type:"numeric",
-          isOpen:false
+          isOpen:false,
         },
         {
           label:"Discount",
@@ -137,6 +131,8 @@
         searchToggle:true as boolean,
         isRestoring:false as boolean,
         pageSize:32 as number,
+        textFilterFields:{} as Record<string,any>,
+        numericFilterFields:{} as Record<string,any>,
       };
     },
     methods:{
@@ -217,7 +213,6 @@
         }
         catch(er){
           console.log(er);
-          // TODO - Better error handling
         }
         finally{
           this.isLoading=false;
@@ -229,11 +224,8 @@
           this.products=this.fetchedRawData.results;
           this.autocompleteSearchResults=this.products.slice(0,6);
         }
-        // TODO - use filters variable instead
         this.textFilterFields=this.fetchedRawData.textFacets;
-        console.log(this.textFilterFields);
         this.numericFilterFields=this.fetchedRawData.numericFacets;
-        console.log(this.numericFilterFields);
         // for (const element of this.result) {
         //   console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive+" "+element.collections.find((ele:any)=> ele==='bestseller sarees' || ele==="bestsellers" )+" "+element._rank);
         // }
@@ -254,10 +246,6 @@
         }
         this.autosuggestionResult=this.autosuggestionRawData.results;
       
-      },
-      // TODO:(toggle) remove this and handle from filter variable->Done
-      toggle(id:string):void{
-        this.visibleStates[id]=!this.visibleStates[id];
       },
       // TODO: remove this and handle from filter variable
       isRangeSelected(selectedArray:any[], min:number, max:number) {
@@ -280,7 +268,6 @@
         ele.selected.length=0;
       })
     },
-      // TODO: remove this and handle from filter variable
     isActive():string{
       const availableFilter=this.filters.find((ele)=>{
         return ele.label==="Availability";
@@ -311,7 +298,18 @@
       behavior:'smooth'
     });
   },
-      // TODO: do this while updating filters variable
+initialiseFacets(){
+  for(let ele of this.filters){
+    if(ele.type==='numeric'){
+      ele.facets=this.fetchedRawData.numericFacets[ele.field];
+    }
+    else if(ele.type==='text'){
+      ele.facets=this.fetchedRawData.textFacets[ele.field]
+    }
+  }
+  console.log(this.filters);
+  
+},
 getSortedSubItems(item:any) {
     let sourceList = [];
     if (item.type === 'numeric') {
@@ -339,9 +337,6 @@ checkSelected(item:any, subItem:any) {
       return item.selected.includes(subItem.label); 
     }
   },
-// handleResize() {
-//       this.layoutRatio = getInitialRatio();
-// },
 checkSearchQuery(){
   if(this.searchQuery!=""){
     this.searchToggle=false;
@@ -386,6 +381,8 @@ updateURL(){
 restoreState() {
     this.isRestoring = true;
   const params = new URLSearchParams(window.location.search);
+  const q=params.get('q');
+  if(q) this.searchQuery=q;
   let availableF = this.filters.find((ele) => ele.label === 'Availability');
   if (availableF) {
     const stockVal = params.get('In Stock Only');
