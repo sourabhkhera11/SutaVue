@@ -43,7 +43,6 @@
         visibleStates:{
           "available":false,
         } as Record<string,boolean>,
-        activeBit:false as boolean,
         filters:[
           {
             label:"Availability",
@@ -277,7 +276,6 @@
       selectedArray.length=0;
     },
     clearAllFiler(){
-      this.activeBit=false;
       this.filters.forEach((ele)=>{
         ele.selected.length=0;
       })
@@ -288,9 +286,6 @@
         return ele.label==="Availability";
       })
       if(availableFilter && availableFilter.selected.length>0){
-        return "AND isActive=1";
-      }
-      if(this.activeBit ){
         return "AND isActive=1";
       }
       return "";
@@ -364,9 +359,6 @@ fillSuggestion(element:string){
 updateURL(){
   if (this.isRestoring) return;
   const params=new URLSearchParams();
-  if(this.activeBit){
-    params.set('inStock','true');
-  }
   if(this.searchQuery){
     params.set('q',this.searchQuery);
   }
@@ -451,12 +443,6 @@ isDeviceTablet(){
         },
         deep:true
       },
-      activeBit:{
-        handler(){
-          this.updateURL();
-          this.fetchData();
-        }
-      },
       searchQuery:{
         handler(){
           this.updateURL();
@@ -480,8 +466,7 @@ isDeviceTablet(){
     },
     computed: {
   selectedFilterCount(){
-    let total=this.activeBit?1:0;
-    total+=this.filters.reduce((sum,item)=>{
+    let total=this.filters.reduce((sum,item)=>{
       return sum+(item.selected?item.selected.length:0);
     },0);
     return total;
@@ -802,42 +787,9 @@ isDeviceTablet(){
       </svg>
     </div>
     <div class="st-sidebar-content st-relative st-top-[55px] st-px-[15px] lg:st-px-[0] st-pb-[100px] lg:st-pb-[0] lg:st-top-[-20px] st-right-0 st-left-0 st-bottom-0">
-      <div class="st-border-b st-border-solid st-border-[rgb(229,231,235)] st-tracking-[1px]">
-    <div
-    class="st-flex st-text-[#5c5c5c] st-text-[12px] st-justify-between st-py-[20px] st-cursor-pointer" @click="toggle('available')">
-    <h3 class="st-text-[15px]" >Availability</h3>
-    <span class="st-flex">
-      <p v-if="activeBit" @click.stop="activeBit=false">Clear</p>
-      <svg @click="toggle('available')" :class="{'st-rotate-180':visibleStates['available']}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-        <path fill-rule="evenodd" clip-rule="evenodd"
-          d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
-          fill="#000000">
-        </path>
-      </svg>
-    </span>
-  </div>
-  <div v-show="visibleStates['available']" class=" st-transition-all st-duration-300 st-ease-in-out">
-    <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-      <li>
-        <div class="outer-checkbox">
-          <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="true" v-model="activeBit" @change="scrollToTop()" />
-            <div
-              class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-              <div
-                class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                In Stock Only
-              </div>
-            </div>
-          </label>
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>
 <div class="Fields">
   <div v-for="item in filters" >
-    <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+    <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
@@ -878,6 +830,22 @@ isDeviceTablet(){
             </div>
           </li>
         </ul>
+        <ul v-else-if="item.label==='Availability'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+      <li>
+        <div class="outer-checkbox">
+          <label class="st-flex st-m-0 st-mb-[12px]">
+            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
+            <div
+              class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+              <div
+                class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                In Stock Only
+              </div>
+            </div>
+          </label>
+        </div>
+      </li>
+    </ul>
         <ul v-else class="st-widget-body st-flex st-flex-col  st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
                           <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.label"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
@@ -895,7 +863,7 @@ isDeviceTablet(){
       </div>
     </div>
 </div>
-</div> 
+</div>  
 </div>
 <div  class="apply-all st-fixed st-m-0 st-left-[unset] st-right-0 st-bottom-0 st-w-[inherit] st-bg-white st-flex st-items-center st-justify-center st-text-center st-border-t-[1px] st-border-solid st-border-[#eaeaec] st-p-[16px] st-gap-[8px]">
   <span @click="clearAllFiler() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
@@ -919,39 +887,6 @@ isDeviceTablet(){
       <section class="maincontainer lg:st-my-[50px] md:st-my-[0px]  st-my-[0px]">
         <div class="collection container md:st-grid lg:st-grid-cols-[25%_1fr] md:st-gap-[30px]">
             <div class="sidebar st-hidden lg:st-block st-sticky st-overflow-y-auto st-top-[200px] st-max-h-[402px] ">  
-<div class="st-border-b st-border-solid st-border-[rgb(229,231,235)] st-tracking-[1px]">
-  <div
-    class="st-flex st-text-[#5c5c5c] st-text-[12px] st-justify-between st-py-[20px] st-cursor-pointer" @click="toggle('available')">
-    <h3 class="st-text-[15px]" >Availability</h3>
-    <span class="st-flex">
-      <p v-if="activeBit" @click.stop="activeBit=false">Clear</p>
-      <svg @click="toggle('available')" :class="{'st-rotate-180':visibleStates['available']}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-        <path fill-rule="evenodd" clip-rule="evenodd"
-          d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
-          fill="#000000">
-        </path>
-      </svg>
-    </span>
-  </div>
-  <div v-show="visibleStates['available']" class=" st-transition-all st-duration-300 st-ease-in-out">
-    <ul class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-      <li>
-        <div class="outer-checkbox">
-          <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="true" v-model="activeBit" @change="scrollToTop()" />
-            <div
-              class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-              <div
-                class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                In Stock Only
-              </div>
-            </div>
-          </label>
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>
     <div class="Fields">
   <div v-for="item in filters" >
     <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
@@ -1036,11 +971,6 @@ isDeviceTablet(){
   <div class="st-filter-tags st-flex  st-gap-[20px] st-w-full st-justify-between">
     
     <div class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
-        <div v-if="activeBit" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
-        <div class="tag-content">In Stock Only</div>
-        <div @click="activeBit=false" class="tag-close st-text-[#ff0000]">✕</div>
-      </div>
-
       <template v-for="(fields, index) in filters">
         <div v-for="(items, subIndex) in fields.selected" :key="fields.label + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
           
@@ -1060,7 +990,7 @@ isDeviceTablet(){
         </div>
       </template>
     </div>
-    <div v-if="filters.some(f => f.selected.length > 0)|| activeBit" class="tag-item st-shrink-0 ">
+    <div v-if="filters.some(f => f.selected.length > 0)" class="tag-item st-shrink-0 ">
       <div @click="clearAllFiler()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
         Reset All
       </div>
