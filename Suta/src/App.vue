@@ -7,7 +7,6 @@
   const collectionId = "KSNQ58MRXELY5JCX767TDSA1"
   const searchClient = new SearchClient(appId, readToken);
   
-  // TODO - declare it as a computed property & also create an isDeviceMobile() ->Done
   export default defineComponent({
     components:{
       card
@@ -126,17 +125,13 @@
         isLoading:false as boolean,
         showUp:false as boolean,
         showDown:true as boolean,
-        // TODO - use computed instead->Done
         layoutClass:"" as string,
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
-        // TODO - rename to autocompleteSearchResults->Done
         autocompleteSearchResults: {} as Record<string,any>,
         searchQuery:"" as string,
-        // TODO - rename to autocompleteSearch... ->Done
         autocompleteSearchToggle:false as boolean,
-        // TODO - rename to a better name ->Done
         autosuggestionRawData:{} as Record<string,any>,
         autosuggestionResult:{} as Record<string,any>,
         popularChoice:"AND showInSuggestion = 1" as string,
@@ -153,9 +148,7 @@
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
           .count(this.pageSize)
           .skip(this.pageNumber*this.pageSize)
-          // TODO - recheck condition
           .filter(`isSearchable = 1 AND (discount>0 OR discount=0) AND price>0 ${this.isActive()}`)
-          // TODO - create a variable for this
           .sort("-isActive","saree_position","-_rank",`${this.sortBy}`)
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
@@ -210,7 +203,6 @@
           }
           ]);
           this.filters.forEach((ele:any)=>{
-            // TODO - avoid repeated condition -> Done
             if(ele.selected?.length>0){
               if(ele.type==="text" ){
                 searchClient.textFacetFilters(ele.field,ele.selected);
@@ -222,8 +214,6 @@
               }
             }
           })
-
-          // TODO: totalhits, isLoadMoreVisible, productResults
           this.fetchedRawData = await searchClient.search(`${this.searchQuery}`,collectionId);
         }
         catch(er){
