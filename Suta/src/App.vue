@@ -47,6 +47,12 @@
         activeBit:false as boolean,
         filters:[
           {
+            label:"Availability",
+            selected:[],
+            type:"constant",
+            isOpen:false
+          },
+          {
           label:"Price",
           field:"discounted_price",
           selected:[],
@@ -116,8 +122,6 @@
           type:"text",
           isOpen:false
         },] as Record<string,any>[],
-        // TODO - remove this and manage the functionality with filters variable
-        selectedFilters:[] as Record<string,any>[],
         pageNumber:0 as number,
         isLoading:false as boolean,
         showUp:false as boolean,
@@ -205,7 +209,7 @@
             max:60,
           }
           ]);
-          this.selectedFilters.forEach((ele:any)=>{
+          this.filters.forEach((ele:any)=>{
             // TODO - avoid repeated condition -> Done
             if(ele.selected?.length>0){
               if(ele.type==="text" ){
@@ -244,9 +248,6 @@
         // for (const element of this.result) {
         //   console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive+" "+element.collections.find((ele:any)=> ele==='bestseller sarees' || ele==="bestsellers" )+" "+element._rank);
         // }
-        // for(const item of this.selectedFilters){
-        //   console.log(item.field);
-        //   console.log(item.selected);
           
         // }
       },
@@ -307,11 +308,9 @@
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
-      // TODO: remove the single use variable
   handleScroll(){
     this.showUp=window.scrollY>50;
-    const bottomOfWindow=window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50;
-    this.showDown=!window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50;
+    this.showDown=!(window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50);
   },
       // TODO: try to improve logic
   move(direction:string){
@@ -414,9 +413,6 @@ restoreState() {
         filter.selected = [];
       }
     });
-    this.selectedFilters=this.filters.filter((ele)=>{
-            return ele.selected.length>0;
-          });
     this.fetchData(); 
     this.$nextTick(() => {
       this.isRestoring = false;
@@ -446,9 +442,6 @@ isDeviceTablet(){
       // TODO: create a push filter function and do that there
       filters:{
         handler(){
-          this.selectedFilters=this.filters.filter((ele)=>{
-            return ele.selected.length>0;
-          });
           if(this.isRestoring)return;
           this.updateURL();
           this.fetchData();
@@ -485,7 +478,7 @@ isDeviceTablet(){
     computed: {
   selectedFilterCount(){
     let total=this.activeBit?1:0;
-    total+=this.selectedFilters.reduce((sum,item)=>{
+    total+=this.filters.reduce((sum,item)=>{
       return sum+(item.selected?item.selected.length:0);
     },0);
     return total;
@@ -1029,7 +1022,7 @@ isDeviceTablet(){
         <div @click="activeBit=false" class="tag-close st-text-[#ff0000]">✕</div>
       </div>
 
-      <template v-for="(fields, index) in selectedFilters">
+      <template v-for="(fields, index) in filters">
         <div v-for="(items, subIndex) in fields.selected" :key="fields.label + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
           
           <div v-if="fields.type==='numeric' && fields.label==='Price'" class="tag-content">
@@ -1048,7 +1041,7 @@ isDeviceTablet(){
         </div>
       </template>
     </div>
-    <div v-if="selectedFilters.length > 0 || activeBit" class="tag-item st-shrink-0 ">
+    <div v-if="filters.some(f => f.selected.length > 0)|| activeBit" class="tag-item st-shrink-0 ">
       <div @click="clearAllFiler()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
         Reset All
       </div>
