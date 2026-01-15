@@ -132,10 +132,11 @@
         searchToggle:true as boolean,
         isRestoring:false as boolean,
         pageSize:32 as number,
+        autoSuggestedProducts:{} as Record<string,any>,
       };
     },
     methods:{
-      async fetchData():Promise<void>{
+      async fetchData(whichType='collection'):Promise<void>{
         this.isLoading=true;
         try{
           searchClient
@@ -208,7 +209,14 @@
               }
             }
           })
-          this.fetchedRawData = await searchClient.search(`${this.searchQuery}`,collectionId);
+          if(whichType==='search'){
+            this.autoSuggestedProducts = await searchClient.search(`${this.searchQuery}`,collectionId);
+          this.autocompleteSearchResults=this.autoSuggestedProducts.results.slice(0,6);
+
+          }
+          else{
+            this.fetchedRawData = await searchClient.search(``,collectionId);
+          }
           this.initialiseFacets();
         }
         catch(er){
@@ -222,7 +230,6 @@
         }
         else{
           this.products=this.fetchedRawData.results;
-          this.autocompleteSearchResults=this.products.slice(0,6);
         }
       },
       async searchData():Promise<void>{
@@ -351,7 +358,7 @@ checkSearchQuery(){
 },
 fillSuggestion(element:string){
   this.searchQuery=element;
-  this.fetchData();
+  this.fetchData('search');
 },
 updateURL(){
   if (this.isRestoring) return;
@@ -424,10 +431,14 @@ onSearch(){
   this.updateURL();
   this.checkSearchQuery();
   this.searchData();
+},
+handleSearchCollection(){
+  this.products=this.autoSuggestedProducts.results;
 }
     },
     mounted(){
       this.searchData();
+      this.fetchData('search');
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
       this.handleScroll();
@@ -559,8 +570,8 @@ onSearch(){
             <path d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"></path>
          </svg>
       </span>
-      <input @input="fetchData(),onSearch()" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
-      <span v-show="searchQuery" @click="searchQuery='', fetchData(),updateURL(),onSearch()" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
+      <input @input="fetchData('search'),onSearch()" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
+      <span v-show="searchQuery" @click="searchQuery='', fetchData('search'),updateURL(),onSearch()" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
       <span @click="autocompleteSearchToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
             <path class="active-path" d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z" data-old_color="#000000" data-original="#000000" fill="#4E3830"></path>
@@ -611,7 +622,7 @@ onSearch(){
     <div v-if="autosuggestionResult.length>0" class="st-row st-flex st-m-[0] ">
    <div class="st-left-col st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] !st-block"></div>
    <div class="st-right-col st-right-col st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
-      <div @click="autocompleteSearchToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{fetchedRawData.totalHits}}</span>) product<span style="">s</span></span></div>
+      <div @click="autocompleteSearchToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{autoSuggestedProducts.totalHits}}</span>) product<span style="">s</span></span></div>
    </div>
     </div>
 </section>
