@@ -14,12 +14,9 @@
     },
     data(){
       return{
-        // TODO - Rename them for better readability ->Done
         fetchedRawData: {} as Record<string,any>,
         products:{} as Record<any,any>,
-        // sortParameters:["-isActive","saree_position","-_rank",`${this.sortBy}`],
         sortBy:"" as string,
-        // TODO - Convert this to array of objects -> Done + all implimentation
         sortList:[
           {
             label:"Price: Low to High",
@@ -47,7 +44,6 @@
         visibleStates:{
           "available":false,
         } as Record<string,boolean>,
-        // TODO - Rename "name" with "label"
         activeBit:false as boolean,
         filters:[
           {
@@ -242,9 +238,9 @@
         }
         // TODO - use filters variable instead
         this.textFilterFields=this.fetchedRawData.textFacets;
-        // console.log(this.textFilterFields);
+        console.log(this.textFilterFields);
         this.numericFilterFields=this.fetchedRawData.numericFacets;
-        // console.log(this.numericFilterFields);
+        console.log(this.numericFilterFields);
         // for (const element of this.result) {
         //   console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive+" "+element.collections.find((ele:any)=> ele==='bestseller sarees' || ele==="bestsellers" )+" "+element._rank);
         // }
@@ -437,15 +433,11 @@ isDeviceTablet(){
       this.searchData();
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
-      // document.querySelector('input[name=st]').addEventListner('keyup', inputHandler)
       this.handleScroll();
-      
-      // window.addEventListener('resize', this.handleResize);
       window.addEventListener('popstate', this.restoreState);
     },
     beforeDestroy(){
       window.removeEventListener("scroll",this.handleScroll);
-      // window.removeEventListener('resize', this.handleResize);
     },
     beforeUnmount(){
       window.removeEventListener('popstate', this.restoreState);
