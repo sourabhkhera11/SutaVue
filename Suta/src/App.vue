@@ -131,8 +131,6 @@
         searchToggle:true as boolean,
         isRestoring:false as boolean,
         pageSize:32 as number,
-        textFilterFields:{} as Record<string,any>,
-        numericFilterFields:{} as Record<string,any>,
       };
     },
     methods:{
@@ -210,6 +208,7 @@
             }
           })
           this.fetchedRawData = await searchClient.search(`${this.searchQuery}`,collectionId);
+          this.initialiseFacets();
         }
         catch(er){
           console.log(er);
@@ -224,13 +223,6 @@
           this.products=this.fetchedRawData.results;
           this.autocompleteSearchResults=this.products.slice(0,6);
         }
-        this.textFilterFields=this.fetchedRawData.textFacets;
-        this.numericFilterFields=this.fetchedRawData.numericFacets;
-        // for (const element of this.result) {
-        //   console.log(element.title.split(" ").slice(0,2).join(" ")+" "+element.product_type+" "+element.price+" "+element.discounted_price+" "+element.discount+" "+element.images[0].src+" "+element.reviews_average+" "+element.reviews_count+" "+element.created_at+" "+element.isActive+" "+element.collections.find((ele:any)=> ele==='bestseller sarees' || ele==="bestsellers" )+" "+element._rank);
-        // }
-          
-        // }
       },
       async searchData():Promise<void>{
         try{
@@ -247,11 +239,9 @@
         this.autosuggestionResult=this.autosuggestionRawData.results;
       
       },
-      // TODO: remove this and handle from filter variable
       isRangeSelected(selectedArray:any[], min:number, max:number) {
     return selectedArray.some(range => range[0] === min && range[1] === max);
     },  
-      // TODO: remove this and handle from filter variable
     toggleRange(selectedArray:any[],min:number,max:number){
       const index = selectedArray.findIndex(range => range[0] === min && range[1] === max);
       if (index === -1) {
@@ -278,7 +268,6 @@
       return "";
     }
   ,
-      // TODO: remove this and handle using v-model
   removeFilter(selectedArray:any[],item:any){
     const index=selectedArray.indexOf(item);
     selectedArray.splice(index,1);
@@ -290,7 +279,6 @@
     this.showUp=window.scrollY>50;
     this.showDown=!(window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50);
   },
-      // TODO: try to improve logic
   move(direction:string){
     const amount=500;
     window.scrollBy({
@@ -308,15 +296,10 @@ initialiseFacets(){
     }
   }
   console.log(this.filters);
-  
 },
 getSortedSubItems(item:any) {
     let sourceList = [];
-    if (item.type === 'numeric') {
-      sourceList = this.numericFilterFields[item.field] || [];
-    } else {
-      sourceList = this.textFilterFields[item.field] || [];
-    }
+    sourceList = item.facets || [];
     return [...sourceList]
     .filter(subItem => {
          const count = (item.type === 'numeric') ? subItem.count : subItem.value; 
@@ -579,7 +562,7 @@ isDeviceTablet(){
       <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span></div>
       <div>
          <ul class="sm:st-gap-[10] st-trending-list st-inline-flex st-flex-wrap md:st-flex-row st-gap-2.5 st-m-0 st-p-0 st-w-full st-flex-col">
-            <li v-for="ele in autosuggestionResult" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
+            <li v-for="ele in autosuggestionResult" :key="ele.displayLabel" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
               <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span></span>
             </li>
          </ul>
@@ -591,7 +574,7 @@ isDeviceTablet(){
       </div>
       <div>
          <ul class="sm:st-gap-2.5 st-trending-list st-inline-flex st-flex-wrap st-flex-col st-gap-2.5 st-m-0 st-p-0 st-w-full">
-            <li v-for="ele in autosuggestionResult.slice(0,5)" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
+            <li v-for="ele in autosuggestionResult.slice(0,5)" :key="ele.displayLabel" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
               <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span>
             </span></li>
          </ul>
@@ -754,7 +737,7 @@ isDeviceTablet(){
     
     <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
       <li @click="sortBy='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
-      <li v-for="(item,index) in sortList" :key="index" @click="sortBy=item.field,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="sortBy=item.field,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
   </span>
             </div>
@@ -773,8 +756,8 @@ isDeviceTablet(){
     </div>
     <div class="st-sidebar-content st-relative st-top-[55px] st-px-[15px] lg:st-px-[0] st-pb-[100px] lg:st-pb-[0] lg:st-top-[-20px] st-right-0 st-left-0 st-bottom-0">
 <div class="Fields">
-  <div v-for="item in filters" >
-    <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+  <div v-for="item in filters" :key="item.id">
+    <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
@@ -788,7 +771,7 @@ isDeviceTablet(){
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
+                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop(),fetchData(),updateURL()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">₹{{ subItem.min }}.00</span>
@@ -804,7 +787,7 @@ isDeviceTablet(){
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop()">
+                <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop(),fetchData(),updateURL()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">{{ subItem.min }}%</span>
@@ -819,7 +802,7 @@ isDeviceTablet(){
       <li>
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
+            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()" />
             <div
               class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div
@@ -835,7 +818,7 @@ isDeviceTablet(){
                           <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.label"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
                               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
+                                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
                                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                                   <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                                     <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
@@ -864,7 +847,7 @@ isDeviceTablet(){
   <label  class="!st-text-[16.0004px] st-font-normal st-block st-pb-[14px] st-mx-[-20px] st-mb-[20px] st-border-b-[1px] st-border-solid st-border-[#e7e7e7]">Sort by</label>
     <ul class="list st-m-0 st-list-none">
       <li @click="sortBy='',fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
-      <li v-for="(item,index) in sortList" :key="index" @click="sortBy=item.field, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="sortBy=item.field, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
 </div>
         </div>
@@ -873,8 +856,8 @@ isDeviceTablet(){
         <div class="collection container md:st-grid lg:st-grid-cols-[25%_1fr] md:st-gap-[30px]">
             <div class="sidebar st-hidden lg:st-block st-sticky st-overflow-y-auto st-top-[200px] st-max-h-[402px] ">  
     <div class="Fields">
-  <div v-for="item in filters" >
-    <div v-if="(numericFilterFields[item.field]?.length>0 && item.type==='numeric') || (textFilterFields[item.field]?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+  <div v-for="item in filters" :key="item.id">
+    <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
@@ -956,7 +939,7 @@ isDeviceTablet(){
   <div class="st-filter-tags st-flex  st-gap-[20px] st-w-full st-justify-between">
     
     <div class="st-filter-inner st-flex st-gap-[10px] st-flex-wrap st-pl-[0px]">
-      <template v-for="(fields, index) in filters">
+      <template v-for="(fields, index) in filters" :key="index">
         <div v-for="(items, subIndex) in fields.selected" :key="fields.label + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
           
           <div v-if="fields.type==='numeric' && fields.label==='Price'" class="tag-content">

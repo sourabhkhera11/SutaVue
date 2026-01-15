@@ -43,7 +43,7 @@
         
         <div class="st-w-fit st-h-fit">
           <div class="typecard st-text-[12px] st-text-[#1c1c1c] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
-            {{ userData.product_type[0].toUpperCase()+userData.product_type.slice(1) }}
+            {{ userData?.product_type[0]?.toUpperCase()+userData.product_type.slice(1) }}
           </div>
           <!-- <div class="fabriccard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
             {{ userData.fit }}
