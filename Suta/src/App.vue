@@ -4,7 +4,8 @@
   import card from './components/card.vue';
   const appId = "26u1hqhy378jlrgxwpaug571";
   const readToken = "SVXPVV89J7GCA4D8DMP7S4N4";
-  const collectionId = "KSNQ58MRXELY5JCX767TDSA1"
+  const collectionId = "KSNQ58MRXELY5JCX767TDSA1";
+  const autoSuggestionCollId="X7PKBZVRIHHER13JKQTANV9Y";
   const searchClient = new SearchClient(appId, readToken);
   
   export default defineComponent({
@@ -226,12 +227,12 @@
       },
       async searchData():Promise<void>{
         try{
-          const searchClient = new SearchClient("26u1hqhy378jlrgxwpaug571", "SVXPVV89J7GCA4D8DMP7S4N4");
+          const searchClient = new SearchClient(appId, readToken);
           let query=searchClient
           .fields("id","displayLabel")
           .count(10)
           .filter(`isSearchable = 1  ${this.popularChoice}`)
-          this.autosuggestionRawData = await query.search(`${this.searchQuery}`,"X7PKBZVRIHHER13JKQTANV9Y");
+          this.autosuggestionRawData = await query.search(`${this.searchQuery}`,autoSuggestionCollId);
         }
         catch(er){
           console.log(er);
@@ -400,6 +401,11 @@ isDeviceMobile(){
 },
 isDeviceTablet(){
   return window.matchMedia("(min-width : 767px) and (max-width : 1024px)").matches;
+},
+onSearch(){
+  this.updateURL();
+  this.checkSearchQuery();
+  this.searchData();
 }
     },
     mounted(){
@@ -416,14 +422,6 @@ isDeviceTablet(){
       window.removeEventListener('popstate', this.restoreState);
     },
     watch:{
-      searchQuery:{
-        handler(){
-          this.updateURL();
-          this.checkSearchQuery();
-          this.searchData();
-        }
-      }
-      ,
     autocompleteSearchToggle(newValue) { 
     if (newValue) {
       document.body.style.overflow = 'hidden';
@@ -543,8 +541,8 @@ isDeviceTablet(){
             <path d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"></path>
          </svg>
       </span>
-      <input @input="fetchData(false)" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
-      <span v-show="searchQuery" @click="searchQuery='', fetchData(),updateURL()" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
+      <input @input="fetchData(),onSearch()" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
+      <span v-show="searchQuery" @click="searchQuery='', fetchData(),updateURL(),onSearch()" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
       <span @click="autocompleteSearchToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
             <path class="active-path" d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z" data-old_color="#000000" data-original="#000000" fill="#4E3830"></path>
