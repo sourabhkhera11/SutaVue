@@ -2,6 +2,7 @@
   import { defineComponent } from 'vue';
   import SearchClient from "@gaspl/search-client";
   import card from './components/card.vue';
+  import Autocomplete from './components/Autocomplete.vue';
   const appId = "26u1hqhy378jlrgxwpaug571";
   const readToken = "SVXPVV89J7GCA4D8DMP7S4N4";
   const collectionId = "KSNQ58MRXELY5JCX767TDSA1";
@@ -10,7 +11,8 @@
   
   export default defineComponent({
     components:{
-      card
+      card,
+      Autocomplete
     },
     data(){
       return{
@@ -560,7 +562,10 @@ handleSearchCollection(){
     </nav>
   </div>
 </header>
- <section @click.self="autocompleteSearchToggle=false" v-if="autocompleteSearchToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
+<section @click.self="autocompleteSearchToggle=false" v-if="autocompleteSearchToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
+    <Autocomplete v-model="autocompleteSearchToggle"/>
+</section>
+ <!-- <section @click.self="autocompleteSearchToggle=false" v-if="autocompleteSearchToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
     <div   class=" st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
    <div class=" st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
       <span class=" st-icon-search st-translate-y-[7px]">
@@ -609,7 +614,6 @@ handleSearchCollection(){
    <div class="sidebar st-col-lg-9 st-col-md-9 st-right-col md:st-w-[75%]  st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
       <div class="st-trending-header st-mb-[10px]">
         <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">Search Results</span></div>
-      <!---->
       <div class="st-row st-cols-2 st-cols-sm-2 st-cols-md-4 st-product-wrapper st-flex st-flex-nowrap st-overflow-y-auto">
          <div v-for="(value,index) in autocompleteSearchResults" :key="index" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" >
             <card  :key="value"  :user-data="value" :ratio="layoutClass"/>
@@ -623,7 +627,7 @@ handleSearchCollection(){
       <div @click="autocompleteSearchToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{autoSuggestedProducts.totalHits}}</span>) product<span style="">s</span></span></div>
    </div>
     </div>
-</section>
+</section> -->
   <section class="mobileBottom md:st-hidden ">
   <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[5px] st-text-[#000000a1]">
     <ul class="mobile-bottom-nav--wrapper st-flex st-justify-evenly">

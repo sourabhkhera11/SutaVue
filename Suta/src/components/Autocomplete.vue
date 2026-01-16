@@ -10,6 +10,13 @@
       components:{
          card
       },
+      props: {
+        modelValue: {
+        type: Boolean,
+        required: true
+        }
+    },
+    emits: ['update:modelValue'],
       data(){
       return{
         fetchedRawData: {} as Record<string,any>,
@@ -123,7 +130,6 @@
         filterCount:0 as number,
         autocompleteSearchResults: {} as Record<string,any>,
         searchQuery:"" as string,
-        autocompleteSearchToggle:false as boolean,
         autosuggestionRawData:{} as Record<string,any>,
         autosuggestionResult:{} as Record<string,any>,
         popularChoice:"AND showInSuggestion = 1" as string,
@@ -249,29 +255,25 @@
       filterQuery(){
         const baseCondition=[
           "isSearchable = 1",
-          "price>0",
-          "discount>=0"
+          "discounted_price>0",
+          "discount>=0",
+          "isActive=1"
         ];
-        if(this.isActive()){
-          baseCondition.push("isActive=1");
+        if(this.searchQuery===''){
+          baseCondition.push("collection_handles_shopify=\'bestseller-sarees\'");
         }
         return baseCondition.join(" AND ");
       },
       sortOptionArray(){
-        const sortFields=["-isActive", "saree_position", "-_rank"];
+        const sortFields=["-isActive"];
         if(this.sortBy){
           sortFields.push(this.sortBy);
         }
+        if(this.searchQuery===''){
+            sortFields.push('bestseller_sarees_position');
+        }
         return sortFields;
       }, 
-    clearFilter(selectedArray:any[]){
-      selectedArray.length=0;
-    },
-    clearAllFiler(){
-      this.filters.forEach((ele)=>{
-        ele.selected.length=0;
-      })
-    },
     isActive():boolean{
       const availableFilter=this.filters.find((ele)=>{
         return ele.label==="Availability";
@@ -282,24 +284,6 @@
       return false;
     }
   ,
-  removeFilter(selectedArray:any[],item:any){
-    const index=selectedArray.indexOf(item);
-    selectedArray.splice(index,1);
-  },
-  scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  },
-  handleScroll(){
-    this.showUp=window.scrollY>50;
-    this.showDown=!(window.scrollY+window.innerHeight >=document.documentElement.offsetHeight-50);
-  },
-  move(direction:string){
-    const amount=500;
-    window.scrollBy({
-      top:direction=='up'?-amount:amount,
-      behavior:'smooth'
-    });
-  },
 initialiseFacets(){
   for(let ele of this.filters){
     if(ele.type==='numeric'){
@@ -311,30 +295,6 @@ initialiseFacets(){
   }
   console.log(this.filters);
 },
-getSortedSubItems(item:any) {
-    let sourceList = [];
-    sourceList = item.facets || [];
-    return [...sourceList]
-    .filter(subItem => {
-         const count = (item.type === 'numeric') ? subItem.count : subItem.value; 
-         return count > 0;
-      })
-    .sort((a, b) => {
-      const isASelected = this.checkSelected(item, a);
-      const isBSelected = this.checkSelected(item, b);
-      if (isASelected && !isBSelected) return -1;
-      if (!isASelected && isBSelected) return 1;
-      return 0; 
-    });
-  },
-checkSelected(item:any, subItem:any) {
-    if (item.type === 'numeric') {
-      return item.selected.includes(`${subItem.min}-${subItem.max}`);
-    } 
-    else {
-      return item.selected.includes(subItem.label); 
-    }
-  },
 checkSearchQuery(){
   if(this.searchQuery!=""){
     this.popularChoiceToggle=false;
@@ -410,27 +370,37 @@ restoreState() {
     this.isRestoring = false;
   });
   },
-isDeviceMobile(){
-  return window.matchMedia("(max-width : 767px)").matches;
-},
-isDeviceTablet(){
-  return window.matchMedia("(min-width : 767px) and (max-width : 1024px)").matches;
-},
 onSearch(){
   this.updateURL();
   this.checkSearchQuery();
   this.fetchAutoResults();
 },
-handleSearchCollection(){
-  this.products=this.autoSuggestedProducts.results;
-}
-    },
 
+    },
+    computed: {
+    autocompleteSearchToggle: {
+      get():boolean {
+        return this.modelValue;
+      },
+      set(value:boolean) {
+        this.$emit('update:modelValue', value);
+      }
+    }
+  },
+mounted(){
+        this.restoreState();
+      this.fetchAutoResults();
+      this.fetchData('search');
+      window.addEventListener('popstate', this.restoreState);
+    },
+    beforeUnmount(){
+      window.removeEventListener('popstate', this.restoreState);
+    },
     })
 </script>
 
 <template>
-    <section @click.self="autocompleteSearchToggle=false" v-if="true" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
+    <section @click.self="autocompleteSearchToggle=false" v-if="autocompleteSearchToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
     <div   class=" st-px-[5px] st-pt-[12px] st-min-h-[35px]" style="display: block;">
    <div class=" st-flex  st-align-middle st-bg-[#ffffff8d] st-h-[39px] st-relative st-px-[20px] st-border-[2px] st-border-solid st-border-[#e19906] st-rounded-[5px]" id="search-desktop">
       <span class=" st-icon-search st-translate-y-[7px]">
@@ -439,7 +409,7 @@ handleSearchCollection(){
          </svg>
       </span>
       <input @input="fetchData('search'),onSearch()" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" type="text" name="st" placeholder="Search for Sarees" value="" autocapitalize="off" autocomplete="off" autocorrect="off">
-      <span v-show="searchQuery" @click="searchQuery='', fetchData(),updateURL(),onSearch()" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
+      <span v-show="searchQuery" @click="searchQuery='', fetchData('search'),updateURL(),onSearch()" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
       <span @click="autocompleteSearchToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
             <path class="active-path" d="M284.286,256.002L506.143,34.144c7.811-7.811,7.811-20.475,0-28.285c-7.811-7.81-20.475-7.811-28.285,0L256,227.717 L34.143,5.859c-7.811-7.811-20.475-7.811-28.285,0c-7.81,7.811-7.811,20.475,0,28.285l221.857,221.857L5.858,477.859 c-7.811,7.811-7.811,20.475,0,28.285c3.905,3.905,9.024,5.857,14.143,5.857c5.119,0,10.237-1.952,14.143-5.857L256,284.287 l221.857,221.857c3.905,3.905,9.024,5.857,14.143,5.857s10.237-1.952,14.143-5.857c7.811-7.811,7.811-20.475,0-28.285 L284.286,256.002z" data-old_color="#000000" data-original="#000000" fill="#4E3830"></path>
