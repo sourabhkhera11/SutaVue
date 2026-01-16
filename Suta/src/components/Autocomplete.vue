@@ -1,7 +1,11 @@
+<!-- Implement the similar feedback from app.vue here as well -->
+
+<!-- Create two functions here, to manage key input from a input bar outside the vue context -->
 <script lang="ts">
    import {defineComponent} from "vue";
    import SearchClient from "@gaspl/search-client";
    import card from "./card.vue";
+  //  TODO: create a file named config.json and import these from there
    const appId = "26u1hqhy378jlrgxwpaug571";
    const readToken = "SVXPVV89J7GCA4D8DMP7S4N4";
    const collectionId = "KSNQ58MRXELY5JCX767TDSA1";
@@ -16,10 +20,13 @@
         required: true
         }
     },
+    // Good
     emits: ['update:modelValue'],
       data(){
       return{
+        // TODO: remove this
         fetchedRawData: {} as Record<string,any>,
+        // TODO: this is an array
         products:{} as Record<any,any>,
         layoutClass:"" as string,
         autocompleteSearchResults: {} as Record<string,any>,
@@ -33,7 +40,9 @@
       };
     },
       methods:{
+        // TODO: see if these can be done inside a single function
       async fetchData():Promise<void>{
+        // Declare this globally
         const searchClient = new SearchClient(appId, readToken);
         try{
           searchClient
