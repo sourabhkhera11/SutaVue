@@ -137,19 +137,13 @@
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
         autocompleteSearchResults: {} as Record<string,any>,
-        searchQuery:"" as string,
         autocompleteSearchToggle:false as boolean,
-        autosuggestionRawData:{} as Record<string,any>,
-        autosuggestionResult:{} as Record<string,any>,
-        popularChoice:"AND showInSuggestion = 1" as string,
-        searchToggle:true as boolean,
         isRestoring:false as boolean,
         pageSize:32 as number,
-        autoSuggestedProducts:{} as Record<string,any>,
       };
     },
     methods:{
-      async fetchData(whichType='collection'):Promise<void>{
+      async fetchData():Promise<void>{
         this.isLoading=true;
         try{
           searchClient
@@ -222,14 +216,7 @@
               }
             }
           })
-          if(whichType==='search'){
-            this.autoSuggestedProducts = await searchClient.search(`${this.searchQuery}`,collectionId);
-          this.autocompleteSearchResults=this.autoSuggestedProducts.results.slice(0,6);
-
-          }
-          else{
-            this.fetchedRawData = await searchClient.search(``,collectionId);
-          }
+          this.fetchedRawData = await searchClient.search(``,collectionId);
           this.initialiseFacets();
         }
         catch(er){
@@ -244,21 +231,6 @@
         else{
           this.products=this.fetchedRawData.results;
         }
-      },
-      async fetchAutoResults():Promise<void>{
-        try{
-          const searchClient = new SearchClient(appId, readToken);
-          let query=searchClient
-          .fields("id","displayLabel")
-          .count(10)
-          .filter(`isSearchable = 1  ${this.popularChoice}`)
-          this.autosuggestionRawData = await query.search(`${this.searchQuery}`,autoSuggestionCollId);
-        }
-        catch(er){
-          console.log(er);
-        }
-        this.autosuggestionResult=this.autosuggestionRawData.results;
-      
       },
       filterQuery(){
         const baseCondition=[
@@ -349,26 +321,9 @@ checkSelected(item:any, subItem:any) {
       return item.selected.includes(subItem.label); 
     }
   },
-checkSearchQuery(){
-  if(this.searchQuery!=""){
-    this.searchToggle=false;
-    this.popularChoice="";
-  }
-  else{
-    this.searchToggle=true;
-    this.popularChoice="AND showInSuggestion = 1";
-  }
-},
-fillSuggestion(element:string){
-  this.searchQuery=element;
-  this.fetchData('search');
-},
 updateURL(){
   if (this.isRestoring) return;
   const params=new URLSearchParams();
-  if(this.searchQuery){
-    params.set('q',this.searchQuery);
-  }
   if(this.sortBy){
     params.set('s',this.sortBy);
   }
@@ -393,8 +348,6 @@ updateURL(){
 restoreState() {
   this.isRestoring = true;
   const params = new URLSearchParams(window.location.search);
-  const q=params.get('q');
-  if(q) this.searchQuery=q;
   const s=params.get('s');
   if(s) this.sortBy=s;
   let availableF = this.filters.find((ele) => ele.label === 'Availability');
@@ -430,18 +383,9 @@ isDeviceMobile(){
 isDeviceTablet(){
   return window.matchMedia("(min-width : 767px) and (max-width : 1024px)").matches;
 },
-onSearch(){
-  this.updateURL();
-  this.checkSearchQuery();
-  this.fetchAutoResults();
-},
-handleSearchCollection(){
-  this.products=this.autoSuggestedProducts.results;
-}
     },
     mounted(){
-      this.fetchAutoResults();
-      this.fetchData('search');
+      this.fetchData();
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
       window.addEventListener('popstate', this.restoreState);
