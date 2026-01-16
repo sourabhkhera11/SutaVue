@@ -204,7 +204,7 @@
               }
               else if(ele.type==="numeric"){
                 ele.selected.forEach((range:any)=>{
-                  searchClient.numericFacetFilters(ele.field,range[0],range[1]);
+                  searchClient.numericFacetFilters(ele.field,range.split('-')[0],range.split('-')[1]);
                 })
               }
             }
@@ -264,18 +264,7 @@
           sortFields.push(this.sortBy);
         }
         return sortFields;
-      },
-      isRangeSelected(selectedArray:any[], min:number, max:number) {
-    return selectedArray.some(range => range[0] === min && range[1] === max);
-    },  
-    toggleRange(selectedArray:any[],min:number,max:number){
-      const index = selectedArray.findIndex(range => range[0] === min && range[1] === max);
-      if (index === -1) {
-      selectedArray.push([min, max]);
-    } else {
-      selectedArray.splice(index, 1);
-    }
-    },
+      }, 
     clearFilter(selectedArray:any[]){
       selectedArray.length=0;
     },
@@ -341,8 +330,9 @@ getSortedSubItems(item:any) {
   },
 checkSelected(item:any, subItem:any) {
     if (item.type === 'numeric') {
-      return this.isRangeSelected(item.selected, subItem.min, subItem.max);
-    } else {
+      return item.selected.includes(`${subItem.min}-${subItem.max}`);
+    } 
+    else {
       return item.selected.includes(subItem.label); 
     }
   },
@@ -372,7 +362,7 @@ updateURL(){
   this.filters.forEach(filter=>{
     if(filter.selected && filter.selected.length>0){
       if(filter.type==='numeric'){
-        const rangeString=filter.selected.map(range=>`${range[0]}-${range[1]}`).join(',');
+        const rangeString=filter.selected.map(range=>`${range}`).join(',');
         params.set(filter.field,rangeString);
       }
       else if(filter.type==='constant'){
@@ -388,7 +378,7 @@ updateURL(){
   window.history.pushState({path:newUrl},'',newUrl);
 },
 restoreState() {
-    this.isRestoring = true;
+  this.isRestoring = true;
   const params = new URLSearchParams(window.location.search);
   const q=params.get('q');
   if(q) this.searchQuery=q;
@@ -406,7 +396,7 @@ restoreState() {
     if (value) {
       if (filter.type === 'numeric') {
         filter.selected = value.split(',').map(rangeStr => {
-          return rangeStr.split('-').map(Number);
+          return rangeStr;
         });
       } else {
         filter.selected = value.split(',');
@@ -798,7 +788,7 @@ handleSearchCollection(){
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected"  @change=" scrollToTop(),fetchData(),updateURL()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">₹{{ subItem.min }}.00</span>
@@ -814,7 +804,7 @@ handleSearchCollection(){
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">{{ subItem.min }}%</span>
@@ -898,7 +888,7 @@ handleSearchCollection(){
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected"  @change="scrollToTop(),fetchData(),updateURL()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">₹{{ subItem.min }}.00</span>
@@ -914,7 +904,7 @@ handleSearchCollection(){
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black" type="checkbox" :checked="isRangeSelected(item.selected, subItem.min, subItem.max)" @change="toggleRange(item.selected, subItem.min, subItem.max), scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">{{ subItem.min }}%</span>
@@ -970,11 +960,11 @@ handleSearchCollection(){
         <div v-for="(items, subIndex) in fields.selected" :key="fields.label + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
           
           <div v-if="fields.type==='numeric' && fields.label==='Price'" class="tag-content">
-            <span>₹{{ items[0] }}.00</span> - <span>₹{{ items[1] }}.00</span>
+            <span>₹{{ items.split('-')[0] }}.00</span> - <span>₹{{ items.split('-')[1] }}.00</span>
           </div>
           
           <div v-else-if="fields.type==='numeric' && fields.label==='Discount'" class="tag-content">
-            <span>{{ items[0] }}%</span> And <span>Above</span>
+            <span>{{ items.split('-')[0] }}%</span> And <span>Above</span>
           </div>
           
           <div v-else class="tag-content">
