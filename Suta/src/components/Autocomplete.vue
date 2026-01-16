@@ -94,6 +94,7 @@ checkSearchQuery(){
 },
 fillSuggestion(element:string){
   this.searchQuery=element;
+  this.updateURL();
   this.fetchData();
 },
 clearSearch() {
