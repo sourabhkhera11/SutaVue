@@ -17,7 +17,7 @@
     data(){
       return{
         fetchedRawData: {} as Record<string,any>,
-        products:{} as Record<any,any>,
+        products:[] as any[],
         sortBy:"" as string,
         sortList:[
           {
@@ -330,7 +330,7 @@ updateURL(){
   this.filters.forEach(filter=>{
     if(filter.selected && filter.selected.length>0){
       if(filter.type==='numeric'){
-        const rangeString=filter.selected.map(range=>`${range}`).join(',');
+        const rangeString=filter.selected.map((range:any)=>`${range}`).join(',');
         params.set(filter.field,rangeString);
       }
       else if(filter.type==='constant'){
@@ -596,12 +596,12 @@ isDeviceTablet(){
       <section class="mobile">
         <div class="lg:st-hidden">
           <div  class=" st-w-full st-text-[14px]  md:st-border-t md:st-border-[#e8e8e1]">
-            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-flex st-gap-[5px] st-text-capitalize"><span >{{ fetchedRawData?.totalHits }}</span><span class=""> Products</span><span class=""></span>
+            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-gap-[5px] st-text-capitalize"><span >{{ fetchedRawData?.totalHits }}</span><span class=""> Products</span><span class=""></span>
             </span>
             </div>
           </div>
       </section>
-      <section class=" container  searchbar content st-absolute st-sticky st-top-[63px] st-z-[10]">
+      <section class=" container  searchbar content st-sticky st-top-[63px] st-z-[10]">
         <div class=" ">
           <div class="filterbar st-flex st-align-middle st-flex-wrap md:st-gap-[50px] lg:st-justify-between st-mt-[0px] lg:st-mt-[50px] st-shadow-[0_1px_rgb(221,221,221),_0_-1px_rgb(221,221,221)] xl:st-mx-[-64px] md:lg:st-[-64px] st-bg-[#fff]">
             <div class="filtersort  lg:st-hidden st-flex st-tracking-[1.98px] st-grow  st-text-[11px] st-justify-center st-align-middle ">
