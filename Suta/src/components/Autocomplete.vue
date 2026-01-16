@@ -365,7 +365,7 @@ restoreState() {
     }
   });
 
-  this.fetchData();
+  this.fetchData('search');
   this.$nextTick(() => {
     this.isRestoring = false;
   });
@@ -417,7 +417,7 @@ mounted(){
       </span>
    </div>
     </div>
-    <section v-if="autosuggestionResult.length===0" class="lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
+    <section v-if="autocompleteSearchResults.length===0" class="lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
   <p class="st-font-[600] st-my-[10px]">No Results found for '{{searchQuery}}'</p>
   <p class="st-mb-[10px]">Try Searching some other keywords</p>
     </section>
