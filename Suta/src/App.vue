@@ -43,7 +43,8 @@
             label:"Availability",
             selected:[],
             type:"constant",
-            isOpen:false
+            isOpen:false,
+            facets: Array<any>,
           },
           {
           label:"Price",
@@ -51,69 +52,79 @@
           selected:[],
           type:"numeric",
           isOpen:false,
+          facets: Array<any>,
         },
         {
           label:"Discount",
           field:"discount",
           selected:[],
           type:"numeric",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
         {
           label:"Category",
           field:"product_type",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
         {
           label:"Blouse Piece",
           field:"st_blousetype",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
       {
           label:"Size",
           field:"size",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
       {
           label:"Colour",
           field:"colour",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
       {
           label:"Fabric",
           field:"fabric",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
       {
           label:"Occasion",
           field:"st_occasion",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
       {
           label:"Technique",
           field:"st_technique",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },
       {
           label:"Pattern",
           field:"st_pattern",
           selected:[],
           type:"text",
-          isOpen:false
+          isOpen:false,
+          facets: Array<any>,
         },] as Record<string,any>[],
         pageNumber:0 as number,
         isLoading:false as boolean,
@@ -304,10 +315,10 @@
 initialiseFacets(){
   for(let ele of this.filters){
     if(ele.type==='numeric'){
-      ele.facets=this.fetchedRawData.numericFacets[ele.field];
+      ele.facets=this.fetchedRawData?.numericFacets[ele?.field] || [];
     }
     else if(ele.type==='text'){
-      ele.facets=this.fetchedRawData.textFacets[ele.field]
+      ele.facets=this.fetchedRawData?.textFacets[ele?.field] || [];
     }
   }
   console.log(this.filters);
