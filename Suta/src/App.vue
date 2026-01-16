@@ -232,7 +232,7 @@
           this.products=this.fetchedRawData.results;
         }
       },
-      async searchData():Promise<void>{
+      async fetchAutoResults():Promise<void>{
         try{
           const searchClient = new SearchClient(appId, readToken);
           let query=searchClient
@@ -420,25 +420,22 @@ isDeviceTablet(){
 onSearch(){
   this.updateURL();
   this.checkSearchQuery();
-  this.searchData();
+  this.fetchAutoResults();
 },
 handleSearchCollection(){
   this.products=this.autoSuggestedProducts.results;
 }
     },
     mounted(){
-      this.searchData();
+      this.fetchAutoResults();
       this.fetchData('search');
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
-      this.handleScroll();
       window.addEventListener('popstate', this.restoreState);
-    },
-    beforeDestroy(){
-      window.removeEventListener("scroll",this.handleScroll);
     },
     beforeUnmount(){
       window.removeEventListener('popstate', this.restoreState);
+      window.removeEventListener("scroll",this.handleScroll);
     },
     watch:{
     autocompleteSearchToggle(newValue) { 
