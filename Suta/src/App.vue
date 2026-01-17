@@ -238,7 +238,7 @@
         }
         if(this.pageNumber>0){
           // TODO: use array.push method here
-          this.products=[...this.products,...this.fetchedRawData.results;
+          this.products=[...this.products,...this.fetchedRawData.results];
         }
         else{
           this.products=this.fetchedRawData.results;
@@ -265,7 +265,7 @@
         return sortFields;
       }, 
       // TODO: combine these two clear filter functions and handle it with filter's fieldName
-    clearFilter(selectedArray?:any[]){
+    clearFilter(selectedArray:any[]){
       selectedArray.length=0;
     },
     clearAllFiler(){
@@ -408,7 +408,6 @@ isDeviceTablet(){
     },
     mounted(){
       // TODO: do we need fetchData() here
-      this.fetchData();
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
       window.addEventListener('popstate', this.restoreState);
