@@ -253,7 +253,7 @@
         }
         if(this.pageNumber>0){
           // DONE: use array.push method here
-          this.products.push(this.productsData.results);
+          this.products.push(...this.productsData.results);
         }
         else{
           this.products=this.productsData.results;
@@ -271,14 +271,17 @@
         ele.selected.length=0;
         })  
       }
+      this.updateURL();
     },
       // DONE: remove this and do this using availabilty filter's selected array ->Avilable isActive one 
   removeFilter(selectedArray:any[],item:any){
     const index=selectedArray.indexOf(item);
     selectedArray.splice(index,1);
+    this.updateURL();
   },
   scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.updateURL();
   },
   handleScroll(){
     this.showUp=window.scrollY>50;
@@ -317,7 +320,7 @@ checkSelected(item:any, subItem:any) {
       return item.selected.includes(subItem.label); 
     }
   },
-  // TODO: this is always being called with fetchData function, see how we can avoid calling the two separatly
+  // DONE: this is always being called with fetchData function, see how we can avoid calling the two separatly
 updateURL(){
   if (this.isRestoring) return;
   const params=new URLSearchParams();
@@ -342,6 +345,7 @@ updateURL(){
   });
   const newUrl=`${window.location.pathname}?${params.toString()}`;
   window.history.pushState({path:newUrl},'',newUrl);
+  this.fetchData();
 },
 restoreState() {
   this.isRestoring = true;
@@ -635,10 +639,8 @@ restoreState() {
                 </div>
     
     <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
-      <!-- TODO: Create a function for sort and do all this '@click' there -->
-      <!-- <li @click="activeSort='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li> -->
-      <!-- TODO: Create a function for sort and do all this '@click' there -->
-      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <!-- DONE: Create a function for sort and do all this '@click' there -> not making sense for two function only and used for two times only  --> 
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label,updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
   </span>
             </div>
@@ -663,7 +665,7 @@ restoreState() {
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
-          <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected),fetchData(),updateURL()">Clear</p>
+          <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
           <svg :class="{'st-rotate-180':item.isOpen}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
         </svg></span>
@@ -673,7 +675,7 @@ restoreState() {
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected"  @change=" scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected"  @change=" scrollToTop()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">₹{{ subItem.min }}.00</span>
@@ -689,7 +691,7 @@ restoreState() {
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected" @change="scrollToTop()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">{{ subItem.min }}%</span>
@@ -704,7 +706,7 @@ restoreState() {
       <li>
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()" />
+            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
             <div
               class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div
@@ -720,7 +722,7 @@ restoreState() {
                           <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.label"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
                               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
+                                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
                                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                                   <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                                     <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
@@ -736,7 +738,7 @@ restoreState() {
 </div>  
 </div>
 <div  class="apply-all st-fixed st-m-0 st-left-[unset] st-right-0 st-bottom-0 st-w-[inherit] st-bg-white st-flex st-items-center st-justify-center st-text-center st-border-t-[1px] st-border-solid st-border-[#eaeaec] st-p-[16px] st-gap-[8px]">
-  <span @click="clearFilter(),fetchData(),updateURL() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
+  <span @click="clearFilter() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
   <span @click="mobileFilterToggle=false" class="apply-btn st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">View Results</span>
 </div>
 </div>
@@ -748,8 +750,7 @@ restoreState() {
   <span @click="mobileSortToggle=false" class="closeFilter st-block st-text-[30px] st-top-[5px] st-text-black st-absolute st-z-[9] st-right-[15px]">×</span>
   <label  class="!st-text-[16.0004px] st-font-normal st-block st-pb-[14px] st-mx-[-20px] st-mb-[20px] st-border-b-[1px] st-border-solid st-border-[#e7e7e7]">Sort by</label>
     <ul class="list st-m-0 st-list-none">
-      <!-- <li @click="activeSort='',fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li> -->
-      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label, updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
 </div>
         </div>
@@ -764,7 +765,7 @@ restoreState() {
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
-          <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected),fetchData(),updateURL()">Clear</p>
+          <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
           <svg :class="{'st-rotate-180':item.isOpen}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
         </svg></span>
@@ -774,7 +775,7 @@ restoreState() {
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected"  @change="scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected"  @change="scrollToTop()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">₹{{ subItem.min }}.00</span>
@@ -790,7 +791,7 @@ restoreState() {
           <li v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.min" >
             <div v-if="subItem.count>0" class="outer-checkbox">
               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
+                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.min+'-'+subItem.max" v-model="item.selected" @change="scrollToTop()">
                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                   <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                     <span class="money">{{ subItem.min }}%</span>
@@ -805,7 +806,7 @@ restoreState() {
       <li>
         <div class="outer-checkbox">
           <label class="st-flex st-m-0 st-mb-[12px]">
-            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()" />
+            <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
             <div
               class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
               <div
@@ -821,9 +822,7 @@ restoreState() {
                           <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.label"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
                               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                                
-                                <!-- TODO: create function for this instead of multiple function call inside @click -->
-                                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
+                                <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop()">
                                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                                   <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
                                     <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
@@ -859,12 +858,12 @@ restoreState() {
             <span>{{ items }}</span>
           </div>
           
-          <div @click="removeFilter(fields.selected, items),fetchData(),updateURL()" class="tag-close st-text-[#ff0000]">✕</div>
+          <div @click="removeFilter(fields.selected, items)" class="tag-close st-text-[#ff0000]">✕</div>
         </div>
       </template>
     </div>
     <div v-if="filters.some(f => f.selected.length > 0)" class="tag-item st-shrink-0 ">
-      <div @click="clearFilter(),fetchData(),updateURL()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
+      <div @click="clearFilter()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
         Reset All
       </div>
     </div>
@@ -878,15 +877,16 @@ restoreState() {
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
     <a class="">
 
-  <!-- TODO: try handleing this in a single div -->
-      <div v-if="!isLoading && !((totalHits - 32 - (pageNumber * 32)) < 32)" @click="pageNumber++ ,fetchData()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
-        LOAD MORE 
-      </div>
-      <div v-if="!isLoading && ((totalHits - 32 - (pageNumber * 32)) < 32)"  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
-        RESULTS END HERE 
-      </div>
+  <!-- DONE: try handleing this in a single div -->
+   <!-- Feel lot more complicated that way as each is having different conditions and styling  -->
       <div v-if="isLoading"  class="st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-border st-border-black st-text-[13px] st-text-black st-font-[700]">
         LOADING... 
+      </div>
+      <div v-else-if="!((totalHits - 32 - (pageNumber * 32)) < 32)" @click="pageNumber++ ,fetchData()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
+        LOAD MORE 
+      </div>
+      <div v-else  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
+        RESULTS END HERE 
       </div>
     </a>
   </div>
@@ -909,8 +909,4 @@ restoreState() {
         </div>
       </section>
 </template>
-<!-- Remove this css as it is already being imported in main.ts -->
-<style scoped>
 
-  @import "./assets/main.css";
-</style>
