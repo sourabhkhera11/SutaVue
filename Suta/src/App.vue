@@ -16,9 +16,12 @@
     },
     data(){
       return{
+        // TODO: not required variable
         fetchedRawData: {} as Record<string,any>,
         products:[] as any[],
+        // TODO: rename to activeSort
         sortBy:"" as string,
+        // TODO: where are the rest of the fields as discussed
         sortList:[
           {
             label:"Price: Low to High",
@@ -44,14 +47,17 @@
           {
             label:"Availability",
             selected:[],
+            // TODO: rename to 'singleFacet'
             type:"constant",
             isOpen:false,
-            facets: Array<any>,
+            // TODO: use correct format
+            facets: [] as Array<any>,
           },
           {
           label:"Price",
           field:"discounted_price",
           selected:[],
+            // TODO: rename to 'numericFacet'
           type:"numeric",
           isOpen:false,
           facets: Array<any>,
@@ -136,6 +142,7 @@
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
+        // TODO: remove unecessary variables
         autocompleteSearchResults: {} as Record<string,any>,
         autocompleteSearchToggle:false as boolean,
         isRestoring:false as boolean,
@@ -150,7 +157,9 @@
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
           .count(this.pageSize)
           .skip(this.pageNumber*this.pageSize)
+          // TODO: do this inside filter array using 'selected' field
           .filter(this.filterQuery())
+          // TODO: no need for a function here, do this here only
           .sort(...this.sortOptionArray())
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
@@ -214,9 +223,11 @@
                   searchClient.numericFacetFilters(ele.field,range.split('-')[0],range.split('-')[1]);
                 })
               }
+              // TODO: also manage availability filter here
             }
           })
           this.fetchedRawData = await searchClient.search(``,collectionId);
+          // TODO: no need for a function here, do this here only
           this.initialiseFacets();
         }
         catch(er){
@@ -226,12 +237,14 @@
           this.isLoading=false;
         }
         if(this.pageNumber>0){
-          this.products=[...this.products,...this.fetchedRawData.results];
+          // TODO: use array.push method here
+          this.products=[...this.products,...this.fetchedRawData.results;
         }
         else{
           this.products=this.fetchedRawData.results;
         }
       },
+      // TODO: simplify this and do this inside fetchData function
       filterQuery(){
         const baseCondition=[
           "isSearchable = 1",
@@ -243,6 +256,7 @@
         }
         return baseCondition.join(" AND ");
       },
+      // TODO: remove this and do this inside fetchData function
       sortOptionArray(){
         const sortFields=["-isActive", "saree_position", "-_rank"];
         if(this.sortBy){
@@ -250,7 +264,8 @@
         }
         return sortFields;
       }, 
-    clearFilter(selectedArray:any[]){
+      // TODO: combine these two clear filter functions and handle it with filter's fieldName
+    clearFilter(selectedArray?:any[]){
       selectedArray.length=0;
     },
     clearAllFiler(){
@@ -258,6 +273,7 @@
         ele.selected.length=0;
       })
     },
+      // TODO: remove this and do this using availabilty filter's selected array 
     isActive():boolean{
       const availableFilter=this.filters.find((ele)=>{
         return ele.label==="Availability";
@@ -286,6 +302,7 @@
       behavior:'smooth'
     });
   },
+      // TODO: remove this and do this inside fetchData function
 initialiseFacets(){
   for(let ele of this.filters){
     if(ele.type==='numeric'){
@@ -297,6 +314,7 @@ initialiseFacets(){
   }
   console.log(this.filters);
 },
+      // Good
 getSortedSubItems(item:any) {
     let sourceList = [];
     sourceList = item.facets || [];
@@ -321,6 +339,7 @@ checkSelected(item:any, subItem:any) {
       return item.selected.includes(subItem.label); 
     }
   },
+  // TODO: this is always being called with fetchData function, see how we can avoid calling the two separatly
 updateURL(){
   if (this.isRestoring) return;
   const params=new URLSearchParams();
@@ -350,6 +369,7 @@ restoreState() {
   const params = new URLSearchParams(window.location.search);
   const s=params.get('s');
   if(s) this.sortBy=s;
+  // TODO: do this inside filters array
   let availableF = this.filters.find((ele) => ele.label === 'Availability');
   if (availableF) {
     const stockVal = params.get('In Stock Only');
@@ -361,6 +381,7 @@ restoreState() {
     const value = params.get(filter.field);
     if (value) {
       if (filter.type === 'numeric') {
+        // TODO: remove map if not needed
         filter.selected = value.split(',').map(rangeStr => {
           return rangeStr;
         });
@@ -377,6 +398,7 @@ restoreState() {
     this.isRestoring = false;
   });
   },
+  // TODO: move these into computed as their values wont change
 isDeviceMobile(){
   return window.matchMedia("(max-width : 767px)").matches;
 },
@@ -385,6 +407,7 @@ isDeviceTablet(){
 },
     },
     mounted(){
+      // TODO: do we need fetchData() here
       this.fetchData();
       this.restoreState();
       window.addEventListener("scroll",this.handleScroll);
@@ -395,6 +418,7 @@ isDeviceTablet(){
       window.removeEventListener("scroll",this.handleScroll);
     },
     watch:{
+      // TODO: do this inside autocomplete compo
     autocompleteSearchToggle(newValue) { 
     if (newValue) {
       document.body.style.overflow = 'hidden';
@@ -410,6 +434,7 @@ isDeviceTablet(){
     },0);
     return total;
   },
+  // TODO: Remove this and do this inside mounted or while defining data property
   layoutRatio(){
     if(this.isDeviceMobile() || this.isDeviceTablet()){
       this.layoutClass= "twoBytwo";
@@ -423,6 +448,7 @@ isDeviceTablet(){
 </script>
 
 <template>
+  <!-- TODO: Move this section to index.html -->
   <header class="st-sticky st-top-0 st-z-20 st-bg-[#fff]">
   <div class=" st-flex md:st-gap-[15px]  st-justify-between st-py-[8px] md:st-px-[48px] st-px-[20px] st-items-center st-shadow-[inset_0_-1px_rgb(28_28_28_/_0.15)]">
     
@@ -494,6 +520,7 @@ isDeviceTablet(){
               <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
               <path d="M3.017 20.747C3.783 16.5 7.922 14.25 12 14.25s8.217 2.25 8.984 6.497" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"></path>
             </svg></a></li>
+            <!-- TODO: do this using vanilla js -->
         <li @click="autocompleteSearchToggle=!autocompleteSearchToggle" class=" md:st-block st-cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
               <path d="M15.439 15.439L12.6315 12.6314M14.6368 7.81841C14.6368 11.5841 11.5841 14.6368 7.81841 14.6368C4.05271 14.6368 1 11.5841 1 7.81841C1 4.05271 4.05271 1 7.81841 1C11.5841 1 14.6368 4.05271 14.6368 7.81841Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg></li>
@@ -506,6 +533,7 @@ isDeviceTablet(){
     </nav>
   </div>
 </header>
+<!-- TODO: Just add a element here where the app will mount and manage everything else using component -->
 <section @click.self="autocompleteSearchToggle=false" v-if="autocompleteSearchToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
     <Autocomplete v-model="autocompleteSearchToggle"/>
 </section>
@@ -646,7 +674,9 @@ isDeviceTablet(){
                 </div>
     
     <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
+      <!-- TODO: Create a function for sort and do all this '@click' there -->
       <li @click="sortBy='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <!-- TODO: Create a function for sort and do all this '@click' there -->
       <li v-for="(item,index) in sortList" :key="item.field" @click="sortBy=item.field,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
   </span>
@@ -666,6 +696,7 @@ isDeviceTablet(){
     </div>
     <div class="st-sidebar-content st-relative st-top-[55px] st-px-[15px] lg:st-px-[0] st-pb-[100px] lg:st-pb-[0] lg:st-top-[-20px] st-right-0 st-left-0 st-bottom-0">
 <div class="Fields">
+  <!-- TODO: remove duplicate elements and try not to repeat code eg: ul li -->
   <div v-for="item in filters" :key="item.id">
     <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
@@ -766,6 +797,7 @@ isDeviceTablet(){
         <div class="collection container md:st-grid lg:st-grid-cols-[25%_1fr] md:st-gap-[30px]">
             <div class="sidebar st-hidden lg:st-block st-sticky st-overflow-y-auto st-top-[200px] st-max-h-[402px] ">  
     <div class="Fields">
+  <!-- TODO: remove duplicate elements and try not to repeat code eg: ul li -->
   <div v-for="item in filters" :key="item.id">
     <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
@@ -828,6 +860,8 @@ isDeviceTablet(){
                           <li  v-for="(subItem,index) in getSortedSubItems(item)" :key="subItem.label"  >
                             <div v-if="subItem.value>0" class="outer-checkbox">
                               <label class="st-flex st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+                                
+                                <!-- TODO: create function for this instead of multiple function call inside @click -->
                                 <input class="st-mr-[12px] st-accent-black" type="checkbox" :value="subItem.label" v-model="item.selected" @change="scrollToTop(),fetchData(),updateURL()">
                                 <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                                   <div class="st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
@@ -882,6 +916,8 @@ isDeviceTablet(){
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
     <a class="">
+
+  <!-- TODO: try handleing this in a single div -->
       <div v-if="!isLoading && !((fetchedRawData?.totalHits - 32 - (pageNumber * 32)) < 32)" @click="pageNumber++ ,fetchData()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
         LOAD MORE 
       </div>
@@ -912,7 +948,8 @@ isDeviceTablet(){
         </div>
       </section>
 </template>
-
+<!-- Remove this css as it is already being imported in main.ts -->
 <style scoped>
+
   @import "./assets/main.css";
 </style>
