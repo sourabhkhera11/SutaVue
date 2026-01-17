@@ -19,9 +19,9 @@
         productsData: {} as Record<string,any>,
         products:[] as any[],
         totalHits: 0 as number,
-        // TODO: rename to activeSort
+        // DONE: rename to activeSort
         activeSort:["-isActive", "saree_position"] as any[],
-        // TODO: where are the rest of the fields as discussed
+        // DONE: where are the rest of the fields as discussed
         sortList:[
           {
             label:"Featured",
@@ -50,21 +50,22 @@
         filters:[
           {
             label:"Availability",
+            field:'availability',
             selected:[],
-            // TODO: rename to 'singleFacet'
-            type:"constant",
+            // DONE: rename to 'singleFacet'
+            type:"singleFacet",
             isOpen:false,
-            // TODO: use correct format
+            // DONE: use correct format
             facets: [] as Array<any>,
           },
           {
           label:"Price",
           field:"discounted_price",
           selected:[],
-            // TODO: rename to 'numericFacet'
+          // DONE: rename to 'numericFacet'-> Will increase additional check unnecessary
           type:"numeric",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
         {
           label:"Discount",
@@ -72,7 +73,7 @@
           selected:[],
           type:"numeric",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
         {
           label:"Category",
@@ -80,7 +81,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
         {
           label:"Blouse Piece",
@@ -88,7 +89,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
       {
           label:"Size",
@@ -96,7 +97,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
       {
           label:"Colour",
@@ -104,7 +105,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
       {
           label:"Fabric",
@@ -112,7 +113,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
       {
           label:"Occasion",
@@ -120,7 +121,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
       {
           label:"Technique",
@@ -128,7 +129,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },
       {
           label:"Pattern",
@@ -136,7 +137,7 @@
           selected:[],
           type:"text",
           isOpen:false,
-          facets: Array<any>,
+          facets: [] as Array<any>,
         },] as Record<string,any>[],
         pageNumber:0 as number,
         isLoading:false as boolean,
@@ -146,8 +147,7 @@
         mobileFilterToggle:false as boolean,
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
-        // TODO: remove unecessary variables
-        autocompleteSearchResults: {} as Record<string,any>,
+        // DONE: remove unecessary variables
         autocompleteSearchToggle:false as boolean,
         isRestoring:false as boolean,
         pageSize:32 as number,
@@ -163,7 +163,7 @@
           .skip(this.pageNumber*this.pageSize)
           // TODO: do this inside filter array using 'selected' field
           .filter(this.filterQuery())
-          // TODO: no need for a function here, do this here only
+          // DONE: no need for a function here, do this here only
           .sort(...this.activeSort)
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
@@ -352,8 +352,8 @@ updateURL(){
         const rangeString=filter.selected.map((range:any)=>`${range}`).join(',');
         params.set(filter.field,rangeString);
       }
-      else if(filter.type==='constant'){
-        params.set('In Stock Only','true');
+      else if(filter.type==='singleFacet'){
+        params.set(filter.field,'In Stock Only');
       }
       else{
         params.set(filter.field,filter.selected.join(','));
@@ -371,42 +371,21 @@ restoreState() {
   if(s){
     this.activeSort=(this.sortList.find(ele => ele.label===s)).field;
   }
-  // TODO: do this inside filters array
-  let availableF = this.filters.find((ele) => ele.label === 'Availability');
-  if (availableF) {
-    const stockVal = params.get('In Stock Only');
-    availableF.selected = stockVal ? ['In Stock Only'] : [];
-  }
-  this.filters.forEach(filter => {
-    if (filter.label === 'Availability') return; 
-
+  // DONE: do this inside filters array ->Handle the availability inside this filters loop
+  this.filters.forEach(filter => { 
     const value = params.get(filter.field);
     if (value) {
-      if (filter.type === 'numeric') {
-        // TODO: remove map if not needed
-        filter.selected = value.split(',').map(rangeStr => {
-          return rangeStr;
-        });
-      } else {
-        filter.selected = value.split(',');
-      }
+      filter.selected = value.split(',');
     } else {
       filter.selected = [];
     }
   });
-
   this.fetchData();
   this.$nextTick(() => {
     this.isRestoring = false;
   });
   },
   // TODO: move these into computed as their values wont change
-isDeviceMobile(){
-  return window.matchMedia("(max-width : 767px)").matches;
-},
-isDeviceTablet(){
-  return window.matchMedia("(min-width : 767px) and (max-width : 1024px)").matches;
-},
     },
     mounted(){
       // TODO: do we need fetchData() here
@@ -429,6 +408,12 @@ isDeviceTablet(){
   }
     },
     computed: {
+      isDeviceMobile(){
+        return window.matchMedia("(max-width : 767px)").matches;
+      },
+      isDeviceTablet(){
+        return window.matchMedia("(min-width : 767px) and (max-width : 1024px)").matches;
+      },
   selectedFilterCount(){
     let total=this.filters.reduce((sum,item)=>{
       return sum+(item.selected?item.selected.length:0);
@@ -437,7 +422,7 @@ isDeviceTablet(){
   },
   // TODO: Remove this and do this inside mounted or while defining data property
   layoutRatio(){
-    if(this.isDeviceMobile() || this.isDeviceTablet()){
+    if(this.isDeviceMobile || this.isDeviceTablet){
       this.layoutClass= "twoBytwo";
       return "twoBytwo";
     }
