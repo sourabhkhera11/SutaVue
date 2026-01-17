@@ -25,7 +25,7 @@
         sortList:[
           {
             label:"Featured",
-            field:[],
+            field:["-isActive", "saree_position"],
           },
           {
             label:"Price: Low to High",
@@ -232,10 +232,7 @@
               }
             }
           })
-          const sortFields =this.sortList.find((ele:any)=>{
-            return ele.label===this.activeSort;
-          });
-          searchClient.sort(...sortFields.label==='Featured'?["-isActive", "saree_position"]:sortFields.field)
+          searchClient.sort(...(this.sortList.find( ele => ele.label===this.activeSort)).field);
           this.productsData = await searchClient.search(``,collectionId);
           this.totalHits=this.productsData?.totalHits;
           // DONE: no need for a function here, do this here only
