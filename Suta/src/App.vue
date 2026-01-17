@@ -20,12 +20,12 @@
         products:[] as any[],
         totalHits: 0 as number,
         // DONE: rename to activeSort
-        activeSort:["-isActive", "saree_position"] as any[],
+        activeSort:"Featured" as string,
         // DONE: where are the rest of the fields as discussed
         sortList:[
           {
             label:"Featured",
-            field:["-isActive", "saree_position"]
+            field:[],
           },
           {
             label:"Price: Low to High",
@@ -155,16 +155,16 @@
     },
     methods:{
       async fetchData():Promise<void>{
+        const baseCondition="isSearchable = 1 AND price>0 AND discount>=0 AND collection_handles_shopify=\'saree\'";
         this.isLoading=true;
         try{
           searchClient
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
           .count(this.pageSize)
           .skip(this.pageNumber*this.pageSize)
-          // TODO: do this inside filter array using 'selected' field
-          .filter(this.filterQuery())
+          // DONE: do this inside filter array using 'selected' field
+          .filter(baseCondition)
           // DONE: no need for a function here, do this here only
-          .sort(...this.activeSort)
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
             {
@@ -227,9 +227,15 @@
                   searchClient.numericFacetFilters(ele.field,range.split('-')[0],range.split('-')[1]);
                 })
               }
-              // TODO: also manage availability filter here
+              else if(ele.field==='availability'){
+                searchClient.filter(baseCondition +" AND isActive=1" );
+              }
             }
           })
+          const sortFields =this.sortList.find((ele:any)=>{
+            return ele.label===this.activeSort;
+          });
+          searchClient.sort(...sortFields.label==='Featured'?["-isActive", "saree_position"]:sortFields.field)
           this.productsData = await searchClient.search(``,collectionId);
           this.totalHits=this.productsData?.totalHits;
           // TODO: no need for a function here, do this here only
@@ -253,7 +259,6 @@
       filterQuery(){
         const baseCondition=[
           "isSearchable = 1",
-          "price>0",
           "discount>=0",
           "collection_handles_shopify=\'saree\'"
         ];
@@ -342,8 +347,8 @@ checkSelected(item:any, subItem:any) {
 updateURL(){
   if (this.isRestoring) return;
   const params=new URLSearchParams();
-  const sortLabel=this.sortList.find(ele => ele.field === this.activeSort);
-  if(this.activeSort){
+  const sortLabel=this.sortList.find(ele => ele.label === this.activeSort);
+  if(sortLabel.label!="Featured"){
     params.set('sort',sortLabel.label);
   }
   this.filters.forEach(filter=>{
@@ -369,7 +374,10 @@ restoreState() {
   const params = new URLSearchParams(window.location.search);
   const s=params.get('sort');
   if(s){
-    this.activeSort=(this.sortList.find(ele => ele.label===s)).field;
+    this.activeSort=(this.sortList.find(ele => ele.label===s)).label;
+  }
+  else{
+    this.activeSort="Featured";
   }
   // DONE: do this inside filters array ->Handle the availability inside this filters loop
   this.filters.forEach(filter => { 
@@ -663,7 +671,7 @@ restoreState() {
       <!-- TODO: Create a function for sort and do all this '@click' there -->
       <!-- <li @click="activeSort='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li> -->
       <!-- TODO: Create a function for sort and do all this '@click' there -->
-      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.field,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
   </span>
             </div>
@@ -774,7 +782,7 @@ restoreState() {
   <label  class="!st-text-[16.0004px] st-font-normal st-block st-pb-[14px] st-mx-[-20px] st-mb-[20px] st-border-b-[1px] st-border-solid st-border-[#e7e7e7]">Sort by</label>
     <ul class="list st-m-0 st-list-none">
       <!-- <li @click="activeSort='',fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li> -->
-      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.field, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
 </div>
         </div>
