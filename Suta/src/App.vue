@@ -16,11 +16,11 @@
     },
     data(){
       return{
-        // TODO: not required variable
-        fetchedRawData: {} as Record<string,any>,
+        productsData: {} as Record<string,any>,
         products:[] as any[],
+        totalHits: 0 as number,
         // TODO: rename to activeSort
-        sortBy:"" as string,
+        activeSort:"" as string,
         // TODO: where are the rest of the fields as discussed
         sortList:[
           {
@@ -36,11 +36,11 @@
             field:"-discount"
           },
           {
-            label:"Date: Old to New",
+            label:"Date, Old to New",
             field:"created_at"
           },
           {
-            label:"Date: New to Old",
+            label:"Date, New to Old",
             field:"-created_at"
           },] as Array<any>,
         filters:[
@@ -226,7 +226,8 @@
               // TODO: also manage availability filter here
             }
           })
-          this.fetchedRawData = await searchClient.search(``,collectionId);
+          this.productsData = await searchClient.search(``,collectionId);
+          this.totalHits=this.productsData?.totalHits;
           // TODO: no need for a function here, do this here only
           this.initialiseFacets();
         }
@@ -237,11 +238,11 @@
           this.isLoading=false;
         }
         if(this.pageNumber>0){
-          // TODO: use array.push method here
-          this.products=[...this.products,...this.fetchedRawData.results];
+          // DONE: use array.push method here
+          this.products.push(this.productsData.results);
         }
         else{
-          this.products=this.fetchedRawData.results;
+          this.products=this.productsData.results;
         }
       },
       // TODO: simplify this and do this inside fetchData function
@@ -249,7 +250,8 @@
         const baseCondition=[
           "isSearchable = 1",
           "price>0",
-          "discount>=0"
+          "discount>=0",
+          "collection_handles_shopify=\'saree\'"
         ];
         if(this.isActive()){
           baseCondition.push("isActive=1");
@@ -259,8 +261,8 @@
       // TODO: remove this and do this inside fetchData function
       sortOptionArray(){
         const sortFields=["-isActive", "saree_position", "-_rank"];
-        if(this.sortBy){
-          sortFields.push(this.sortBy);
+        if(this.activeSort){
+          sortFields.push(this.activeSort);
         }
         return sortFields;
       }, 
@@ -306,10 +308,10 @@
 initialiseFacets(){
   for(let ele of this.filters){
     if(ele.type==='numeric'){
-      ele.facets=this.fetchedRawData?.numericFacets[ele?.field] || [];
+      ele.facets=this.productsData?.numericFacets[ele?.field] || [];
     }
     else if(ele.type==='text'){
-      ele.facets=this.fetchedRawData?.textFacets[ele?.field] || [];
+      ele.facets=this.productsData?.textFacets[ele?.field] || [];
     }
   }
   console.log(this.filters);
@@ -343,8 +345,8 @@ checkSelected(item:any, subItem:any) {
 updateURL(){
   if (this.isRestoring) return;
   const params=new URLSearchParams();
-  if(this.sortBy){
-    params.set('s',this.sortBy);
+  if(this.activeSort){
+    params.set('s',this.activeSort);
   }
   this.filters.forEach(filter=>{
     if(filter.selected && filter.selected.length>0){
@@ -368,7 +370,7 @@ restoreState() {
   this.isRestoring = true;
   const params = new URLSearchParams(window.location.search);
   const s=params.get('s');
-  if(s) this.sortBy=s;
+  if(s) this.activeSort=s;
   // TODO: do this inside filters array
   let availableF = this.filters.find((ele) => ele.label === 'Availability');
   if (availableF) {
@@ -623,7 +625,7 @@ isDeviceTablet(){
       <section class="mobile">
         <div class="lg:st-hidden">
           <div  class=" st-w-full st-text-[14px]  md:st-border-t md:st-border-[#e8e8e1]">
-            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-gap-[5px] st-text-capitalize"><span >{{ fetchedRawData?.totalHits }}</span><span class=""> Products</span><span class=""></span>
+            <span  class="st-flex st-justify-center st-text-[14px] md:st-text-[14px] st-text-[#5c5c5c] st-pl-[0] st-pt-[0px] st-my-[10px] st-font-normal  st-gap-[5px] st-text-capitalize"><span >{{ totalHits }}</span><span class=""> Products</span><span class=""></span>
             </span>
             </div>
           </div>
@@ -660,7 +662,7 @@ isDeviceTablet(){
                   <svg  role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
               </span>
             </div>
-            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ fetchedRawData?.totalHits }}</span><span>products</span></span>
+            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ totalHits }}</span><span>products</span></span>
             </div>
 
             <div class="sortby st-hidden lg:st-block st-py-[13px] st-border-l st-border-[#e8e8e1] st-group st-relative st-text-[11px] st-flex st-items-center st-gap-[0px] st-align-middle st-justify-center st-text-[#5c5c5c] st-cursor-pointer">
@@ -674,9 +676,9 @@ isDeviceTablet(){
     
     <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
       <!-- TODO: Create a function for sort and do all this '@click' there -->
-      <li @click="sortBy='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <li @click="activeSort='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
       <!-- TODO: Create a function for sort and do all this '@click' there -->
-      <li v-for="(item,index) in sortList" :key="item.field" @click="sortBy=item.field,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.field,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
   </span>
             </div>
@@ -786,8 +788,8 @@ isDeviceTablet(){
   <span @click="mobileSortToggle=false" class="closeFilter st-block st-text-[30px] st-top-[5px] st-text-black st-absolute st-z-[9] st-right-[15px]">×</span>
   <label  class="!st-text-[16.0004px] st-font-normal st-block st-pb-[14px] st-mx-[-20px] st-mb-[20px] st-border-b-[1px] st-border-solid st-border-[#e7e7e7]">Sort by</label>
     <ul class="list st-m-0 st-list-none">
-      <li @click="sortBy='',fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
-      <li v-for="(item,index) in sortList" :key="item.field" @click="sortBy=item.field, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li @click="activeSort='',fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.field, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
 </div>
         </div>
@@ -917,10 +919,10 @@ isDeviceTablet(){
     <a class="">
 
   <!-- TODO: try handleing this in a single div -->
-      <div v-if="!isLoading && !((fetchedRawData?.totalHits - 32 - (pageNumber * 32)) < 32)" @click="pageNumber++ ,fetchData()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
+      <div v-if="!isLoading && !((totalHits - 32 - (pageNumber * 32)) < 32)" @click="pageNumber++ ,fetchData()" class="st-border st-border-black st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-black st-font-[700]">
         LOAD MORE 
       </div>
-      <div v-if="!isLoading && ((fetchedRawData?.totalHits - 32 - (pageNumber * 32)) < 32)"  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
+      <div v-if="!isLoading && ((totalHits - 32 - (pageNumber * 32)) < 32)"  class=" st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-text-[13px] st-text-[#fff] st-bg-[#F48A77] st-font-[400] st-border-none">
         RESULTS END HERE 
       </div>
       <div v-if="isLoading"  class="st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-border st-border-black st-text-[13px] st-text-black st-font-[700]">
