@@ -238,8 +238,15 @@
           searchClient.sort(...sortFields.label==='Featured'?["-isActive", "saree_position"]:sortFields.field)
           this.productsData = await searchClient.search(``,collectionId);
           this.totalHits=this.productsData?.totalHits;
-          // TODO: no need for a function here, do this here only
-          this.initialiseFacets();
+          // DONE: no need for a function here, do this here only
+          for(let ele of this.filters){
+            if(ele.type==='numeric'){
+              ele.facets=this.productsData?.numericFacets[ele?.field] || [];
+            }
+            else if(ele.type==='text'){
+              ele.facets=this.productsData?.textFacets[ele?.field] || [];
+            }
+          }
         }
         catch(er){
           console.log(er);
@@ -255,39 +262,20 @@
           this.products=this.productsData.results;
         }
       },
-      // TODO: simplify this and do this inside fetchData function
-      filterQuery(){
-        const baseCondition=[
-          "isSearchable = 1",
-          "discount>=0",
-          "collection_handles_shopify=\'saree\'"
-        ];
-        if(this.isActive()){
-          baseCondition.push("isActive=1");
-        }
-        return baseCondition.join(" AND ");
-      },
+      // DONE: simplify this and do this inside fetchData function
       // DONE: remove this and do this inside fetchData function
-      // TODO: combine these two clear filter functions and handle it with filter's fieldName
-    clearFilter(selectedArray:any[]){
-      selectedArray.length=0;
-    },
-    clearAllFiler(){
-      this.filters.forEach((ele)=>{
-        ele.selected.length=0;
-      })
-    },
-      // TODO: remove this and do this using availabilty filter's selected array 
-    isActive():boolean{
-      const availableFilter=this.filters.find((ele)=>{
-        return ele.label==="Availability";
-      })
-      if(availableFilter && availableFilter.selected.length>0){
-        return true;
+      // DONE: combine these two clear filter functions and handle it with filter's fieldName
+    clearFilter(selectedArray?:any[]){
+      if(selectedArray){
+        selectedArray.length=0;
       }
-      return false;
-    }
-  ,
+      else{
+        this.filters.forEach((ele)=>{
+        ele.selected.length=0;
+        })  
+      }
+    },
+      // DONE: remove this and do this using availabilty filter's selected array ->Avilable isActive one 
   removeFilter(selectedArray:any[],item:any){
     const index=selectedArray.indexOf(item);
     selectedArray.splice(index,1);
@@ -306,18 +294,7 @@
       behavior:'smooth'
     });
   },
-      // TODO: remove this and do this inside fetchData function
-initialiseFacets(){
-  for(let ele of this.filters){
-    if(ele.type==='numeric'){
-      ele.facets=this.productsData?.numericFacets[ele?.field] || [];
-    }
-    else if(ele.type==='text'){
-      ele.facets=this.productsData?.textFacets[ele?.field] || [];
-    }
-  }
-  console.log(this.filters);
-},
+      // DONE: remove this and do this inside fetchData function->Initialise Facet One
       // Good
 getSortedSubItems(item:any) {
     let sourceList = [];
@@ -393,11 +370,12 @@ restoreState() {
     this.isRestoring = false;
   });
   },
-  // TODO: move these into computed as their values wont change
+  // DONE: move these into computed as their values wont change
     },
     mounted(){
-      // TODO: do we need fetchData() here
+      // DONE: do we need fetchData() here
       this.restoreState();
+      this.layoutClass=(this.isDeviceMobile || this.isDeviceTablet)? "twoBytwo":"threeBythree";  
       window.addEventListener("scroll",this.handleScroll);
       window.addEventListener('popstate', this.restoreState);
     },
@@ -428,15 +406,7 @@ restoreState() {
     },0);
     return total;
   },
-  // TODO: Remove this and do this inside mounted or while defining data property
-  layoutRatio(){
-    if(this.isDeviceMobile || this.isDeviceTablet){
-      this.layoutClass= "twoBytwo";
-      return "twoBytwo";
-    }
-      this.layoutClass="threeBythree";
-      return "threeBythree"
-  }
+  // DONE: Remove this and do this inside mounted or while defining data property
 },
   })
 </script>
@@ -769,7 +739,7 @@ restoreState() {
 </div>  
 </div>
 <div  class="apply-all st-fixed st-m-0 st-left-[unset] st-right-0 st-bottom-0 st-w-[inherit] st-bg-white st-flex st-items-center st-justify-center st-text-center st-border-t-[1px] st-border-solid st-border-[#eaeaec] st-p-[16px] st-gap-[8px]">
-  <span @click="clearAllFiler(),fetchData(),updateURL() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
+  <span @click="clearFilter(),fetchData(),updateURL() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
   <span @click="mobileFilterToggle=false" class="apply-btn st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">View Results</span>
 </div>
 </div>
@@ -897,7 +867,7 @@ restoreState() {
       </template>
     </div>
     <div v-if="filters.some(f => f.selected.length > 0)" class="tag-item st-shrink-0 ">
-      <div @click="clearAllFiler(),fetchData(),updateURL()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
+      <div @click="clearFilter(),fetchData(),updateURL()" class="tag-content st-text-[14px] st-bg-[#323232] st-py-[5px] st-px-[10px] st-text-[#ffffff] st-rounded-[0px] st-cursor-pointer">
         Reset All
       </div>
     </div>
@@ -905,7 +875,7 @@ restoreState() {
 </div>
 </div>
                 <div class="productlist st-flex st-flex-wrap md:st-mx-[-15px] st-mx-[2.5px] " >
-                  <card v-for="(value,index) in products" :key="index" :class="[layoutClass || layoutRatio ]"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
+                  <card v-for="(value,index) in products" :key="index" :class="layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
