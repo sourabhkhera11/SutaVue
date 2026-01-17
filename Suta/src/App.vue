@@ -20,28 +20,32 @@
         products:[] as any[],
         totalHits: 0 as number,
         // TODO: rename to activeSort
-        activeSort:"" as string,
+        activeSort:["-isActive", "saree_position"] as any[],
         // TODO: where are the rest of the fields as discussed
         sortList:[
           {
+            label:"Featured",
+            field:["-isActive", "saree_position"]
+          },
+          {
             label:"Price: Low to High",
-            field:"discounted_price"
+            field:["-isActive", "discounted_price", "saree_position"],
           },
           {
             label:"Price: High to Low",
-            field:"-discounted_price"
+            field:["-isActive", "-discounted_price", "saree_position"],
           },
           {
             label:"Discount: High to Low",
-            field:"-discount"
+            field:["-isActive", "-discount", "saree_position"],
           },
           {
             label:"Date, Old to New",
-            field:"created_at"
+            field:["-isActive", "created_at", "saree_position"],
           },
           {
             label:"Date, New to Old",
-            field:"-created_at"
+            field:["-isActive", "-created_at", "saree_position"],
           },] as Array<any>,
         filters:[
           {
@@ -160,7 +164,7 @@
           // TODO: do this inside filter array using 'selected' field
           .filter(this.filterQuery())
           // TODO: no need for a function here, do this here only
-          .sort(...this.sortOptionArray())
+          .sort(...this.activeSort)
           .textFacets("product_type","st_blousetype","size","colour","fabric","st_occasion","st_technique","st_pattern")
           .numericFacets("discounted_price",[
             {
@@ -258,14 +262,7 @@
         }
         return baseCondition.join(" AND ");
       },
-      // TODO: remove this and do this inside fetchData function
-      sortOptionArray(){
-        const sortFields=["-isActive", "saree_position", "-_rank"];
-        if(this.activeSort){
-          sortFields.push(this.activeSort);
-        }
-        return sortFields;
-      }, 
+      // DONE: remove this and do this inside fetchData function
       // TODO: combine these two clear filter functions and handle it with filter's fieldName
     clearFilter(selectedArray:any[]){
       selectedArray.length=0;
@@ -345,8 +342,9 @@ checkSelected(item:any, subItem:any) {
 updateURL(){
   if (this.isRestoring) return;
   const params=new URLSearchParams();
+  const sortLabel=this.sortList.find(ele => ele.field === this.activeSort);
   if(this.activeSort){
-    params.set('s',this.activeSort);
+    params.set('sort',sortLabel.label);
   }
   this.filters.forEach(filter=>{
     if(filter.selected && filter.selected.length>0){
@@ -369,8 +367,10 @@ updateURL(){
 restoreState() {
   this.isRestoring = true;
   const params = new URLSearchParams(window.location.search);
-  const s=params.get('s');
-  if(s) this.activeSort=s;
+  const s=params.get('sort');
+  if(s){
+    this.activeSort=(this.sortList.find(ele => ele.label===s)).field;
+  }
   // TODO: do this inside filters array
   let availableF = this.filters.find((ele) => ele.label === 'Availability');
   if (availableF) {
@@ -676,7 +676,7 @@ isDeviceTablet(){
     
     <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
       <!-- TODO: Create a function for sort and do all this '@click' there -->
-      <li @click="activeSort='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <!-- <li @click="activeSort='',fetchData(), updateURL()" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li> -->
       <!-- TODO: Create a function for sort and do all this '@click' there -->
       <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.field,fetchData(),updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
@@ -788,7 +788,7 @@ isDeviceTablet(){
   <span @click="mobileSortToggle=false" class="closeFilter st-block st-text-[30px] st-top-[5px] st-text-black st-absolute st-z-[9] st-right-[15px]">×</span>
   <label  class="!st-text-[16.0004px] st-font-normal st-block st-pb-[14px] st-mx-[-20px] st-mb-[20px] st-border-b-[1px] st-border-solid st-border-[#e7e7e7]">Sort by</label>
     <ul class="list st-m-0 st-list-none">
-      <li @click="activeSort='',fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li>
+      <!-- <li @click="activeSort='',fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px]  st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">Featured</li> -->
       <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.field, fetchData(),updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
 </div>
