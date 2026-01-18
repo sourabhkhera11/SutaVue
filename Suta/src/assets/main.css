@@ -87,3 +87,6 @@ body{
 .sixBysix{
   flex-basis: 16.66%;
 }
+.hidden{
+  display: none;
+}

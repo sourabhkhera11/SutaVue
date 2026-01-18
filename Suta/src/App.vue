@@ -145,7 +145,6 @@
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
         // DONE: remove unecessary variables
-        autocompleteSearchToggle:false as boolean,
         isRestoring:false as boolean,
         pageSize:32 as number,
       };
@@ -381,16 +380,6 @@ restoreState() {
       window.removeEventListener('popstate', this.restoreState);
       window.removeEventListener("scroll",this.handleScroll);
     },
-    watch:{
-      // TODO: do this inside autocomplete compo
-    autocompleteSearchToggle(newValue) { 
-    if (newValue) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-  }
-    },
     computed: {
       isDeviceMobile(){
         return window.matchMedia("(max-width : 767px)").matches;
@@ -410,95 +399,6 @@ restoreState() {
 </script>
 
 <template>
-  <!-- TODO: Move this section to index.html -->
-  <header class="st-sticky st-top-0 st-z-20 st-bg-[#fff]">
-  <div class=" st-flex md:st-gap-[15px]  st-justify-between st-py-[8px] md:st-px-[48px] st-px-[20px] st-items-center st-shadow-[inset_0_-1px_rgb(28_28_28_/_0.15)]">
-    
-    <div class="burgerBox lg:st-hidden st-flex st-gap-[20px]">
-      <button type="button">
-        <svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-hamburger" viewBox="0 0 24 24">
-          <path d="M1 19h22M1 12h22M1 5h22" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"></path>
-        </svg>
-      </button>
-      <div class=""></div>
-      <div class=""></div>
-      <div class=""></div>
-    </div>
-
-    <a href="/" class="">
-      <span class="st-sr-only">Suta</span>
-      <img 
-        class="st-w-[70px] st-max-w-full st-h-auto header__logo-image lcp-candidate" 
-        src="//suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=2283" 
-        alt="" 
-        srcset="//suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=140 140w, //suta.in/cdn/shop/files/Suta_final_logo_df452a25-681f-4caa-a64e-a389640ad0f2.png?v=1761126095&amp;width=210 210w" 
-        width="2283" 
-        height="1521" 
-        sizes="70px" 
-        loading="eager" 
-        fetchpriority="high"
-      >
-    </a>
-
-    <nav class=" st-hidden lg:st-block">
-      <ul class=" st-flex st-flex-wrap st-justify-center st-align-middle st-gap-[41.6px] st-text-[14px] st-tracking-[1.2px] st-cursor-pointer ">
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out  "><a class="st-visited:text-[#000080]" href="https://www.google.com/" target="_blank">Women</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out  "><a class="st-visited:text-[#000080]" href="https://www.google.co" target="_blank">Suta Wedding</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out  "><a class="st-visited:text-[#000080]" href="https://www.google.c" target="_blank">Men</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out st-text-[#FF0000] "><a class="st-visited:text-[#000080]" href="https://www.google" target="_blank">Sale</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.googl" target="_blank">Kids</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.goog" target="_blank">Accessories</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.goo" target="_blank">Gifts</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.go" target="_blank">Collections</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.g" target="_blank">Our Stores</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.googleee" target="_blank">About Us</a></li>
-        <li class="st-hover:translate-y-[-10px] st-ease-in-out"><a class="st-visited:text-[#000080]" href="https://www.ggg" target="_blank">FAQ</a></li>
-      </ul>
-    </nav>
-
-    <nav>
-      <ul class="st-flex st-gap-[10px] md:st-gap-[20px] st-align-middle ">
-        
-        <li class="md:st-hidden">
-          <a title="App Download" target="_blank" class="Header__Icon Icon-Wrapper Icon-Wrapper--clickable suta_download hide-on-desktop" href="https://onelink.to/k35vtm">
-            
-            <svg class="st-w-[35px] st-h-[26px]" id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840.57 500">
-              <g>
-                <rect class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x="30" y="25" width="303.16" height="450" rx="30.86" ry="30.86"></rect>
-                <line class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x1="181.58" y1="119.96" x2="181.58" y2="354.65"></line>
-                <line class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x1="93.5" y1="266.57" x2="181.58" y2="354.65"></line>
-                <line class="st-fill-none st-stroke-black st-stroke-[25px]" stroke-linecap="round" stroke-linejoin="round" x1="269.65" y1="266.57" x2="181.58" y2="354.65"></line>
-                
-                <path class="st-stroke-[0px]" d="m30,412.84h303.16v35.12c0,14.92-12.12,27.04-27.04,27.04H55.57c-14.11,0-25.57-11.46-25.57-25.57v-36.59h0Z"></path>
-              </g>
-              <text class="st-text-[228.78px] st-font-medium" transform="translate(366.51 331.21)">
-                <tspan x="0" y="0">APP</tspan>
-              </text>
-            </svg>
-            </a>
-        </li>
-
-        <li><a href=""><svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-account" viewBox="0 0 24 24">
-              <path d="M16.125 8.75c-.184 2.478-2.063 4.5-4.125 4.5s-3.944-2.021-4.125-4.5c-.187-2.578 1.64-4.5 4.125-4.5 2.484 0 4.313 1.969 4.125 4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              <path d="M3.017 20.747C3.783 16.5 7.922 14.25 12 14.25s8.217 2.25 8.984 6.497" stroke="currentColor" stroke-width="1.5" stroke-miterlimit="10"></path>
-            </svg></a></li>
-            <!-- TODO: do this using vanilla js -->
-        <li @click="autocompleteSearchToggle=!autocompleteSearchToggle" class=" md:st-block st-cursor-pointer"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 17 17" fill="none">
-              <path d="M15.439 15.439L12.6315 12.6314M14.6368 7.81841C14.6368 11.5841 11.5841 14.6368 7.81841 14.6368C4.05271 14.6368 1 11.5841 1 7.81841C1 4.05271 4.05271 1 7.81841 1C11.5841 1 14.6368 4.05271 14.6368 7.81841Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-            </svg></li>
-        <li><a href=""><svg aria-hidden="true" fill="none" focusable="false" width="24" class="header__nav-icon icon icon-cart" viewBox="0 0 24 24">
-              <path d="M10 7h13l-4 9H7.5L5 3H1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-              <circle cx="9" cy="20" r="1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>
-              <circle cx="17" cy="20" r="1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></circle>
-            </svg></a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-<!-- TODO: Just add a element here where the app will mount and manage everything else using component -->
-<section @click.self="autocompleteSearchToggle=false" v-if="autocompleteSearchToggle" class="searchSpace st-absolute st-top-0 md:st-top-auto st-bg-[#fff] md:st-bg-transparent md:st-fixed st-z-[3000] st-h-full st-w-full">
-    <Autocomplete v-model="autocompleteSearchToggle"/>
-</section>
   <section class="mobileBottom md:st-hidden ">
   <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[5px] st-text-[#000000a1]">
     <ul class="mobile-bottom-nav--wrapper st-flex st-justify-evenly">
