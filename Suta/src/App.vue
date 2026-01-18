@@ -3,10 +3,7 @@
   import SearchClient from "@gaspl/search-client";
   import card from './components/card.vue';
   import Autocomplete from './components/Autocomplete.vue';
-  const appId = "26u1hqhy378jlrgxwpaug571";
-  const readToken = "SVXPVV89J7GCA4D8DMP7S4N4";
-  const collectionId = "KSNQ58MRXELY5JCX767TDSA1";
-  const autoSuggestionCollId="X7PKBZVRIHHER13JKQTANV9Y";
+  import {appId,readToken,collectionId} from "./assets/config.json";
   const searchClient = new SearchClient(appId, readToken);
   
   export default defineComponent({

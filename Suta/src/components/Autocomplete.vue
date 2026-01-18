@@ -1,15 +1,14 @@
-<!-- Implement the similar feedback from app.vue here as well -->
+<!--DONE: Implement the similar feedback from app.vue here as well -->
 
-<!-- Create two functions here, to manage key input from a input bar outside the vue context -->
+<!--TODO Create two functions here, to manage key input from a input bar outside the vue context -->
 <script lang="ts">
-   import {defineComponent} from "vue";
-   import SearchClient from "@gaspl/search-client";
-   import card from "./card.vue";
-  //  TODO: create a file named config.json and import these from there
-   const appId = "26u1hqhy378jlrgxwpaug571";
-   const readToken = "SVXPVV89J7GCA4D8DMP7S4N4";
-   const collectionId = "KSNQ58MRXELY5JCX767TDSA1";
-   const autoSuggestionCollId="X7PKBZVRIHHER13JKQTANV9Y";
+  import {defineComponent} from "vue";
+  import SearchClient from "@gaspl/search-client";
+  import card from "./card.vue";
+  //  DONE: create a file named config.json and import these from there
+  import {appId,readToken,collectionId,autoSuggestionCollId} from "../assets/config.json";
+  const searchClient = new SearchClient(appId, readToken);
+
    export default defineComponent({
       components:{
          card
@@ -24,94 +23,54 @@
     emits: ['update:modelValue'],
       data(){
       return{
-        // TODO: remove this
-        fetchedRawData: {} as Record<string,any>,
-        // TODO: this is an array
-        products:{} as Record<any,any>,
-        layoutClass:"" as string,
-        autocompleteSearchResults: {} as Record<string,any>,
+        // DONE: remove this -> fetchRawData
+        products:{} as Record<string,any>,
+        totalHits:0 as number,
         searchQuery:"" as string,
-        autosuggestionRawData:{} as Record<string,any>,
-        autosuggestionResult:{} as Record<string,any>,
-        popularChoice:"AND showInSuggestion = 1" as string,
-        popularChoiceToggle:true as boolean,
+        productSuggestions:{} as Record<string,any>,
         isRestoring:false as boolean,
         displayProducts:6 as number,
       };
     },
       methods:{
-        // TODO: see if these can be done inside a single function
+        // DONE: see if these can be done inside a single function
       async fetchData():Promise<void>{
-        // Declare this globally
-        const searchClient = new SearchClient(appId, readToken);
+        //DONE: Declare this globally
+        const baseCondition="isSearchable = 1 AND price>0 AND discount>=0 AND collection_handles_shopify=\'saree\'";
         try{
           searchClient
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
           .count(this.displayProducts)
-          .filter(this.filterQuery())
-          .sort(...this.sortOptionArray())
-        this.fetchedRawData = await searchClient.search(`${this.searchQuery}`,collectionId);
-        this.autocompleteSearchResults=this.fetchedRawData.results;
-        }
-        catch(er){
-          console.log(er);
-        }
-      },
-      async fetchAutoResults():Promise<void>{
-        try{
-          const searchClient = new SearchClient(appId, readToken);
-          let query=searchClient
+          if(this.searchQuery===''){
+            searchClient
+            .filter(baseCondition+" AND collection_handles_shopify=\'bestseller-sarees\'")
+            .sort("-isActive",'bestseller_sarees_position');
+          }
+          else{
+            searchClient
+            .filter(baseCondition)
+            .sort("-isActive");
+          }
+        this.products = await searchClient.search(`${this.searchQuery}`,collectionId);
+        this.totalHits=this.products.totalHits;
+
+        searchClient
           .fields("id","displayLabel")
-          .count(10)
-          .filter(`isSearchable = 1  ${this.popularChoice}`)
-          this.autosuggestionRawData = await query.search(`${this.searchQuery}`,autoSuggestionCollId);
+          .count(this.displayProducts);
+          (this.searchQuery==='')?searchClient.filter("isSearchable = 1  AND showInSuggestion = 1"):searchClient.filter("isSearchable = 1");
+        this.productSuggestions = await searchClient.search(`${this.searchQuery}`,autoSuggestionCollId);
         }
         catch(er){
           console.log(er);
         }
-        this.autosuggestionResult=this.autosuggestionRawData.results;
-      
       },
-      filterQuery(){
-        const baseCondition=[
-          "isSearchable = 1",
-          "discounted_price>0",
-          "discount>=0",
-          "isActive=1"
-        ];
-        if(this.searchQuery===''){
-          baseCondition.push("collection_handles_shopify=\'bestseller-sarees\'");
-        }
-        return baseCondition.join(" AND ");
-      },
-      sortOptionArray(){
-        const sortFields=["-isActive"];
-        if(this.searchQuery===''){
-            sortFields.push('bestseller_sarees_position');
-        }
-        return sortFields;
-      }, 
-checkSearchQuery(){
-  if(this.searchQuery!=""){
-    this.popularChoiceToggle=false;
-    this.popularChoice="";
-  }
-  else{
-    this.popularChoiceToggle=true;
-    this.popularChoice="AND showInSuggestion = 1";
-  }
-},
 fillSuggestion(element:string){
   this.searchQuery=element;
   this.updateURL();
-  this.fetchData();
 },
 clearSearch() {
   this.searchQuery = '';
-  this.checkSearchQuery(); 
-  this.fetchData();
   this.updateURL(); 
-  this.fetchAutoResults();
 },
 updateURL(){
   const params=new URLSearchParams();
@@ -120,6 +79,7 @@ updateURL(){
   }
   const newUrl=`${window.location.pathname}?${params.toString()}`;
   window.history.replaceState({},'',newUrl);
+  this.fetchData();
 },
 restoreState() {
   this.isRestoring = true;
@@ -131,18 +91,11 @@ restoreState() {
   else{
     this.searchQuery='';
   }
-  this.checkSearchQuery();
   this.fetchData();
   this.$nextTick(() => {
     this.isRestoring = false;
   });
   },
-onSearch(){
-  this.updateURL();
-  this.checkSearchQuery();
-  this.fetchAutoResults();
-},
-
     },
     computed: {
     autocompleteSearchToggle: {
@@ -157,13 +110,12 @@ onSearch(){
 mounted(){
     this.restoreState();
     this.fetchData();
-    this.fetchAutoResults();
-      window.addEventListener('popstate', this.restoreState);
+    window.addEventListener('popstate', this.restoreState);
     },
-    beforeUnmount(){
-      window.removeEventListener('popstate', this.restoreState);
+beforeUnmount(){
+    window.removeEventListener('popstate', this.restoreState);
     },
-    })
+})
 </script>
 
 <template>
@@ -175,7 +127,7 @@ mounted(){
             <path d="M495,466.2L377.2,348.4c29.2-35.6,46.8-81.2,46.8-130.9C424,103.5,331.5,11,217.5,11C103.4,11,11,103.5,11,217.5   S103.4,424,217.5,424c49.7,0,95.2-17.5,130.8-46.7L466.1,495c8,8,20.9,8,28.9,0C503,487.1,503,474.1,495,466.2z M217.5,382.9   C126.2,382.9,52,308.7,52,217.5S126.2,52,217.5,52C308.7,52,383,126.3,383,217.5S308.7,382.9,217.5,382.9z"></path>
          </svg>
       </span>
-      <input @input="fetchData(),onSearch()" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" placeholder="Search for Sarees" >
+      <input @input="updateURL()" @keyup.enter="autocompleteSearchToggle=false" v-model="searchQuery"  class="st-basis-[95%] st-pl-[30px]  st-font-[18px] st-border-none st-h-[35px] st-outline-none st-focus:outline-none st-focus:ring-0" placeholder="Search for Sarees" >
       <span v-show="searchQuery" @click="clearSearch()" class=" input-close-btn st-translate-y-[5px] st-pr-[10px] st-text-[14px] st-cursor-pointer" style="display: block;">Clear</span>
       <span @click="autocompleteSearchToggle=false" class=" close_search st-translate-y-[10px] st-cursor-pointer">
          <svg height="12px" style="enable-background:new 0 0 512.001 512.001;" viewBox="0 0 512.001 512.001" width="12px" x="0px" xml:space="preserve" y="0px">
@@ -184,17 +136,17 @@ mounted(){
       </span>
    </div>
     </div>
-    <section v-if="autocompleteSearchResults.length===0" class="lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
+    <section v-if="(products?.results)?.length===0" class="lg:st-flex st-flex-col st-w-full st-text-center st-bg-[#fff]">
   <p class="st-font-[600] st-my-[10px]">No Results found for '{{searchQuery}}'</p>
   <p class="st-mb-[10px]">Try Searching some other keywords</p>
     </section>
     <div v-else class="st-row st-flex-wrap st-flex st-flex-col md:st-flex-row ">
-  <section v-if="popularChoiceToggle" class="st-col-lg-3 st-col-md-3 st-left-col md:st-w-[25%]  st-trending-search st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]  st-mb-[10px] lg:st-mb-[0]" style="">
+  <section v-if="searchQuery===''" class="st-col-lg-3 st-col-md-3 st-left-col md:st-w-[25%]  st-trending-search st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]  st-mb-[10px] lg:st-mb-[0]" style="">
    <div id="st-before-search">
       <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span></div>
       <div>
          <ul class="sm:st-gap-[10] st-trending-list st-inline-flex st-flex-wrap md:st-flex-row st-gap-2.5 st-m-0 st-p-0 st-w-full st-flex-col">
-            <li v-for="ele in autosuggestionResult" :key="ele.displayLabel" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
+            <li v-for="ele in productSuggestions?.results" :key="ele.displayLabel" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
               <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span></span>
             </li>
          </ul>
@@ -206,7 +158,7 @@ mounted(){
       </div>
       <div>
          <ul class="sm:st-gap-2.5 st-trending-list st-inline-flex st-flex-wrap st-flex-col st-gap-2.5 st-m-0 st-p-0 st-w-full">
-            <li v-for="ele in autosuggestionResult.slice(0,5)" :key="ele.displayLabel" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
+            <li v-for="ele in productSuggestions?.results" :key="ele.displayLabel" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
               <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span>
             </span></li>
          </ul>
@@ -216,18 +168,17 @@ mounted(){
    <div class="sidebar st-col-lg-9 st-col-md-9 st-right-col md:st-w-[75%]  st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
       <div class="st-trending-header st-mb-[10px]">
         <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">Search Results</span></div>
-      <!---->
       <div class="st-row st-cols-2 st-cols-sm-2 st-cols-md-4 st-product-wrapper st-flex st-flex-nowrap st-overflow-y-auto">
-         <div v-for="(value,index) in autocompleteSearchResults" :key="index" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" >
-            <card  :key="value"  :user-data="value" :ratio="layoutClass"/>
+         <div v-for="(value,index) in products.results" :key="index" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" >
+            <card  :key="value"  :user-data="value" />
          </div>
       </div>
    </div>
     </div>
-    <div v-if="autosuggestionResult.length>0" class="st-row st-flex st-m-[0] ">
+    <div v-if="products?.results?.length>0" class="st-row st-flex st-m-[0] ">
    <div class="st-left-col st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] !st-block"></div>
    <div class="st-right-col st-right-col st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
-      <div @click="autocompleteSearchToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{fetchedRawData.totalHits}}</span>) product<span style="">s</span></span></div>
+      <div @click="autocompleteSearchToggle=false" class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{totalHits}}</span>) product<span style="">s</span></span></div>
    </div>
     </div>
 </section>
