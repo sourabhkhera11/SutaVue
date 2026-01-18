@@ -45,15 +45,6 @@
           <div class="typecard st-text-[12px] st-text-[#1c1c1c] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
             {{ userData?.product_type[0]?.toUpperCase()+userData.product_type.slice(1) }}
           </div>
-          <!-- <div class="fabriccard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
-            {{ userData.fit }}
-          </div>
-          <div class="fabriccard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
-            {{ userData.style }}
-          </div>
-          <div class="fabriccard st-text-[12px] st-tracking-[0.7px] st-px-[8px] st-w-fit st-h-fit st-border-[1px] st-border-[#8c8686]">
-            {{ userData.vendor }}
-          </div> -->
         </div>
 
         <div class="prices st-flex st-gap-[8px] st-w-fit st-h-fit">
@@ -83,5 +74,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Scoped styles if needed */
+
 </style>
