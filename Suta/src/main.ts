@@ -28,6 +28,7 @@ const updateSearchState = (val: string) => {
 [crossIcon, searchIcon].forEach(el => {
     el?.addEventListener("click", () => {
         searchSpace?.classList.toggle('hidden');
+        document.body.classList.toggle('no-scroll');
         searchInput.focus(); 
     });
 });
@@ -45,6 +46,7 @@ searchClear?.addEventListener("click", () => {
 searchInput?.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
         searchSpace?.classList.toggle('hidden');
+        document.body.classList.toggle('no-scroll');
     }
 });
 

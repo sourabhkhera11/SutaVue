@@ -378,7 +378,7 @@ restoreState() {
         return window.matchMedia("(max-width : 767px)").matches;
       },
       isDeviceTablet(){
-        return window.matchMedia("(min-width : 767px) and (max-width : 1024px)").matches;
+        return window.matchMedia("(min-width : 767px) and (max-width : 1023px)").matches;
       },
   selectedFilterCount(){
     let total=this.filters.reduce((sum,item)=>{
@@ -518,7 +518,7 @@ restoreState() {
                   <svg  role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
               </span>
             </div>
-            <div class="products st-py-[13px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ totalHits }}</span><span>products</span></span>
+            <div class="products st-py-[15px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ totalHits }}</span><span>products</span></span>
             </div>
 
             <div class="sortby st-hidden lg:st-block st-py-[13px] st-border-l st-border-[#e8e8e1] st-group st-relative st-text-[11px] st-flex st-items-center st-gap-[0px] st-align-middle st-justify-center st-text-[#5c5c5c] st-cursor-pointer">
@@ -626,7 +626,7 @@ restoreState() {
 </div>
         </div>
       </section>
-      <section class="maincontainer lg:st-my-[50px] md:st-my-[0px]  st-my-[0px]">
+      <section class="maincontainer lg:st-my-[48px] md:st-my-[0px]  st-my-[0px]">
         <div class="collection container md:st-grid lg:st-grid-cols-[25%_1fr] md:st-gap-[30px]">
             <div class="sidebar st-hidden lg:st-block st-sticky st-overflow-y-auto st-top-[200px] st-max-h-[402px] "> 
               <!-- DONE: remove duplicate elements and try not to repeat code eg: ul li -> earlier 4 ui elements now 2 because 1 is of single facet and it doesn't require loop and has static value done separetly -->
@@ -688,7 +688,7 @@ restoreState() {
     </div> 
               </div>            
               <div class="contentarea st-overflow-hidden st-w-full">
-                <div class=" st-hidden lg:st-block st-flex st-w-full st-px-[10px] lg:st-px-[0] lg:st-pr-[0px] st-mb-[20px] lg:st-mb-[10px] lg:st-mt-[25px]">
+                <div class=" st-hidden lg:st-block st-flex st-w-full st-px-[10px] lg:st-px-[0] lg:st-pr-[0px] st-mb-[20px] lg:st-mb-[10px] lg:st-mt-[0px]">
 <div class="filter-tag-column st-width st-w-full">
   <div class="st-filter-tags st-flex  st-gap-[20px] st-w-full st-justify-between">
     
