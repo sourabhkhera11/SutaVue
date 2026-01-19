@@ -117,42 +117,56 @@ beforeUnmount(){
 <p class="st-font-[600] st-my-[10px]">No Results found for '{{searchQuery}}'</p>
 <p class="st-mb-[10px]">Try Searching some other keywords</p>
   </section>
-  <div v-else class="st-row st-flex-wrap st-flex st-flex-col md:st-flex-row ">
-<section v-if="searchQuery===''" class="st-col-lg-3 st-col-md-3 st-left-col md:st-w-[25%]  st-trending-search st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]  st-mb-[10px] lg:st-mb-[0]" style="">
- <div id="st-before-search">
-    <div class="st-trending-header st-mb-[10px]"><span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span></div>
-    <div>
-       <ul class="sm:st-gap-[10] st-trending-list st-inline-flex st-flex-wrap md:st-flex-row st-gap-2.5 st-m-0 st-p-0 st-w-full st-flex-col">
-          <li v-for="ele in productSuggestions?.results" :key="ele.displayLabel" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[48%] sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px]  st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block"><span>
-            <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span></span>
+  <div v-else class="st-row st-flex st-flex-col md:st-flex-row st-w-full st-overflow-hidden">
+  
+  <section v-if="searchQuery===''" class="st-col-lg-3 st-col-md-3 st-left-col st-w-full md:st-w-[25%] st-trending-search st-p-[10px] lg:st-pl-[40px] md:st-bg-[#f6f7f7] st-bg-[#fff] st-mb-[10px] lg:st-mb-[0]">
+    <div id="st-before-search">
+      <div class="st-trending-header st-mb-[10px]">
+        <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold">Popular Choices</span>
+      </div>
+      <div>
+        <ul class="st-trending-list st-flex st-flex-wrap st-gap-2.5 st-m-0 st-p-0 st-w-full">
+          <li v-for="ele in productSuggestions?.results" :key="ele.displayLabel" class="st-text-center st-bg-[#dddddd] st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-w-[38%] md:st-w-auto st-flex-grow sm:hover:st-bg-[#ffffff] sm:hover:st-shadow-[0_0_0_1px_rgba(0,0,0,.02)] st-py-[5px] !st-px-[10px] sm:st-py-[7px] !sm:st-px-[10px] st-rounded-[4px] st-trending-label st-text-[12px] st-uppercase st-font-normal st-m-0.5 st-inline-block">
+            <span>
+              <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-font-normal st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span>
+            </span>
           </li>
-       </ul>
+        </ul>
+      </div>
     </div>
- </div>
-</section>
- <div v-else class="st-col-lg-3 st-col-md-3 st-left-col md:st-w-[25%] st-p-[10px] lg:st-pl-[40px] st-bg-[#f6f7f7]" style="">
-    <div class="st-left-col-header st-relative st-pb-[10px] st-mb-[10px] after:st-absolute after:st-inline-block after:st-w-[auto] after:st-h-[1px] after:st-right-[0px] after:st-bottom-[0] after:st-left-[0px] after:st-bg-[#e4e4e9]"><span class="st-whitespace-normal st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold"> Search Suggestions </span>
+  </section>
+
+  <div v-else class="st-col-lg-3 st-mb-[10px] st-col-md-3 st-left-col st-w-full md:st-w-[25%] st-p-[10px] lg:st-pl-[40px] md:st-bg-[#f6f7f7] st-bg-[#fff]">
+    <div class="st-left-col-header st-relative st-pb-[10px] st-mb-[10px] ">
+      <span class="st-whitespace-normal st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold"> Search Suggestions </span>
     </div>
     <div>
-       <ul class="sm:st-gap-2.5 st-trending-list st-inline-flex st-flex-wrap st-flex-col st-gap-2.5 st-m-0 st-p-0 st-w-full">
-          <li v-for="ele in productSuggestions?.results" :key="ele.displayLabel" class="sm:st-py-[0px] st-py-[0] st-px-[0] sm:st-px-[0] st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block"><span>
-            <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span>
-          </span></li>
-       </ul>
+      <ul class="st-trending-list st-flex st-flex-wrap st-flex-col st-gap-2.5 st-m-0 st-p-0 st-w-full">
+        <li v-for="ele in productSuggestions?.results" :key="ele.displayLabel" class="st-trending-label st-text-[12px] st-uppercase st-font-medium st-m-0.5 st-inline-block">
+          <span>
+            <span @click="fillSuggestion(ele.displayLabel)" class="st-label-text st-font-normal st-whitespace-normal st-text-[#000000] st-cursor-pointer">{{ ele.displayLabel }}</span>
+          </span>
+        </li>
+      </ul>
     </div>
-    <div class="no-trending-search-text" style="display: none;"><span  class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>
- </div>
- <div class="sidebar st-col-lg-9 st-col-md-9 st-right-col md:st-w-[75%]  st-p-[10px] lg:st-pr-[40px] st-bg-[#fff]">
-    <div class="st-trending-header st-mb-[10px]">
-      <span class="st-heading-text st-text-[13px] st-uppercase st-pb-[10px] st-text-[#323232] st-font-semibold st-pl-[30px]">{{(searchQuery===""?'Recommended for you':'Search Results')}}</span></div>
-    <div class="st-row st-cols-2 st-cols-sm-2 st-cols-md-4 st-product-wrapper st-flex st-flex-nowrap st-overflow-y-auto">
-       <div v-for="(value,index) in products.results" :key="index" class="st-product-wrap st-w-1/2 sm:st-px-[15px] st-px-[2.5px] lg:st-w-1/4 st-shrink-0" >
-          <card  :key="value"  :user-data="value" />
-       </div>
-    </div>
- </div>
+    <div class="no-trending-search-text" style="display: none;"><span class="st-text-[12px] st-text-[#604a4a]">No Search Suggestions</span></div>
   </div>
-  <div v-if="products?.results?.length>0" class="st-row st-flex st-m-[0] ">
+
+  <div class="sidebar st-col-lg-9 st-col-md-9 st-right-col st-w-full md:st-w-[75%] st-p-[10px] lg:st-pr-[40px] st-bg-[#fff] st-overflow-hidden">
+    <div class="st-trending-header st-mb-[10px]">
+      <span class="st-heading-text st-text-[13px] st-uppercase md:st-pb-[10px] st-text-[#323232] st-font-semibold md:st-pl-[30px]">{{(searchQuery===""?'Recommended for you':'Search Results')}}</span>
+    </div>
+
+    <div class="st-product-wrapper st-flex st-flex-nowrap  st-overflow-x-auto md:st-overflow-x-auto md:st-overflow-visible st-w-full st-gap-2 md:st-gap-0 st-pb-4">
+       
+       <div v-for="(value,index) in products.results" :key="index" class="st-product-wrap st-w-[45%] md:st-w-1/4 st-shrink-0 sm:st-px-[15px] st-px-[2.5px]" >
+          <card :key="value" :user-data="value" />
+       </div>
+
+    </div>
+  </div>
+</div>
+  <div v-if="searchQuery!==''" class="st-row st-flex st-m-[0] ">
  <div class="st-left-col st-hidden md:st-block st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] "></div>
  <div class="st-right-col st-right-col st-w-[100%] md:st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
     <div  class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{totalHits}}</span>) product<span style="">s</span></span></div>

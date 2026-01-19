@@ -143,7 +143,7 @@
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
         // DONE: remove unecessary variables
-        pageSize:32 as number,
+        pageSize:36 as number,
         readMoreToggle:true as boolean,
       };
     },
@@ -360,6 +360,14 @@ restoreState() {
   });
   this.fetchData();
   },
+  scrollBlock(isOpen:boolean){
+    if(isOpen){
+      document.body.classList.add('no-scroll');
+    }
+    else{
+      document.body.classList.remove('no-scroll');
+    }
+  },
   // DONE: move these into computed as their values wont change
     },
     mounted(){
@@ -393,7 +401,7 @@ restoreState() {
 
 <template>
   <section class="mobileBottom md:st-hidden ">
-  <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[5px] st-text-[#000000a1]">
+  <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[5px] st-text-[#000000a1] st-shadow-[0_-2px_5px_rgb(0_0_0_/_22%)]">
     <ul class="mobile-bottom-nav--wrapper st-flex st-justify-evenly">
       <li class="mobile-bottom-nav--item">
         <a href="/" class="st-flex st-flex-col st-items-center">
@@ -490,49 +498,50 @@ restoreState() {
         <div class=" ">
           <div class="filterbar st-flex st-align-middle st-flex-wrap md:st-gap-[50px] lg:st-justify-between st-mt-[0px] lg:st-mt-[50px] st-shadow-[0_1px_rgb(221,221,221),_0_-1px_rgb(221,221,221)] xl:st-mx-[-64px] md:lg:st-[-64px] st-bg-[#fff]">
             <div class="filtersort  lg:st-hidden st-flex st-tracking-[1.98px] st-grow  st-text-[11px] st-justify-center st-align-middle ">
-              <div @click="mobileFilterToggle=true" class="filter st-basis-[50%] st-text-[#1c1c1ccc] st-px-[3px] st-text-center st-py-[13px] st-border-r st-border-[#e8e8e1] st-font-Futura">
+              <div @click="mobileFilterToggle=true,scrollBlock(mobileFilterToggle)" class="filter st-basis-[50%] st-text-[#1c1c1ccc] st-px-[3px] st-text-center st-py-[13px] st-border-r st-border-[#e8e8e1] !st-font-[Futura,sans-serif] st-opacity-[75%]">
                 FILTER <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span>
               </div>
-              <div @click="mobileSortToggle=true" class="sortby st-py-[13px] st-basis-[50%] st-text-[#1c1c1ccc] st-px-[3px] st-border-r st-border-[#e8e8e1] st-text-center">
-                SORT BY
+              <div @click="mobileSortToggle=true,scrollBlock(mobileSortToggle)" class="sortby st-py-[13px] st-basis-[50%] st-text-[#1c1c1ccc] !st-font-[Futura,sans-serif] st-opacity-[75%] st-px-[3px] st-border-r st-border-[#e8e8e1] st-text-center st-flex st-justify-center st-items-center">
+                <p>SORT BY</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="10px" height="10px" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#5c5c5c"></path></svg>
               </div>
             </div>
-            <div class="sideicons st-px-[20px] st-py-[13px]  st-flex st-gap-[16px] st-leading-[1.5] st-cursor-pointer  ">
-              <span class=" lg:st-hidden st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='oneByone'" :class="layoutClass==='oneByone'?'st-opacity-100': 'st-opacity-30'">
+            <div class="sideicons st-px-[30px] st-py-[13px]  st-flex st-gap-[16px] st-leading-[1.5] st-cursor-pointer  ">
+              <span class=" lg:st-hidden st-block " @click="layoutClass='oneByone'" :class="layoutClass==='oneByone'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M0 0h18v18H0z"></path></svg>
               </span>
-              <span class="lg:st-hidden st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='twoBytwo'" :class="layoutClass==='twoBytwo'?'st-opacity-100': 'st-opacity-30'">
+              <span class="lg:st-hidden " @click="layoutClass='twoBytwo'" :class="layoutClass==='twoBytwo'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="#000000" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path>
                 </svg>
               </span>
-              <span class="st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='threeBythree'" :class="layoutClass==='threeBythree'?'st-opacity-100': 'st-opacity-30'">
+              <span class="st-hidden lg:st-block " @click="layoutClass='threeBythree'" :class="layoutClass==='threeBythree'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path fill="currentColor" d="M0 0h8v8H0zM0 10h8v8H0zM10 0h8v8h-8zM10 10h8v8h-8z"></path></svg>
               </span>
-              <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='fourByfour'" :class="layoutClass==='fourByfour'?'st-opacity-100': 'st-opacity-30'">
+              <span class=" st-hidden lg:st-block " @click="layoutClass='fourByfour'" :class="layoutClass==='fourByfour'?'st-opacity-100': 'st-opacity-30'">
                 <svg role="presentation" width="18" viewBox="0 0 18 18" fill="none">
                   <path fill="currentColor"d="M0 0h4v4H0zM0 7h4v4H0zM0 14h4v4H0zM7 0h4v4H7zM7 7h4v4H7zM7 14h4v4H7zM14 0h4v4h-4zM14 7h4v4h-4zM14 14h4v4h-4z"></path>
                 </svg>
                 </span>
-                <span class=" st-hidden lg:st-block st-border-[1px] st-border-solid st-border-[#000]" @click="layoutClass='sixBysix'" :class="layoutClass==='sixBysix'?'st-opacity-100': 'st-opacity-30'">
+                <span class=" st-hidden lg:st-block " @click="layoutClass='sixBysix'" :class="layoutClass==='sixBysix'?'st-opacity-100': 'st-opacity-30'">
                   <svg  role="presentation" width="18" viewBox="0 0 18 18" fill="none"><path data-v-da40671c="" fill="currentColor" d="M0 0h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0zm0 4h18v2H0z"></path></svg>
               </span>
             </div>
-            <div class="products st-py-[15px] st-flex   lg:st-block st-hidden"><span class="st-text-[12px] st-gap-[5px] st-flex"><span>Showing</span><span>{{ totalHits }}</span><span>products</span></span>
+            <div class="products st-text-[14px]  st-text-[#5c5c5c]  st-py-[15px] st-flex   lg:st-block st-hidden"><span class="st-text-[14px] st-gap-[5px] st-flex"><span>{{ totalHits }}</span><span>Products</span></span>
             </div>
 
-            <div class="sortby st-hidden lg:st-block st-py-[13px] st-border-l st-border-[#e8e8e1] st-group st-relative st-text-[11px] st-flex st-items-center st-gap-[0px] st-align-middle st-justify-center st-text-[#5c5c5c] st-cursor-pointer">
-                <span class="st-flex ">
-                <p class=" st-px-[36px] st-inline-flex">Sort By</p>
+            <div class="sortby st-hidden lg:st-block st-px-[48px] st-py-[18px] st-border-l st-border-[#e8e8e1] st-group st-relative st-text-[11px] st-flex st-items-center st-gap-[0px] st-align-middle st-justify-center st-text-[#5c5c5c] st-cursor-pointer">
+                <span class="st-flex st-items-center st-gap-[5px]">
+                <p class=" st-inline-flex">Sort By</p>
                 <div class="st-inline-flex ">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 24 24" fill="none">
+                <svg xmlns="http://www.w3.org/2000/svg" width="17px" height="17px" viewBox="0 0 24 24" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#5c5c5c" />
                 </svg>
                 </div>
     
     <ul id="sortList"  class="st-sorting st-hidden group-active:st-block lg:group-hover:st-block st-absolute st-bg-white st-top-full st-m-[0] st-w-[170px] st-right-0 st-origin-top st-z-[3] st-shadow-[2px_2px_6px_#5c5c5c0d] st-border st-border-solid st-border-[#e7e7e7]">
       <!-- DONE: Create a function for sort and do all this '@click' there -> not making sense for two function only and used for two times only  --> 
-      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label,updateURL()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label,scrollToTop()" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
   </span>
             </div>
@@ -540,88 +549,97 @@ restoreState() {
         </div>
       </div>
       </section>
-      <section v-if="mobileFilterToggle"  class=" lg:st-hidden filterby-sidebar  st-bg-[#00000080] st-inset-0 st-fixed st-z-[2000]">
-        <div @click.self="mobileFilterToggle=false" class="st-top-0 st-w-full st-absolute st-left-0 st-right-0 st-bottom-0   ">
-  <div class="mobilesearch hidden-desktop st-z-[500] st-inline-block lg:st-hidden st-fixed st-top-[0] st-w-[75%] st-left-[unset] st-right-[-100%] st-h-full st-bg-white st-opacity-0 st-z-[6] open st-opacity-100 st-right-[0] st-overflow-auto">
-    <div class="filterHeader st-w-[inherit] st-bg-white st-flex st-justify-between st-items-center st-p-[16px] st-leading-[20px] st-text-[14px] st-text-[#333333] st-font-semibold st-fixed st-z-[1] st-border st-border-solid st-border-[#e8e9eb] st-uppercase" id="mobileHeader">
-      <div class="mobile-filter-title"> Filter by</div>
-      <svg @click="mobileFilterToggle=false"  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="st-cross-btn st-w-[20px] st-fill-[#000000]">
-        <path   d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"></path>
-      </svg>
-    </div>
-    <div class="st-sidebar-content st-relative st-top-[55px] st-px-[15px] lg:st-px-[0] st-pb-[100px] lg:st-pb-[0] lg:st-top-[-20px] st-right-0 st-left-0 st-bottom-0">
+      <Transition
+    enter-active-class="st-transition-opacity st-duration-[225ms] st-ease-[cubic-bezier(0.4,0,0.2,1)]"
+  enter-from-class="st-opacity-0"
+  enter-to-class="st-opacity-100"
+  leave-active-class="st-transition-opacity st-duration-[225ms] st-ease-[cubic-bezier(0.4,0,0.2,1)]"
+  leave-from-class="st-opacity-100"
+  leave-to-class="st-opacity-0"
+  >
+  <section v-if="mobileFilterToggle"  class=" lg:st-hidden filterby-sidebar  st-bg-[#00000080] st-inset-0 st-fixed st-z-[2000]">
+    <div @click.self="mobileFilterToggle=false,scrollBlock(mobileFilterToggle)" class="st-top-0 st-w-full st-absolute st-left-0 st-right-0 st-bottom-0   ">
+<div class="mobilesearch hidden-desktop st-z-[500] st-inline-block lg:st-hidden st-fixed st-top-[0] st-w-[75%] st-left-[unset] st-right-[-100%] st-h-full st-bg-white st-opacity-0 st-z-[6] open st-opacity-100 st-right-[0] st-overflow-auto">
+<div class="filterHeader st-w-[inherit] st-bg-white st-flex st-justify-between st-items-center st-p-[16px] st-leading-[20px] st-text-[14px] st-text-[#333333] st-font-semibold st-fixed st-z-[1] st-border st-border-solid st-border-[#e8e9eb] st-uppercase" id="mobileHeader">
+  <div class="mobile-filter-title"> Filter by</div>
+  <svg @click="mobileFilterToggle=false,scrollBlock(mobileFilterToggle)"  clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="st-cross-btn st-w-[20px] st-fill-[#000000]">
+    <path   d="m12 10.93 5.719-5.72c.146-.146.339-.219.531-.219.404 0 .75.324.75.749 0 .193-.073.385-.219.532l-5.72 5.719 5.719 5.719c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.385-.073-.531-.219l-5.719-5.719-5.719 5.719c-.146.146-.339.219-.531.219-.401 0-.75-.323-.75-.75 0-.192.073-.384.22-.531l5.719-5.719-5.72-5.719c-.146-.147-.219-.339-.219-.532 0-.425.346-.749.75-.749.192 0 .385.073.531.219z"></path>
+  </svg>
+</div>
+<div class="st-sidebar-content st-relative st-top-[55px] st-px-[15px] lg:st-px-[0] st-pb-[100px] lg:st-pb-[0] lg:st-top-[-20px] st-right-0 st-left-0 st-bottom-0">
 <!-- DONE: remove duplicate elements and try not to repeat code eg: ul li -> earlier 4 ui elements now 2 because 1 is of single facet and it doesn't require loop and has static value done separetly -->
 <div class="Fields">
-      <div v-for="item in filters" :key="item.id">
-        <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
-          <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
-            <h3 class="st-text-[15px] " >{{item.label}}</h3>
-            <span class="st-flex st-align-top">
-              <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
-              <svg :class="{'st-rotate-180':item.isOpen}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
-            </svg></span>
-          </div>
-          <div v-if="item.isOpen" class=" st-transition-all st-duration-300 st-ease-in-out">
-            <ul v-if="item.label==='Availability' && item.type==='singleFacet'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-              <li>
-                <div class="outer-checkbox">
-                  <label class="st-flex st-m-0 st-mb-[12px]">
-                    <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
-                    <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                      <div
-                        class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                        In Stock Only
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </li>
-            </ul>
-            <ul v-else class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
-              <li v-for="(subItem,index) in getSortedSubItems(item)" :key="(item.type==='numeric')?subItem.min:subItem.label" >
-                <div v-if="(item.type==='numeric')?subItem.count>0:subItem.value>0" class="outer-checkbox">
-                  <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
-                    <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="(item.type==='numeric')?subItem.min+'-'+subItem.max:subItem.label" v-model="item.selected"  @change="scrollToTop()">
-                    <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
-                      <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
-                        <div v-if="item.type==='numeric' && item.label==='Price'" >
-                          <span class="money">₹{{ subItem.min }}.00</span>
-                          <span> - </span>  
-                          <span class="money">₹{{ subItem.max }}.00</span> ({{ subItem.count }}) 
-                        </div>
-                        <div v-else-if="item.type==='numeric' && item.label==='Discount'">
-                          <span class="money">{{ subItem.min }}%</span>
-                          <span class="money"> And Above</span> ({{ subItem.count }}) 
-                        </div>
-                        <div v-else>
-                          <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
+  <div v-for="item in filters" :key="item.id">
+    <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+      <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
+        <h3 class="st-text-[15px] " >{{item.label}}</h3>
+        <span class="st-flex st-align-top">
+          <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
+          <svg :class="{'st-rotate-180':item.isOpen}" xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24" fill="none">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z" fill="#000000"></path>
+        </svg></span>
       </div>
-    </div>  
+      <div v-if="item.isOpen" class=" st-transition-all st-duration-300 st-ease-in-out">
+        <ul v-if="item.label==='Availability' && item.type==='singleFacet'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+          <li>
+            <div class="outer-checkbox">
+              <label class="st-flex st-justify-center st-items-center st-m-0 st-mb-[12px] st-cursor-pointer">
+                <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
+                <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+                  <div
+                    class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                    In Stock Only
+                  </div>
+                </div>
+              </label>
+            </div>
+          </li>
+        </ul>
+        <ul v-else class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
+          <li v-for="(subItem,index) in getSortedSubItems(item)" :key="(item.type==='numeric')?subItem.min:subItem.label" >
+            <div v-if="(item.type==='numeric')?subItem.count>0:subItem.value>0" class="outer-checkbox">
+              <label class="st-flex st-justify-center st-cursor-pointer st-items-center st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+                <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="(item.type==='numeric')?subItem.min+'-'+subItem.max:subItem.label" v-model="item.selected"  @change="scrollToTop()">
+                <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
+                  <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
+                    <div v-if="item.type==='numeric' && item.label==='Price'" >
+                      <span class="money">₹{{ subItem.min }}.00</span>
+                      <span> - </span>  
+                      <span class="money">₹{{ subItem.max }}.00</span> ({{ subItem.count }}) 
+                    </div>
+                    <div v-else-if="item.type==='numeric' && item.label==='Discount'">
+                      <span class="money">{{ subItem.min }}%</span>
+                      <span class="money"> And Above</span> ({{ subItem.count }}) 
+                    </div>
+                    <div v-else>
+                      <span class="money">{{ subItem.label }}</span>({{ subItem.value }}) 
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>  
 </div>
 <div  class="apply-all st-fixed st-m-0 st-left-[unset] st-right-0 st-bottom-0 st-w-[inherit] st-bg-white st-flex st-items-center st-justify-center st-text-center st-border-t-[1px] st-border-solid st-border-[#eaeaec] st-p-[16px] st-gap-[8px]">
-  <span @click="clearFilter() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
-  <span @click="mobileFilterToggle=false" class="apply-btn st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">View Results</span>
+<span @click="clearFilter() " class="st-reset-all-mobile st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">Clear all <span v-if="selectedFilterCount>0">({{ selectedFilterCount }})</span> </span>
+<span @click="mobileFilterToggle=false,scrollBlock(mobileFilterToggle)" class="apply-btn st-text-[12px] st-bg-[#2b2b2b] st-max-w-[167px] st-w-[167px] st-p-[10px] st-font-medium st-text-[#ffffff] st-rounded-[0px] st-uppercase">View Results</span>
 </div>
 </div>
 </div>
-      </section>
-      <section v-if="mobileSortToggle" @click.self="mobileSortToggle=false" class="sortby-sidebar lg:st-hidden  st-bg-[#00000080] st-fixed st-inset-0 st-z-[1999]">
+  </section>
+      </Transition>
+      <section v-if="mobileSortToggle" @click.self="mobileSortToggle=false,scrollBlock(mobileSortToggle)" class="sortby-sidebar lg:st-hidden  st-bg-[#00000080] st-fixed st-inset-0 st-z-[1999]">
         <div class=" st-w-full st-absolute  st-left-0 st-right-0 st-bottom-0  " >
           <div  class=" st-bg-white st-overflow-y-auto st-overflow-x-hidden st-p-[20px]   st-text-center ">
-  <span @click="mobileSortToggle=false" class="closeFilter st-block st-text-[30px] st-top-[5px] st-text-black st-absolute st-z-[9] st-right-[15px]">×</span>
+  <span @click="mobileSortToggle=false,scrollBlock(mobileSortToggle)" class="closeFilter st-block st-text-[30px] st-top-[5px] st-text-black st-absolute st-z-[9] st-right-[15px]">×</span>
   <label  class="!st-text-[16.0004px] st-font-normal st-block st-pb-[14px] st-mx-[-20px] st-mb-[20px] st-border-b-[1px] st-border-solid st-border-[#e7e7e7]">Sort by</label>
     <ul class="list st-m-0 st-list-none">
-      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label, updateURL(),  mobileSortToggle=false" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
+      <li v-for="(item,index) in sortList" :key="item.field" @click="activeSort=item.label, scrollToTop(),  mobileSortToggle=false,scrollBlock(mobileSortToggle)" class="st-block st-py-[10px] st-px-[15px] st-w-full st-text-[13px] st-font-normal st-text-[#5c5c5c] st-cursor-pointer">{{ item.label }}</li>
     </ul>
 </div>
         </div>
@@ -645,7 +663,7 @@ restoreState() {
             <ul v-if="item.label==='Availability' && item.type==='singleFacet'" class="st-widget-body st-flex st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
               <li>
                 <div class="outer-checkbox">
-                  <label class="st-flex st-m-0 st-mb-[12px]">
+                  <label class="st-flex st-cursor-pointer st-justify-center st-items-center st-m-0 st-mb-[12px]">
                     <input class=" st-mr-[12px] st-accent-black" type="checkbox" value="In Stock Only" v-model="item.selected" @change="scrollToTop()" />
                     <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                       <div
@@ -660,7 +678,7 @@ restoreState() {
             <ul v-else class="st-widget-body st-flex st-flex-col st-flex-wrap st-gap-[10px] st-mb-[20px] st-list-none st-filter-items st-ml-[0px]">
               <li v-for="(subItem,index) in getSortedSubItems(item)" :key="(item.type==='numeric')?subItem.min:subItem.label" >
                 <div v-if="(item.type==='numeric')?subItem.count>0:subItem.value>0" class="outer-checkbox">
-                  <label class="st-flex  st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
+                  <label class="st-flex st-cursor-pointer st-justify-center st-items-center st-align-middle st-m-0 st-text-[13px] st-text-[#5c5c5c] st-leading-[19.5px] st-opacity-70">
                     <input class="st-mr-[12px] st-accent-black"  type="checkbox" :value="(item.type==='numeric')?subItem.min+'-'+subItem.max:subItem.label" v-model="item.selected"  @change="scrollToTop()">
                     <div class="st-filter-label-container st-flex st-items-center st-justify-between st-w-full">
                       <div class="filter-label st-text-[13px] st-text-[#5c5c5c] st-font-normal st-capitalize">
@@ -696,19 +714,19 @@ restoreState() {
       <template v-for="(fields, index) in filters" :key="index">
         <div v-for="(items, subIndex) in fields.selected" :key="fields.label + subIndex" class="tag-item st-flex st-cursor-pointer st-gap-[5px] st-border st-border-solid st-border-[#525252] st-rounded-[3px] st-text-[#525252] st-py-[5px] st-px-[10px] st-capitalize">
           
-          <div v-if="fields.type==='numeric' && fields.label==='Price'" class="tag-content">
+          <div @click="removeFilter(fields.selected, items)" v-if="fields.type==='numeric' && fields.label==='Price'" class="tag-content">
             <span>₹{{ items.split('-')[0] }}.00</span> - <span>₹{{ items.split('-')[1] }}.00</span>
           </div>
           
-          <div v-else-if="fields.type==='numeric' && fields.label==='Discount'" class="tag-content">
+          <div @click="removeFilter(fields.selected, items)" v-else-if="fields.type==='numeric' && fields.label==='Discount'" class="tag-content">
             <span>{{ items.split('-')[0] }}%</span> And <span>Above</span>
           </div>
           
-          <div v-else class="tag-content">
+          <div @click="removeFilter(fields.selected, items)" v-else class="tag-content">
             <span>{{ items }}</span>
           </div>
           
-          <div @click="removeFilter(fields.selected, items)" class="tag-close st-text-[#ff0000]">✕</div>
+          <div  class="tag-close st-text-[#ff0000]">✕</div>
         </div>
       </template>
     </div>

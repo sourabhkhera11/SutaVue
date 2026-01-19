@@ -28,6 +28,10 @@ const updateSearchState = (val: string) => {
 [crossIcon, searchIcon].forEach(el => {
     el?.addEventListener("click", () => {
         searchSpace?.classList.toggle('hidden');
+        window.scrollTo({
+            top:0,
+            behavior:'smooth'
+        })
         document.body.classList.toggle('no-scroll');
         searchInput.focus(); 
     });
