@@ -24,7 +24,6 @@ comments mane likhe h AI nhi h taki apko specific pta ho ... hehe
         totalHits:0 as number,
         searchQuery:"" as string,
         productSuggestions:{} as Record<string,any>,
-        isRestoring:false as boolean,
         displayProducts:6 as number,
         autocompleteSearchToggle:true as boolean,
       };
@@ -33,14 +32,14 @@ comments mane likhe h AI nhi h taki apko specific pta ho ... hehe
         // DONE: see if these can be done inside a single function
       async fetchData():Promise<void>{
         //DONE: Declare this globally
-        const baseCondition="isSearchable = 1 AND price>0 AND discount>=0 AND collection_handles_shopify=\'saree\'";
+        const baseCondition="isSearchable = 1 AND price>0 AND discount>=0 ";
         try{
           searchClient
           .fields("id","product_type","collections" ,"discount", "discounted_price", "images", "price", "size","title","isActive","reviews_average","reviews_count","st_size","created_at","_rank")
           .count(this.displayProducts)
           if(this.searchQuery===''){
             searchClient
-            .filter(baseCondition+" AND collection_handles_shopify=\'bestseller-sarees\'")
+            .filter(baseCondition+" AND collection_handles_shopify=\'saree\' AND collection_handles_shopify=\'bestseller-sarees\'")
             .sort("-isActive",'bestseller_sarees_position');
           }
           else{
@@ -54,7 +53,7 @@ comments mane likhe h AI nhi h taki apko specific pta ho ... hehe
         searchClient
           .fields("id","displayLabel")
           .count(this.displayProducts);
-          (this.searchQuery==='')?searchClient.filter("isSearchable = 1  AND showInSuggestion = 1"):searchClient.filter("isSearchable = 1");
+          (this.searchQuery==='')?searchClient.filter("isSearchable = 1  AND showInSuggestion = 1 "):searchClient.filter("isSearchable = 1");
         this.productSuggestions = await searchClient.search(`${this.searchQuery}`,autoSuggestionCollId);
         }
         catch(er){
@@ -79,11 +78,10 @@ updateURL(){
     params.set('q',this.searchQuery);
   }
   const newUrl=`${window.location.pathname}?${params.toString()}`;
-  window.history.replaceState({},'',newUrl);
+  window.history.pushState({},'',newUrl);
   this.fetchData();
 },
 restoreState() {
-  this.isRestoring = true;
   const params = new URLSearchParams(window.location.search);
   const q=params.get('q');
   if(q){
@@ -93,9 +91,6 @@ restoreState() {
     this.searchQuery='';
   }
   this.fetchData();
-  this.$nextTick(() => {
-    this.isRestoring = false;
-  });
   },
     },
     watch:{

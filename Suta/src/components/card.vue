@@ -9,14 +9,14 @@
         <span v-else-if="userData.collections.find((ele:any)=> ele==='most loved sarees' )"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           MOST LOVED
         </span>
+        <span v-else-if="userData.discount > 0"  class="st-bg-[#d70302cc] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
+          {{ userData.discount }}% OFF
+        </span>
         <span v-else-if="userData.created_at > '1764527400'"  class="st-bg-[#000] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           NEW
         </span>
         <span v-else-if="userData.product_type==='combo of 5' || userData.product_type==='combo of 10' || userData.product_type==='combo of 3' "  class="st-bg-[#f5913c] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
           {{ userData.product_type.toUpperCase()}}
-        </span>
-        <span v-else-if="userData.discount > 0"  class="st-bg-[#d70302cc] st-text-[#fff] st-text-[11px] st-py-[1.6px] st-px-[8px]  st-tracking-[1.98px] st-flex">
-          {{ userData.discount }}% OFF
         </span>
         
       </div>

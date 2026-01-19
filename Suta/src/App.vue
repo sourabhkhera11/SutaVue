@@ -2,14 +2,12 @@
   import { defineComponent } from 'vue';
   import SearchClient from "@gaspl/search-client";
   import card from './components/card.vue';
-  import Autocomplete from './components/Autocomplete.vue';
   import {appId,readToken,collectionId} from "./assets/config.json";
   const searchClient = new SearchClient(appId, readToken);
   
   export default defineComponent({
     components:{
-      card,
-      Autocomplete
+      card
     },
     data(){
       return{
@@ -145,7 +143,6 @@
         mobileSortToggle:false as boolean,
         filterCount:0 as number,
         // DONE: remove unecessary variables
-        isRestoring:false as boolean,
         pageSize:32 as number,
       };
     },
@@ -318,7 +315,6 @@ checkSelected(item:any, subItem:any) {
   },
   // DONE: this is always being called with fetchData function, see how we can avoid calling the two separatly
 updateURL(){
-  if (this.isRestoring) return;
   const params=new URLSearchParams();
   const sortLabel=this.sortList.find(ele => ele.label === this.activeSort);
   if(sortLabel.label!="Featured"){
@@ -344,7 +340,6 @@ updateURL(){
   this.fetchData();
 },
 restoreState() {
-  this.isRestoring = true;
   const params = new URLSearchParams(window.location.search);
   const s=params.get('sort');
   if(s){
@@ -363,9 +358,6 @@ restoreState() {
     }
   });
   this.fetchData();
-  this.$nextTick(() => {
-    this.isRestoring = false;
-  });
   },
   // DONE: move these into computed as their values wont change
     },
