@@ -144,6 +144,7 @@
         filterCount:0 as number,
         // DONE: remove unecessary variables
         pageSize:32 as number,
+        readMoreToggle:true as boolean,
       };
     },
     methods:{
@@ -470,7 +471,9 @@ restoreState() {
           <div class="wid md:st-max-w-[680px] st-max-w-[370px] st-text-center">
             <div class="textCenter ">
               <h3 class="st-leading-[33px] md:st-text-[22px] st-text-[18px] st-tracking-[3.96px]">ALL COLLECTIONS - ONLINE SAREE SHOPPING</h3>
-              <p class="st-inline st-text-[14px] st-leading-[23.1px]">Explore Suta's latest saree collection and discover the diverse weaves of India. Online saree shopping has never been easier with ... </p><span class="st-text-[#FF0000] st-text-[14px]">Read More</span>
+              <p v-if="readMoreToggle" class="st-inline st-text-[14px] st-leading-[23.1px]">Explore Suta's latest saree collection and discover the diverse weaves of India. Online saree shopping has never been easier with ... <span @click="readMoreToggle=false" class="st-text-[#FF0000] st-text-[14px] st-cursor-pointer">Read More</span> </p>
+              <p v-else class="st-inline st-text-[14px] st-leading-[23.1px]">Explore Suta's latest saree collection and discover the diverse weaves of India. Online saree shopping has never been easier with Suta's expansive range of six-yard beauties that are versatile in their fabric, style and technique. <span @click="readMoreToggle=true" class="st-text-[#e0b926] st-cursor-pointer st-text-[14px]">Read Less</span> </p>
+
             </div>
           </div>
         </div>
