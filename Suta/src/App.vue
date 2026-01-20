@@ -377,15 +377,13 @@ restoreState() {
       document.body.classList.remove('no-scroll');
     }
   },
-  checkNumericFacets(facetArray:any){
-  let flag=0;
-   for (const element of facetArray) {
-        if (element.count != 0) {
-            flag=1;
-        }
-    }
-    return (flag===1)?true:false;
-  },
+  checkNumericFacets(facetArray: any) {
+    console.log(facetArray);
+  if (!facetArray || !Array.isArray(facetArray)) {
+    return false;
+  }
+  return facetArray.some((element: any) => element.count > 0);
+},
   singleToggleFunction(label:any){
     for(let ele of this.filters){
       if(ele.label===label){
@@ -678,7 +676,7 @@ restoreState() {
               <!-- DONE: remove duplicate elements and try not to repeat code eg: ul li -> earlier 4 ui elements now 2 because 1 is of single facet and it doesn't require loop and has static value done separetly -->
     <div class="Fields">
       <div v-for="item in filters" :key="item.id">
-        <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+        <div v-if="(item.type==='numeric' && checkNumericFacets(item.facets)) || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
           <div   @click="item.isOpen=!item.isOpen,singleToggleFunction(item.label)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
             <h3 class="st-text-[15px] " >{{item.label}}</h3>
             <span class="st-flex st-align-top">
