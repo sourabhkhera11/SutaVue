@@ -4,13 +4,14 @@ import App from './App.vue'
 import Autocomplete from './components/Autocomplete.vue';
 
 createApp(App).mount('#app');
-createApp(Autocomplete).mount('#searchResults');
 
 const searchIcon = document.getElementById('search-icon');
 const searchInput = document.getElementById('searchInput') as HTMLInputElement;
 const crossIcon = document.getElementById('cross-icon');
 const searchClear = document.getElementById('searchClear');
 const searchSpace = document.getElementById('searchSpace');
+
+let isAutocompleteMounted = false;
 
 const updateSearchState = (val: string) => {
     window.dispatchEvent(new CustomEvent('searchUpdate', {
@@ -36,6 +37,13 @@ const updateSearchState = (val: string) => {
         searchInput.focus(); 
     });
 });
+
+searchIcon?.addEventListener("click",()=>{
+    if(!isAutocompleteMounted){
+        createApp(Autocomplete).mount("#searchResults");
+    }
+    isAutocompleteMounted=true;
+})
 
 searchInput?.addEventListener('input', (e) => {
     updateSearchState((e.target as HTMLInputElement).value);
