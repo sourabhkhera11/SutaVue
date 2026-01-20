@@ -426,7 +426,7 @@ restoreState() {
 </script>
 
 <template>
-  <section class="mobileBottom md:st-hidden ">
+  <section class="mobileBottom md:st-hidden st-relative st-h-[100%]">
   <div class="mobile-bottom-nav st-w-[100%] st-bg-[#fff] st-fixed st-z-[100] st-bottom-0 st-py-[5px] st-text-[#000000a1] st-shadow-[0_-2px_5px_rgb(0_0_0_/_22%)]">
     <ul class="mobile-bottom-nav--wrapper st-flex st-justify-evenly">
       <li class="mobile-bottom-nav--item">

@@ -24,7 +24,7 @@ comments mane likhe h AI nhi h taki apko specific pta ho ... hehe
         totalHits:0 as number,
         searchQuery:"" as string,
         productSuggestions:{} as Record<string,any>,
-        displayProducts:6 as number,
+        displayProducts:5 as number,
         autocompleteSearchToggle:true as boolean,
       };
     },

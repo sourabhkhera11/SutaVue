@@ -25,16 +25,26 @@ const updateSearchState = (val: string) => {
     }
 };
 
-
 [crossIcon, searchIcon].forEach(el => {
     el?.addEventListener("click", () => {
-        searchSpace?.classList.toggle('hidden');
-        window.scrollTo({
-            top:0,
-            behavior:'smooth'
-        })
-        document.body.classList.toggle('no-scroll');
-        searchInput.focus(); 
+        const isHidden = searchSpace?.classList.contains('hidden');
+
+        if (isHidden) {
+            searchSpace?.classList.remove('hidden');
+            window.scrollTo({
+                top: 0,
+                behavior: 'auto' 
+            });
+            setTimeout(() => {
+                document.body.classList.add('no-scroll');
+                searchInput?.focus();
+            }, 10);
+
+        } else {
+            document.body.classList.remove('no-scroll');
+            searchSpace?.classList.add('hidden');
+            searchInput?.blur();
+        }
     });
 });
 
@@ -54,14 +64,6 @@ searchClear?.addEventListener("click", () => {
     updateSearchState('');
     searchInput.focus(); 
 });
-
-searchInput?.addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') {
-        searchSpace?.classList.toggle('hidden');
-        document.body.classList.toggle('no-scroll');
-    }
-});
-
 window.addEventListener('vueSearchUpdate', (e: any) => {
     if (searchInput && searchInput.value !== e.detail) {
         searchInput.value = e.detail;
