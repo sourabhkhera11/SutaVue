@@ -149,7 +149,7 @@
     },
     methods:{
       async fetchData():Promise<void>{
-        const baseCondition="isSearchable = 1 AND discounted_price>0 AND discount>=0 AND collection_handles_shopify=\'saree\'";
+        const baseCondition="isSearchable = 1 AND discounted_price>0 AND collection_handles_shopify=\'saree\'";
         this.isLoading=true;
         try{
           searchClient
@@ -193,23 +193,27 @@
             {
             min:10,
             max:20,
-            maxInclusive:false
+            maxInclusive:true
           },
           {
             min:20,
             max:30,
+            maxInclusive:true
           },
           {
             min:30,
             max:40,
+            maxInclusive:true
           },
           {
             min:40,
             max:50,
+            maxInclusive:true
           },
           {
             min:50,
             max:60,
+            maxInclusive:true
           }
           ]);
           this.filters.forEach((ele:any)=>{

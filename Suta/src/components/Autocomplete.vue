@@ -39,7 +39,7 @@ comments mane likhe h AI nhi h taki apko specific pta ho ... hehe
           .count(this.displayProducts)
           if(this.searchQuery===''){
             searchClient
-            .filter(baseCondition+" AND collection_handles_shopify=\'saree\' AND collection_handles_shopify=\'bestseller-sarees\'")
+            .filter(baseCondition+" AND collection_handles_shopify=\'bestseller-sarees\'")
             .sort("-isActive",'bestseller_sarees_position');
           }
           else{
