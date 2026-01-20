@@ -26,7 +26,7 @@
           <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6.00019C10.2006 3.90317 7.19377 3.2551 4.93923 5.17534C2.68468 7.09558 2.36727 10.3061 4.13778 12.5772C5.60984 14.4654 10.0648 18.4479 11.5249 19.7369C11.6882 19.8811 11.7699 19.9532 11.8652 19.9815C11.9483 20.0062 12.0393 20.0062 12.1225 19.9815C12.2178 19.9532 12.2994 19.8811 12.4628 19.7369C13.9229 18.4479 18.3778 14.4654 19.8499 12.5772C21.6204 10.3061 21.3417 7.07538 19.0484 5.17534C16.7551 3.2753 13.7994 3.90317 12 6.00019Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </div>
-      <a href="/products/jungle-rani" class="product-card__media st-relative st-block">
+      <a class="product-card__media st-relative st-block">
         <img v-if="userData.images[0]" class="st-cursor-pointer st-block st-w-full" :src="userData.images[0].src" alt="Jungle Rani">
         <img v-else class="st-cursor-pointer st-block st-w-full st-h-full" src="https://media.istockphoto.com/id/1500807425/vector/image-not-found-icon-vector-design.jpg?s=612x612&w=0&k=20&c=SF3EoL0zSi3XUwFzduMo3xdJFEk8V5IUsGqRocgPEtU=" alt="">
         <img v-if="userData.images[1]" class="st-absolute st-inset-0 st-opacity-0 group-hover:st-opacity-100 st-transition-opacity st-duration-300 st-w-full" :src="userData.images[1].src" alt="2nd image">

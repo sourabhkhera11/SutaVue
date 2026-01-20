@@ -24,23 +24,23 @@
           },
           {
             label:"Price: Low to High",
-            field:["-isActive", "discounted_price", "saree_position"],
+            field:[ "discounted_price"],
           },
           {
             label:"Price: High to Low",
-            field:["-isActive", "-discounted_price", "saree_position"],
+            field:["-discounted_price"],
           },
           {
             label:"Discount: High to Low",
-            field:["-isActive", "-discount", "saree_position"],
+            field:[ "-discount"],
           },
           {
             label:"Date, Old to New",
-            field:["-isActive", "created_at", "saree_position"],
+            field:["created_at"],
           },
           {
             label:"Date, New to Old",
-            field:["-isActive", "-created_at", "saree_position"],
+            field:[ "-created_at"],
           },] as Array<any>,
         filters:[
           {
@@ -149,7 +149,7 @@
     },
     methods:{
       async fetchData():Promise<void>{
-        const baseCondition="isSearchable = 1 AND price>0 AND discount>=0 AND collection_handles_shopify=\'saree\'";
+        const baseCondition="isSearchable = 1 AND discounted_price>0 AND discount>=0 AND collection_handles_shopify=\'saree\'";
         this.isLoading=true;
         try{
           searchClient
@@ -193,6 +193,7 @@
             {
             min:10,
             max:20,
+            maxInclusive:false
           },
           {
             min:20,
@@ -230,6 +231,9 @@
           this.productsData = await searchClient.search(``,collectionId);
           this.totalHits=this.productsData?.totalHits;
           // DONE: no need for a function here, do this here only
+          console.log(this.productsData?.numericFacets);
+          console.log(this.productsData?.textFacets);
+          
           for(let ele of this.filters){
             if(ele.type==='numeric'){
               ele.facets=this.productsData?.numericFacets[ele?.field] || [];
@@ -367,6 +371,15 @@ restoreState() {
     else{
       document.body.classList.remove('no-scroll');
     }
+  },
+  checkNumericFacets(facetArray:any){
+  let flag=0;
+   for (const element of facetArray) {
+        if (element.count != 0) {
+            flag=1;
+        }
+    }
+    return (flag===1)?true:false;
   },
   // DONE: move these into computed as their values wont change
     },
@@ -570,7 +583,7 @@ restoreState() {
 <!-- DONE: remove duplicate elements and try not to repeat code eg: ul li -> earlier 4 ui elements now 2 because 1 is of single facet and it doesn't require loop and has static value done separetly -->
 <div class="Fields">
   <div v-for="item in filters" :key="item.id">
-    <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
+    <div v-if="( item.type==='numeric' && checkNumericFacets(item.facets)) || (item.type==='text' && item.facets?.length>0 ) || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
       <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
@@ -739,12 +752,12 @@ restoreState() {
 </div>
 </div>
                 <div class="productlist st-flex st-flex-wrap md:st-mx-[-15px] st-mx-[2.5px] " >
-                  <card v-for="(value,index) in products" :key="index" :class="layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
+                  <card v-if="products.length>0" v-for="(value,index) in products" :key="index" :class="layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
+                  <p v-else class="st-text-[16.38px] st-text-[#1C1C1C] st-font-[600] st-pl-[100px] ">We're sorry. There are no results</p>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
-  <div class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
+  <div  v-if="products.length>0" class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
     <a class="">
-
   <!-- DONE: try handleing this in a single div -->
    <!-- Feel lot more complicated that way as each is having different conditions and styling  -->
       <div v-if="isLoading"  class="st-py-[5px] st-px-[10px] st-tracking-[1.2px] st-border st-border-black st-text-[13px] st-text-black st-font-[700]">
