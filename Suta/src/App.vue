@@ -235,9 +235,6 @@
           this.productsData = await searchClient.search(``,collectionId);
           this.totalHits=this.productsData?.totalHits;
           // DONE: no need for a function here, do this here only
-          console.log(this.productsData?.numericFacets);
-          console.log(this.productsData?.textFacets);
-          
           for(let ele of this.filters){
             if(ele.type==='numeric'){
               ele.facets=this.productsData?.numericFacets[ele?.field] || [];
@@ -378,7 +375,6 @@ restoreState() {
     }
   },
   checkNumericFacets(facetArray: any) {
-    console.log(facetArray);
   if (!facetArray || !Array.isArray(facetArray)) {
     return false;
   }
