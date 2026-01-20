@@ -166,7 +166,7 @@ beforeUnmount(){
     </div>
   </div>
 </div>
-  <div v-if="searchQuery!==''" class="st-row st-flex st-m-[0] ">
+  <div v-if="(searchQuery!=='' && products?.results.length>0)" class="st-row st-flex st-m-[0] ">
  <div class="st-left-col st-hidden md:st-block st-w-[25%] st-p-[10px] st-bg-[#f6f7f7] "></div>
  <div class="st-right-col st-right-col st-w-[100%] md:st-w-[75%] st-p-[10px] st-bg-[#f6f7f7]">
     <div  class="st-goto-search st-text-center" style=""><span class="st-box-btn st-text-[14px] st-normal-case st-font-bold st-text-[#343434] st-cursor-pointer"> View all (<span>{{totalHits}}</span>) product<span style="">s</span></span></div>

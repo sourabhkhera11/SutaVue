@@ -346,6 +346,7 @@ updateURL(){
   });
   const newUrl=`${window.location.pathname}?${params.toString()}`;
   window.history.pushState({path:newUrl},'',newUrl);
+  this.pageNumber=0;
   this.fetchData();
 },
 restoreState() {
@@ -384,6 +385,16 @@ restoreState() {
         }
     }
     return (flag===1)?true:false;
+  },
+  singleToggleFunction(label:any){
+    for(let ele of this.filters){
+      if(ele.label===label){
+        continue;
+      }
+      else{
+        ele.isOpen=false;
+      }
+    }
   },
   // DONE: move these into computed as their values wont change
     },
@@ -588,7 +599,7 @@ restoreState() {
 <div class="Fields">
   <div v-for="item in filters" :key="item.id">
     <div v-if="( item.type==='numeric' && checkNumericFacets(item.facets)) || (item.type==='text' && item.facets?.length>0 ) || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
-      <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
+      <div   @click="item.isOpen=!item.isOpen,singleToggleFunction(item.label)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
         <h3 class="st-text-[15px] " >{{item.label}}</h3>
         <span class="st-flex st-align-top">
           <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
@@ -668,7 +679,7 @@ restoreState() {
     <div class="Fields">
       <div v-for="item in filters" :key="item.id">
         <div v-if="(item.facets?.length>0 && item.type==='numeric') || (item.facets?.length>0 && item.type==='text') || (item.label==='Availability') " class="st-border-b st-border-solid st-border-[rgb(229,231,235)]" >
-          <div   @click="item.isOpen=!item.isOpen" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
+          <div   @click="item.isOpen=!item.isOpen,singleToggleFunction(item.label)" class="st-flex st-text-[#5c5c5c] st-text-[12px]  st-justify-between st-py-[20px] st-cursor-pointer st-tracking-[1px]">
             <h3 class="st-text-[15px] " >{{item.label}}</h3>
             <span class="st-flex st-align-top">
               <p v-if="item.selected.length>0" @click.stop="clearFilter(item.selected)">Clear</p>
@@ -743,7 +754,7 @@ restoreState() {
             <span>{{ items }}</span>
           </div>
           
-          <div  class="tag-close st-text-[#ff0000]">✕</div>
+          <div @click="removeFilter(fields.selected, items)" class="tag-close st-text-[#ff0000]">✕</div>
         </div>
       </template>
     </div>
@@ -757,7 +768,7 @@ restoreState() {
 </div>
                 <div class="productlist st-flex st-flex-wrap md:st-mx-[-15px] st-mx-[2.5px] " >
                   <card v-if="products.length>0" v-for="(value,index) in products" :key="index" :class="layoutClass"  class=" md:st-px-[15px] md:st-mx-[0px]  st-relative st-mt-0 st-mb-[8px] md:st-mb-[0px]"  :user-data="value" :ratio="layoutClass"/>
-                  <p v-else class="st-text-[16.38px] st-text-[#1C1C1C] st-font-[600] st-pl-[100px] ">We're sorry. There are no results</p>
+                  <p v-else class="st-text-[16.38px] st-text-[#1C1C1C] st-font-[600] st-pl-[300px] st-pt-[100px] ">We're sorry. There are no results</p>
                   </div>
                 <div class="button st-flex st-justify-center st-align-middle">
   <div  v-if="products.length>0" class="button  st-w-fit st-cursor-pointer st-my-[40px] md:st-my-[0px]">
